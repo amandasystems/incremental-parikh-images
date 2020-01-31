@@ -1,0 +1,13 @@
+author: Albin Stjerna
+documentclass: article
+papersize: a4
+fontsize: 11pt
+babel-lang: british
+tables: true
+linkReferences: true
+link-citations: true
+bibliography: bibliography.bib
+lang: en-GB
+citation-style: https://raw.githubusercontent.com/citation-style-language/styles/master/ieee.csl
+codeBlockCaptions: true
+cref: True
