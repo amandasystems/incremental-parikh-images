@@ -7,9 +7,9 @@ title: |-
 See [@fig:automata] and [@fig:one].
 
 
-![This is an enormous automaton.](automata.pdf){#fig:automata}
+![This is an enormous automaton.](img/automata.pdf){#fig:automata}
 
-![This is a small automaton.](1.pdf){#fig:one}
+![This is a small automaton.](img/1.pdf){#fig:one}
 
 
 # References
