@@ -1,4 +1,4 @@
-TODAY := $(shell date "+%B %e, %Y")
+LAST_MODIFIED := $(shell date -r Report.md "+%B %e, %Y")
 METADATA := pandoc-meta.yaml
 TEX_TEMPLATE := template.tex
 PP := cdsoft-pp
@@ -21,7 +21,7 @@ Report.pdf: Report.md ${BIBLIOGRAPHY} ${METADATA} ${TEX_TEMPLATE} ${FIGURES}
 		--filter pandoc-crossref \
 		--filter pandoc-citeproc \
 		--highlight-style pygments \
-		--metadata date="${TODAY}" \
+		--metadata date="${LAST_MODIFIED}" \
 		-o $@ \
 		--metadata-file=${METADATA} \
 		--template=${TEX_TEMPLATE}
