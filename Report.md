@@ -11,6 +11,7 @@ title: |-
 - What is even a Parikh Image
 - Why do we need it
 - The role of Parikh Images in Ostrich
+- Ostrich in the bigger picture
 
 # Efficient Parikh Image Computation
 
@@ -19,7 +20,7 @@ context-free grammar (CFG) was described in [@generate-parikh-image]. However,
 this method would yield a formula containing quantifiers, which in many
 practical cases are prohibitively time-consuming to eliminate.
 
-## Generating Quantifier-Free Presburger Formulii Lazily
+## Generating Quantifier-Free Presburger Formulae Lazily
 
 Our approach, similar to other classic relaxations such as the one used for
 solving the travelling salesperson problem in Concorde [@concorde], relaxes the
