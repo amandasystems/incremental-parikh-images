@@ -23,9 +23,6 @@ jobs:
     - name: Install build dependencies
       run: sudo apt-get install pandoc make graphviz pandoc-citeproc haskell-platform
     
-    - name: Install haskell stack
-      run: curl -sSL https://get.haskellstack.org/ | sh
-    
     - name: Compile pp
       run: |
         mkdir pp
