@@ -4,6 +4,8 @@ title: |-
   Parikh Images
 ---
 
+This is revision `!sh(git rev-parse --short HEAD)`.
+
 # Introduction
 
 ## Parikh Images and String Equations
@@ -11,7 +13,22 @@ title: |-
 - What is even a Parikh Image
 - Why do we need it
 - The role of Parikh Images in Ostrich
-- Ostrich in the bigger picture
+- Ostrich [@ostrich] in the bigger picture
+- Other approaches:
+  - Trau [@trau]
+  - ARATHA [@minizinc-dse-js] solving framework using G-STRINGS, which uses dashed string representations
+  - also cvc and z3 (word equations + heuristics??? I DON'T KNOW)
+
+## Relationship to Path Profiling
+
+- essentially, path profiling discovers dependence realtions in the flow equations.
+
+
+## Observations
+
+- Flow rules are insufficient to ensure reachability of automata in the presence of cycles
+
+- Any automaton where a cycle cannot become disconnected can be fully represented by the flow rules
 
 # Efficient Parikh Image Computation
 
@@ -29,11 +46,9 @@ flow equations. We then lazily generate clauses to block disconnected components
 by computing a min-cut between the disconnected states and the rest of the path.
 These sub-problems are solved using our own solver, Ostrich, as an oracle.
 
-
 ![This is an enormous automaton.](img/automata.pdf){#fig:automata}
 
 ![This is a small automaton.](img/1.pdf){#fig:one}
-
 
 # References
 
