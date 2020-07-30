@@ -26,8 +26,8 @@ jobs:
     - name: Compile pp
       run: |
         mkdir pp
-        curl -sSL http://cdelord.fr/pp/pp.tgz --output pp.tgz
         cd pp
+        curl -sSL http://cdelord.fr/pp/pp.tgz --output pp.tgz
         tar xvf pp.tgz
         make
 
