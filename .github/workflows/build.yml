@@ -21,7 +21,18 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install build dependencies
-      run: sudo apt install pandoc make
+      run: sudo apt install pandoc make graphviz pandoc-citeproc pandoc-crossref haskell-platform
+    
+    - name: Install haskell stack
+      run: curl -sSL https://get.haskellstack.org/ | sh
+    
+    - name: Compile pp
+      run: |
+        mkdir pp
+        curl -sSL http://cdelord.fr/pp/pp.tgz --output pp.tgz
+        cd pp
+        tar xvf pp.tgz
+        make
 
     # Runs a single command using the runners shell
     - name: Build the report
