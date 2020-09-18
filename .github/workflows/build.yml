@@ -24,10 +24,10 @@ jobs:
       run: sudo apt-get install pandoc make graphviz pandoc-citeproc haskell-platform
 
     - name: Update cabal
-      run: cabal v2-update
+      run: cabal new-update
 
     - name: Install pandoc-crossref
-      run: sudo cabal v2-install --install-method=copy pandoc-crossref
+      run: sudo cabal new-install --install-method=copy pandoc-crossref
 
     - name: Build the report
       run: cd $GITHUB_WORKSPACE && make
