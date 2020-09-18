@@ -2,6 +2,7 @@
 title: |-
   Something something\
   Parikh Images
+mathfont: texgyrepagella-math.otf
 ---
 
 This is revision `!sh(git rev-parse --short HEAD)`.
@@ -46,8 +47,17 @@ Following [@generate-parikh-image], we define the Parikh Image of a CEFA $\mathc
 
 $$
 \begin{aligned}
-\psi(\mathcal{A}) & = \\
-& =
+\psi(\mathcal{A}) := &\bigwedge_{i \in \{1, \ldots, k\}}
+r_i = \sum_{\delta, \eta \in \delta} t_\delta \cdot \eta(i)  \\
+&\bigwedge_{q \in S} \text{$1$ if $q \in I$} +
+\sum_{\delta = q' \xrightarrow{} q} t_\delta 
+- \sum_{\delta = q\xrightarrow{}q'} = 
+\text{$1$ if $q \in F$, $0$ otherwise}\\
+& \bigwedge_{\delta = q \xrightarrow{} q'} t_\delta > 0 
+\implies z_q > 0 \\
+& \bigwedge_{q \in S, q \not \in F} z_q = 0 
+\bigwedge_{\delta = q \xrightarrow{} q'} 
+z_q = q_{q'} + 1 \land t_\delta \geq 1 \land z_{q'} \geq 1\\
 \end{aligned}
 $$
 
@@ -73,7 +83,7 @@ In essence, the Parikh image of an automaton represents all possible paths throu
 
 # Efficient Parikh Image Computation
 
-- TODO explain which part of the existential quantification that is expensive to eliminate and why
+- TODO explain that the quantified transition variables are fine (follows from gauss-jordan elimination of system, only propagates coefficients of registers more or less), and it's the connectedness condition that kills us
 
 A key observation is that for our use case, we often do not need the entire image, but rather subsets of it. It therefore follows that generating the image lazily is useful.
 
