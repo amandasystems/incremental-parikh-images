@@ -23,7 +23,8 @@ jobs:
     - name: Install build dependencies
       run: >
         sudo apt-get install haskell-platform cabal-install build-essential
-        curl file git graphviz
+        curl file git graphviz &&
+        sudo apt-get --no-install-recommends install texlive-{base,bibtex-extra,extra-utils,generic-recommended,fonts-recommended,font-utils,latex-base,latex-recommended,latex-extra,math-extra,pictures,pstricks,science} tex-gyre texlive-xetex
 
     - name: Install homebrew
       run: >
