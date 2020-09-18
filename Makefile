@@ -1,7 +1,6 @@
 LAST_MODIFIED := $(shell date -r Report.md "+%B %e, %Y")
 METADATA := pandoc-meta.yaml
 TEX_TEMPLATE := template.tex
-PP := cdsoft-pp
 IMAGE_PATH := img
 FIGURES := ${IMAGE_PATH}/1.pdf ${IMAGE_PATH}/automata.pdf
 
@@ -15,7 +14,7 @@ ${IMAGE_PATH}/automata.pdf: automata.dot
 
 
 Report.pdf: Report.md ${BIBLIOGRAPHY} ${METADATA} ${TEX_TEMPLATE} ${FIGURES}
-	${PP} -img=${IMAGE_PATH}/ $< | pandoc --from markdown \
+	pandoc $< --from markdown \
 		--to pdf \
 		--standalone \
 		--filter pandoc-crossref \

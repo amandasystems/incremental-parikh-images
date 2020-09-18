@@ -22,13 +22,12 @@ jobs:
 
     - name: Install build dependencies
       run: sudo apt-get install pandoc make graphviz pandoc-citeproc haskell-platform
-    
-    - name: Get pp
-      run: |
-        mkdir pp
-        cd pp
-        curl -sSL http://cdelord.fr/pp/pp-linux-x86_64.txz --output pp.tgz
-        tar xvf pp.tgz
-    # Runs a single command using the runners shell
+
+    - name: Update cabal
+      run: cabal v2-update
+
+    - name: Install pandoc-crossref
+    - run: sudo cabal v2-install --install-method=copy pandoc-crossref
+
     - name: Build the report
-      run: cd $GITHUB_WORKSPACE && make PP=./pp/pp
+      run: cd $GITHUB_WORKSPACE && make
