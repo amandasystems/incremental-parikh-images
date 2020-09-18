@@ -38,3 +38,12 @@ jobs:
 
     - name: Build the report
       run: cd $GITHUB_WORKSPACE && make
+
+    - name: Upload report to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Report.pdf
+        tag: ${{ github.ref }}
+        overwrite: true
+        file_glob: true
