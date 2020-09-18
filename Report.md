@@ -56,7 +56,7 @@ r_i = \sum_{\delta, \eta \in \delta} t_\delta \cdot \eta(i)  \\
 & \bigwedge_{\delta = q \xrightarrow{} q'} t_\delta > 0 
 \implies z_q > 0 \\
 & \bigwedge_{q \in S, q \not \in F} z_q = 0 
-\bigwedge_{\delta = q \xrightarrow{} q'} 
+\bigvee_{\delta = q \xrightarrow{} q'} 
 z_q = q_{q'} + 1 \land t_\delta \geq 1 \land z_{q'} \geq 1\\
 \end{aligned}
 $$
