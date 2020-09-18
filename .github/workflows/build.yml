@@ -27,7 +27,7 @@ jobs:
       run: cabal v2-update
 
     - name: Install pandoc-crossref
-    - run: sudo cabal v2-install --install-method=copy pandoc-crossref
+      run: sudo cabal v2-install --install-method=copy pandoc-crossref
 
     - name: Build the report
       run: cd $GITHUB_WORKSPACE && make
