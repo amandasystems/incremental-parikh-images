@@ -21,13 +21,19 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install build dependencies
-      run: sudo apt-get install pandoc make graphviz pandoc-citeproc haskell-platform cabal-install
+      run: >
+        sudo apt-get install haskell-platform cabal-install build-essential
+        curl file git graphviz
 
-    - name: Update cabal
-      run: cabal update
+    - name: Install homebrew
+      run: >
+        git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew &&
+        mkdir ~/.linuxbrew/bin &&
+        ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin &&
+        eval $(~/.linuxbrew/bin/brew shellenv)
 
-    - name: Install pandoc-crossref
-      run: sudo cabal install pandoc-crossref
+    - name: Install pandoc and friends
+      run: brew install pandoc-crossref pandoc pandoc-citeproc
 
     - name: Build the report
       run: cd $GITHUB_WORKSPACE && make
