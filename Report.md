@@ -33,22 +33,20 @@ $$
 \psi(A) = \left\{ \psi(x) | x \in A \right\}
 $$
 
-Thus we would have $\psi(\left\{ab, abb\right\}) = \left\{\left[1, 1\right], \left[1, 2\right]\right\}$. Mixing notations slightly, we allow a Presburger formula to describe an infinite Parikh image by describing a relationship between the occurrences of each character in the language. For our example above, we would have $\psi(\Sigma^*) = \left[x, y\right]$ with no further restrictions on $x$ and $y$, since we can have any number of $a$:s and $b$:s and their occurrences are independent. Furthermore, we will use the notation $\psi(\mathcal{A})$ to mean the Parikh image of the language recognised by a non-deterministic finite automaton (NFA) $\mathcal{A}$, really a tuple $\langle Q, \Sigma, \delta, I, F\rangle$, where $Q$ is a finite set of states, $\Sigma$ is a finite alphabet, $\delta \subseteq Q \times \Sigma \times Q$ is the transition relation, $I,F \subseteq Q$ are the set of initial and final states respectively. We also write a transition $(q, a, q') \in \delta$ as  $q \xrightarrow{a} q'$.
+Thus we would have $\psi(\left\{ab, abb\right\}) = \left\{\left[1, 1\right], \left[1, 2\right]\right\}$.
 
-We will also extend this definition of a Parikh image to cost-enriched NFA:s (CEFA:s). A CEFA is an NFA enriched with a vector of mutually distinct registers $R = \left[r_1, \ldots, r_k\right]$ and and a cost register update function $\eta: R \rightarrow \mathbb{Z}$ associated with each transition. For a CEFA, we write a transition $\langle q, a, q', \eta\rangle \in \delta$ as $q \xrightarrow{a, \eta} q'$. Note that we do not allow constraints involving registers to appear in transition constraints (**DO WE WANT THIS?**); they are solely expressed in terms of input characters $a \in \Sigma$ as with regular automata.
+**Insight 1:** Another way of viewing the Parikh map is as a monoid homomorphism $p:\: \left(\Sigma^*, \cdot, \epsilon \right) \to (\mathbb{Z}^\Sigma, +, \vec{0})$, where $\cdot$ is the string concatenation operation, the objects of the right-hand-side monoid are character counts, and $+$ is standard vector addition. Note that while the left monoid does not commute, the right one does.
 
+This viewpoint enables us to generalise the Parikh map further to arbitrary monoid morphisms $h:\: \Sigma^* \to M$ where $M$ is a commutative monoid. It then follows from the universal mapping property (**HELP**) that any such morphism $h$ can also be expressed in terms of the Parikh map, as $h' \circ p$. A useful example of such a morphism might be computing the length of a string, which could easily be recast in terms of the Parikh map by summing the individual character counts of the vector.
 
-
-**Example**: a length-counting automaton would have a sole register $R = \left[r\right]$, a single, both accepting and initial, state $q$, and a single transition relation $q \xrightarrow{*, 1} q$, where each character would cause the $r$ to increment by one.
-
-
-
-Following [@generate-parikh-image], we define the Parikh Image of a CEFA $\mathcal{A} =  \langle Q, \Sigma, R, \delta, I, F \rangle$ as:
+For solving purposes we are more interested in the *images* of these maps $p, h$, as they would allow us to derive the possible input values for a given (set of) outputs. Following [@generate-parikh-image], we define the Parikh Image of a DFA $\mathcal{A} =  \langle Q, \Sigma,\delta, I, F \rangle$ as:
 
 $$
 \begin{aligned}
-\psi(\mathcal{A}) := &\bigwedge_{i \in \{1, \ldots, k\}}
-r_i = \sum_{\delta, \eta \in \delta} t_\delta \cdot \eta(i)  \\
+\psi(\mathcal{A}) := 
+& \bigwedge_{\alpha \in \Sigma}
+c_\alpha = \sum_{\delta \in \delta} t_\delta  
+\text{ where $\alpha \in \delta$}\\
 &\bigwedge_{q \in S} \text{$1$ if $q \in I$} +
 \sum_{\delta = q' \xrightarrow{} q} t_\delta 
 - \sum_{\delta = q\xrightarrow{}q'} = 
@@ -57,37 +55,40 @@ r_i = \sum_{\delta, \eta \in \delta} t_\delta \cdot \eta(i)  \\
 \implies z_q > 0 \\
 & \bigwedge_{q \in S, q \not \in F} z_q = 0 
 \bigvee_{\delta = q \xrightarrow{} q'} 
-z_q = q_{q'} + 1 \land t_\delta \geq 1 \land z_{q'} \geq 1\\
+z_q = z_{q'} + 1 \land t_\delta \geq 1 \land z_{q'} \geq 1\\
 \end{aligned}
 $$
 
-
-
-This definition allows us to construct a CEFA $\mathcal{C}$ for an arbitrary NFA $\mathcal{A}$ where we associate each letter $a \in \Sigma$ with a register  $r_a$ such that each transition $q \xrightarrow{a} q'$ becomes transitions $q \xrightarrow{a, r_a \mapsto 1} q'$ in $\mathcal{C}$, and otherwise let $\mathcal{C}$ copy $\mathcal{A}$. By this definition and our definition of the Parikh image above, $\psi(\mathcal{A}) = \psi(\mathcal{C})$  (**Q: do we want to mash the transitions together? Is this how the update function works?**).
+where all variables $z_i, t_i$ are existentially quantified and the variables $c_\alpha$ make up the actual image.
 
 In essence, the Parikh image of an automaton represents all possible paths through it modulo order. This fact is particularly useful for deciding negative inclusion in languages. For example, a string with a character count outside of the Parikh image of a language cannot be in that language. It is also useful for determining length constraints on strings whose possible values are represented by automata. Both of these applications are used in the Ostrich string solver [@ostrich], which we used in our experiments.
 
-- ## Relationship to Path Profiling
+## Finding a Parikh Image is Optimally Path Profiling
 
-- essentially, path profiling [@path_profiling][@optimally_profiling] discovers dependence relations in the flow equations
-- TODO determine the relationship between path profiling's optimisation (cut out
-  the MST) and the flow equations. Is it equal to gauss-jordan elimination?
+- essentially, path profiling [@path_profiling][@optimally_profiling] discovers dependence relations in the flow equations (proof later)
+
 - relationship to min-flow theorem
   (https://en.wikipedia.org/wiki/Dual_linear_program vs max-flow min-cut)
 
-## Observations
-
-- Flow rules are insufficient to ensure reachability of automata in the presence of cycles
-- Any automaton where a cycle cannot become disconnected can be fully represented by the flow rules
-- TODO prove that?
+- relationship to TSP
 
 # Efficient Parikh Image Computation
 
 - TODO explain that the quantified transition variables are fine (follows from gauss-jordan elimination of system, only propagates coefficients of registers more or less), and it's the connectedness condition that kills us
 
-A key observation is that for our use case, we often do not need the entire image, but rather subsets of it. It therefore follows that generating the image lazily is useful.
+A key observation is that for many interesting morphisms, we often do not need the entire image, but rather subsets of it. It therefore follows that generating the image lazily is useful.
 
 - TODO what does Anthonys paper say about this? what happens when you relax a CFG to a regular language?
+
+## Observations
+
+- the problem breaks down into a flow analysis part (linear equations), and a cycle-detection part
+
+- Flow rules are insufficient to ensure reachability of automata in the presence of cycles
+
+- Any automaton where a cycle cannot become disconnected can be fully represented by the flow rules
+
+- prove that a MST covers exactly the parts of the automata that cannot be determined by gauss-jordan-eliminating the flow equations // reduce the path profiling problem to finding a parikh image of some clever automaton modulo homomorphims
 
 ## Generating Quantifier-Free Presburger Formulae Lazily
 
@@ -111,9 +112,25 @@ TODO define the semantics of the "parikh image predicate".
 
 ![This is a small automaton.](img/1.pdf){#fig:one}
 
+# Use Cases
+
+## Parikh Images of Symbolic Automata
+
+- problem: unicode is really big
+
+- describe symbolic automata
+
+- a symbolic automata is an isomorphism on DFAs
+
 # Evaluation
 
 # References
 
 ::: {#refs}
 :::
+
+<!-- We will also extend this definition of a Parikh image to cost-enriched NFA:s (CEFA:s). A CEFA is an NFA enriched with a vector of mutually distinct registers $R = \left[r_1, \ldots, r_k\right]$ and a cost register update function $\eta: R \rightarrow \mathbb{Z}$ associated with each transition. For a CEFA, we write a transition $\langle q, a, q', \eta\rangle \in \delta$ as $q \xrightarrow{a, \eta} q'$. Note that we do not allow constraints involving registers to appear in transition constraints as that would push us solidly out of regular languages; they are solely expressed in terms of input characters $a \in \Sigma$ as with regular automata. -->
+
+<!-- **Example**: a length-counting automaton would have a sole register $R = \left[r\right]$, a single, both accepting and initial, state $q$, and a single transition relation $q \xrightarrow{*, 1} q$, where each character would cause the $r$ to increment by one. -->
+
+<!-- This definition allows us to construct a CEFA $\mathcal{C}$ for an arbitrary NFA $\mathcal{A}$ where we associate each letter $a \in \Sigma$ with a register  $r_a$ such that each transition $q \xrightarrow{a} q'$ becomes transitions $q \xrightarrow{a, r_a \mapsto 1} q'$ in $\mathcal{C}$, and otherwise let $\mathcal{C}$ copy $\mathcal{A}$. By this definition and our definition of the Parikh image above, $\psi(\mathcal{A}) = \psi(\mathcal{C})$  (**Q: do we want to mash the transitions together? Is this how the update function works?**). -->
