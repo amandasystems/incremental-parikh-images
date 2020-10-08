@@ -46,4 +46,4 @@ jobs:
         file: Report.pdf
         tag: nightly
         overwrite: true
-        file_glob: true
+        prerelease: true
