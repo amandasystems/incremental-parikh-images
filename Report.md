@@ -165,7 +165,8 @@ $$
 \end{aligned}
 $$
 
-and $\KnownConnected$ corresponds to the following:
+and $\KnownConnected$ corresponds to the following, corresponding to guaranteed
+connectedness (or, conversely, the non-existence of cuts disagreeing with $\TransitionVec$):
 $$
 \forall{C, T}\: C = \SeparatingCut(T) \implies \forall{i} \: \Transitions_i \in T \land \TransitionVec_i > 0 \implies \forall{j} \: \Transitions_j \in C \implies \TransitionVec_j = 0
 $$
