@@ -1,0 +1,28 @@
+\usepackage{amsmath}
+\DeclareMathOperator{\Image}{Im}
+\newcommand{\ParikhPredicate}[4]{\Image_{#1, #2}(#3, #4)}
+\newcommand{\Automaton}[0]{\mathcal{A}}
+\newcommand{\Tuple}[1]{\left\langle#1\right\rangle}
+\newcommand{\States}[0]{Q}
+\newcommand{\Initial}[0]{I}
+\newcommand{\Accepting}[0]{F}
+\newcommand{\Transitions}[0]{\delta}
+\newcommand{\Alphabet}[0]{\Sigma}
+\newcommand{\Label}[0]{l}
+\newcommand{\AndComp}[2]{\bigwedge_{#1} #2}
+\newcommand{\Set}[1]{\left\{#1\right\}}
+\newcommand{\NrTransitions}[0]{t}
+\newcommand{\FromLabelTo}[3]{#1 \xrightarrow{#2} #3}
+\newcommand{\EllipsisSequence}[2]{#1_{1}, \ldots, #1_{#2}}
+\newcommand{\Vector}[1]{\overrightarrow{#1}}
+\newcommand{\TransitionVec}[0]{\Vector{x}}
+\newcommand{\PostTransitionVec}[0]{\Vector{y}}
+\newcommand{\PredicateInstance}[0]{\ParikhPredicate{\Automaton}{h}{\TransitionVec}{\PostTransitionVec}}
+\DeclareMathOperator{\SeparatingCut}{Cut}
+\DeclareMathOperator{\In}{\textsc{In}}
+\DeclareMathOperator{\Out}{\textsc{Out}}
+\newcommand{\SomeClause}[0]{\phi}
+\newcommand{\SuchThat}[0]{\:\mid\:}
+\newcommand{\Naturals}[0]{\mathbb{N}}
+\newcommand{\FlowEq}[0]{\textsc{Flow-Eqs}}
+\newcommand{\KnownConnected}[0]{\textsc{Known-Connected}}

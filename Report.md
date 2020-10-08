@@ -114,7 +114,7 @@ $\Transitions_i = \FromLabelTo{q}{\Label}{q'}$.
 
 Treating $\Automaton$ as a graph with vertices $Q$ and edges $\delta$, we use
 the term _separating cut_ of a set of _transitions_ $T =
-\Set{\EllipsisSequence{\Transitions}{n}}, \SeparatingCut(T)$ to refer to any set
+\Set{\Transitions_i, \ldots, \Transitions_n}, \SeparatingCut(T)$ to refer to any set
 of transitions whose removal causes $T$ to be unreachable from any state in
 $\Initial$, with the meaning that a transition is reachable iff its starting
 node is. Note that if $T$ contains a transition $e =
@@ -133,20 +133,24 @@ $\PredicateInstance$ such that it is true exactly when:
 \begin{mathpar}
   \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$}]
     {\AndComp
-      {j \in \Naturals \SuchThat \Transitions_j \in T}
+      {j \in 1,\ldots,t \SuchThat \Transitions_j \in T}
       {\TransitionVec{j} = 0} 
-    \land \PredicateInstance \AndComp{i \in \Naturals \SuchThat \Transitions_i \in C}{\TransitionVec_i = 0} \land \SomeClause}
-    {\PredicateInstance \AndComp{i \in \Naturals \SuchThat \Transitions_i \in C} 
+    \land \PredicateInstance \AndComp{i \in 1,\ldots,t \SuchThat \Transitions_i \in C}{\TransitionVec_i = 0} \land \SomeClause}
+    {\PredicateInstance \AndComp{i \in 1,\ldots,t \SuchThat \Transitions_i \in C} 
     \TransitionVec_i = 0 \land \SomeClause}
     
   \inferrule*[left=Expand]
-    {\FlowEq \AndComp{i \in \Naturals}{h(\TransitionVec_i) = \PostTransitionVec_i} \land \PredicateInstance \land \SomeClause}
+    {\FlowEq \AndComp{i \in 1,\ldots,t}{h(\TransitionVec_i) = \PostTransitionVec_i} \land \PredicateInstance \land \SomeClause}
     {\PredicateInstance \land \SomeClause}
 
   \inferrule*[left=Split]
   {\TransitionVec_i = 0 \land \PredicateInstance \land \SomeClause \\ | 
   \\ \TransitionVec_i \geq 0 \land \PredicateInstance \land \SomeClause}
     {\PredicateInstance{} \land \SomeClause}
+    
+\inferrule*[left=Subsume, right=\textnormal{if \KnownConnected}]
+  {\SomeClause}
+  {\PredicateInstance{} \land \SomeClause}
    
 \end{mathpar}
 
@@ -154,12 +158,28 @@ where $\FlowEq$ are the flow-balancing part of the Parikh image from [@sec:parik
 
 $$
 \begin{aligned}
-& \In(q) = \text{$1$ if $q \in I$} + \sum_{i \in \Naturals \SuchThat \Transitions_i = \FromLabelTo{*}{}{q}} \TransitionVec_i\\
-& \Out(q) = \sum_{i \in \Naturals \SuchThat \Transitions_i = \FromLabelTo{q}{}{*}} \TransitionVec_i\\
+& \In(q) = \text{$1$ if $q \in I$} + \sum_{i \in 1,\ldots,t \SuchThat \Transitions_i = \FromLabelTo{*}{}{q}} \TransitionVec_i\\
+& \Out(q) = \sum_{i \in 1,\ldots,t \SuchThat \Transitions_i = \FromLabelTo{q}{}{*}} \TransitionVec_i\\
 & \FlowEq = \AndComp{q \in Q}{\In(q) - \Out(q)}
 \text{ $\geq 0$ if $q \in F$, $= 0$ otherwise}
 \end{aligned}
 $$
+
+and $\KnownConnected$ corresponds to the following:
+$$
+\forall{C, T}\: C = \SeparatingCut(T) \implies \forall{i} \: \Transitions_i \in T \land \TransitionVec_i > 0 \implies \forall{j} \: \Transitions_j \in C \implies \TransitionVec_j = 0
+$$
+
+The \textsc{Propagate} rule allows us to propagate connectedness across
+$\Automaton$. It states that we are only allowed to "use" transitions attached
+to a reachable state, and is necessary to ensure connectedness in the presence
+of cycles. \textsc{Expand} expands the predicate into its most basic rules; one
+set of linear equations connecting $\TransitionVec$ and $\PostTransitionVec$,
+and the linear flow equations of the standard Parikh image formulation.
+
+Finally, \textsc{Split} allows us to branch on the proof tree by first trying to
+exclude a contested edge from a potential solution and then concluding that it
+must be included.
 
 #### An Example
 
