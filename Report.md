@@ -6,7 +6,7 @@ mathfont: texgyrepagella-math.otf
 header-includes: |
     \usepackage{mathpartir}
     \usepackage{mymacros}
-abstract: BLAH BLAH ABSTRACT
+abstract: We contribute a novel understanding of how Parikh maps can be combined with arbitrary monoid morphisms to efficiently represent a wide range of logics on automata and automata-like structures. Cases studied as examples in this report include epistemic logic and string-length constraints in a string constraint solver. Moreover, we show how this formulation can be efficiently implemented in a theorem prover for succinct formulations of SEVERAL CONSTRAINTS on strings. Finally, we show that this implementation in addition to being Z BETTER also offers X PERFORMANCE improvements on Y real-world instances.
 ---
 
 This is revision `!sh(git rev-parse --short HEAD)`.
