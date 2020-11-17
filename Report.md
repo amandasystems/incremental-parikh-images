@@ -129,13 +129,38 @@ node is. Note that if $T$ contains a transition $e =
 \FromLabelTo{v}{\Label}{v'}$ such that $v \in \Initial$, $\SeparatingCut(T) =
 \emptyset$.
 
+We will follow the notation of [@generate-parikh-image] and simultaneously talk
+about $\Automaton$ as a graph and an automaton. Moreover, we will continuously
+refer to the subgraph produced by keeping only the transitions/edges whose
+corresponding variables in $\TransitionVec$ are positive ($> 0$). An edge will
+be called *selected* if it is in this subgraph. An edge that is known to be zero
+will conversely be called *deselected*. An edge whose corrsponding term has no
+known status is called unknown. Formally, we define these as follows:
+
+\begin{definition}
+$\Selected(x)(\SomeClause)$ means that $x > a$ for some $a \geq 0$ is a clause
+in $\SomeClause$.
+\end{definition}
+
+\begin{definition}
+$\Deselected(x)(\SomeClause)$ means that $x = 0$ or $x < a$ for some $a \leq 1$
+is a clause in $\SomeClause$.
+\end{definition}
+
+\begin{definition}
+$\Unknown(x)(\SomeClause)$ means that neither $\Selected(x)(\SomeClause)$ nor
+$\Selected(x)(\SomeClause)$ holds.
+\end{definition}
+
+
 With these preliminaries out of the way, we can define a predicate
 $\PredicateInstance$ such that it is true exactly when:
 
 - $h:\: \Alphabet^* \rightarrow M$, a morphism to a commutative product monoid 
    $M = \prod_{i} M_i$
 - $\TransitionVec$ is a vector of terms such that each term correspond to a
-  transition in $\Automaton$
+  transition in $\Automaton$. We use the notation $x_t$ to refer to transition
+  $t \in \Transitions$'s corresponding term.
 
 \begin{mathpar}
   \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$}]
@@ -146,11 +171,11 @@ $\PredicateInstance$ such that it is true exactly when:
     {\PredicateInstance \land \AndComp{i \in 1,\ldots,t \SuchThat \Transitions_i \in C} 
     \TransitionVec_i = 0 \land \SomeClause}
     
-  \inferrule*[left=Expand]
+  \inferrule*[left=Expand, right=\textnormal{(Only once)}]
     {\FlowEq \land \AndComp{i \in 1,\ldots,t}{h(\TransitionVec_i) = \PostTransitionVec_i} \land \PredicateInstance \land \SomeClause}
     {\PredicateInstance \land \SomeClause}
 
-  \inferrule*[left=Split]
+  \inferrule*[left=Split, right=\textnormal{if $\Unknown(\TransitionVec_i)(\SomeClause)$}]
   {\TransitionVec_i = 0 \land \PredicateInstance \land \SomeClause \\ | 
   \\ \TransitionVec_i > 0 \land \PredicateInstance \land \SomeClause}
     {\PredicateInstance{} \land \SomeClause}
@@ -205,7 +230,6 @@ tree (MST) of the automaton.
   edge (formalise!)
 
 
-
 #### An Example
 
 HELP
@@ -218,33 +242,6 @@ with some arbitrary other clauses $\SomeClause$. For our decision procedure to
 be sound would mean to preserve satisfiability. Any valuation function that
 satisfies a formula before evaluating one of the rules would also be a valuation
 of the result of applying the rule.
-
-First, we will introduce some terminology. We will follow the notation of
-[@generate-parikh-image] and simultaneously talk about $\Automaton$ as a graph
-and an automaton. Moreover, we will continuously refer to the subgraph produced
-by keeping only the transitions/edges whose corresponding variables in
-$\TransitionVec$ are positive ($> 0$). An edge will be called *selected* if it
-is in this subgraph. An edge that is known to be zero will conversely be called
-*deselected*. An edge whose corrsponding term has no known status is called
-unknown.
-
-Formally, we mean the following:
-
-\begin{definition}
-$\Selected(x)(\SomeClause)$ means that $x > a$ for some $a \geq 0$ is a clause
-in $\SomeClause$.
-\end{definition}
-
-\begin{definition}
-$\Deselected(x)(\SomeClause)$ means that $x = 0$ or $x < a$ for some $a \leq 1$
-is a clause in $\SomeClause$.
-\end{definition}
-
-\begin{definition}
-$\Unknown(x)(\SomeClause)$ means that neither $\Selected(x)(\SomeClause)$ nor
-$\Selected(x)(\SomeClause)$ holds.
-\end{definition}
-
 
 Structurally, an assignment to $\TransitionVec$ (which can be partial) can be
 outside of the Parikh image of $\Automaton$ only if it is not part of a valid
