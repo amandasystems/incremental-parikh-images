@@ -13,6 +13,10 @@ PANDOC_OPTIONS := --standalone \
 
 all: Report.pdf
 
+${IMAGE_PATH}/nice.pdf: nice-example.dot
+	dot -Tpdf -o $@ $< -Earrowsize=0.5
+
+
 ${IMAGE_PATH}/1.pdf: 1.dot
 	dot -Tpdf -o $@ $< -Earrowsize=0.5 -Efontsize=9.0
 

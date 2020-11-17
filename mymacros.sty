@@ -10,6 +10,7 @@
 \newcommand{\Alphabet}[0]{\Sigma}
 \newcommand{\Label}[0]{l}
 \newcommand{\AndComp}[2]{\bigwedge_{#1} #2}
+\newcommand{\OrComp}[2]{\bigvee_{#1} #2}
 \newcommand{\Set}[1]{\left\{#1\right\}}
 \newcommand{\NrTransitions}[0]{t}
 \newcommand{\FromLabelTo}[3]{#1 \xrightarrow{#2} #3}
@@ -21,8 +22,35 @@
 \DeclareMathOperator{\SeparatingCut}{Cut}
 \DeclareMathOperator{\In}{\textsc{In}}
 \DeclareMathOperator{\Out}{\textsc{Out}}
+\DeclareMathOperator{\Val}{Val}
+\DeclareMathOperator{\Selected}{\textsc{Selected}}
+\DeclareMathOperator{\Deselected}{\textsc{Deselected}}
+\DeclareMathOperator{\Unknown}{\textsc{Unknown}}
+\DeclareMathOperator{\AssignFn}{\beta}
 \newcommand{\SomeClause}[0]{\phi}
 \newcommand{\SuchThat}[0]{\:\mid\:}
 \newcommand{\Naturals}[0]{\mathbb{N}}
 \newcommand{\FlowEq}[0]{\textsc{Flow-Eqs}}
 \newcommand{\KnownConnected}[0]{\textsc{Known-Connected}}
+\DeclareFontFamily{U}{skulls}{}
+\DeclareFontShape{U}{skulls}{m}{n}{ <-> skull }{}
+\newcommand{\skull}{\text{\usefont{U}{skulls}{m}{n}\symbol{'101}}}
+\newcommand{\Propagate}[0]{\textsc{Propagate}}
+\newcommand{\Expand}[0]{\textsc{Expand}}
+\newcommand{\Split}[0]{\textsc{Split}}
+\newcommand{\Subsume}[0]{\textsc{Subsume}}
+\newcommand{\DeadTransition}[0]{\delta_{\skull}}
+\newcommand{\Valuation}[0]{\Val_{\AssignFn}(\SomeClause)}
+\newcommand{\Assignment}[0]{\AssignFn = \Set{x_0 \mapsto a_0, \ldots, x_n
+    \mapsto a_n}}
+\newcommand{\AssignsTo}[2]{\AssignFn(#1 = #2)}
+
+
+
+\newcommand{\Fudge}[1]{{\color{blue}{\textit{#1}}}}
+
+% Theorems
+\usepackage{amsthm}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
