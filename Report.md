@@ -163,13 +163,12 @@ $\PredicateInstance$ such that it is true exactly when:
   $t \in \Transitions$'s corresponding term.
 
 \begin{mathpar}
-  \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$}]
+  \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$, $\exists t \in T \::\: \lnot \Selected(t)$}]
     {\AndComp
-      {j \in 1,\ldots,t \SuchThat \Transitions_j \in T}
-      {\TransitionVec{j} = 0} 
-    \land \PredicateInstance \land \AndComp{i \in 1,\ldots,t \SuchThat \Transitions_i \in C}{\TransitionVec_i = 0} \land \SomeClause}
-    {\PredicateInstance \land \AndComp{i \in 1,\ldots,t \SuchThat \Transitions_i \in C} 
-    \TransitionVec_i = 0 \land \SomeClause}
+      {\Transitions_t \in T}
+      {\TransitionVec_{\Transitions_t} = 0} 
+    \land \PredicateInstance \land \AndComp{\Transitions_c \in C}{\TransitionVec_{\Transitions_c} = 0} \land \SomeClause}
+    {\PredicateInstance \land \AndComp{\Transitions_c \in C}{\TransitionVec_{\Transitions_c} = 0} \land \SomeClause}
     
   \inferrule*[left=Expand, right=\textnormal{(Only once)}]
     {\FlowEq \land \AndComp{i \in 1,\ldots,t}{h(\TransitionVec_i) = \PostTransitionVec_i} \land \PredicateInstance \land \SomeClause}
@@ -203,27 +202,30 @@ $$
 \forall{C, T}\: C = \SeparatingCut(T) \implies \forall{i} \: \Transitions_i \in T \land \TransitionVec_i > 0 \implies \forall{j} \: \Transitions_j \in C \implies \TransitionVec_j = 0
 $$
 
-The \textsc{Propagate} rule allows us to propagate connectedness across
+Additionally, we assume the existence of a rule \PresburgerClose{},
+corresponding to a sound and complete solver for Presburger formulae.
+
+The $\Propagate{}$ rule allows us to propagate connectedness across
 $\Automaton$. It states that we are only allowed to "use" transitions attached
 to a reachable state, and is necessary to ensure connectedness in the presence
 of cycles. \textsc{Expand} expands the predicate into its most basic rules; one
 set of linear equations connecting $\TransitionVec$ and $\PostTransitionVec$,
 and the linear flow equations of the standard Parikh image formulation.
 
-Finally, \textsc{Split} allows us to branch on the proof tree by first trying to
+Finally, $\Split{}$ allows us to branch on the proof tree by first trying to
 exclude a contested edge from a potential solution and then concluding that it
 must be included.
 
 A decision procedure for our predicate in a tableau-based automated theorem
-prover would start by expanding the predicate using the EXPAND rule. For many
-instances of the predicate, this would be enough to induce subsumption; as long
-as the DFA contains no loops that could be disconnected from a minimum spanning
-tree (MST) of the automaton.
+prover would start by expanding the predicate using the $\Expand{}$ rule. For
+many instances of the predicate, this would be enough to induce subsumption; as
+as long as the DFA contains no loops that could be disconnected from a minimum
+spanning tree (MST) of the automaton.
 
 - FIXME: is subsume really correct? We need at least the mapping equations, don't we?
 - FIXME: what happens to Expand under this formulation of h, h'? How do we map h into this?
-- FIXME add precondition that the separating cut is of deselected edges and
-  reformulate propagate to actually propagate variable values!!!
+- FIXME add precondition that the separating cut is of deselected edges so that
+  it is guaranteed to terminate
 - FIXME introduce and formalise the selected/deselected edges terminology
 - FIXME we will assume a sound, complete and terminating decision procedure for
   presburger arithmetic such that we can determine the selectedness status of an
@@ -326,23 +328,54 @@ The decision procedure is preserves satisfiability.
 As all the rules preserve satisfiability, so must the decision procedure.
 \end{proof}
 
+### Termination
+
+We prove termination by showing that the number of transition terms
+($\TransitionVec$) that are unknown is decreasing monotonically with each rule
+application. Initially, the worst-case number of unknown terms is $n =
+|\TransitionVec|$, i.e. all terms are unknown.
+
+\Expand is evaluated precisely once, which means that it is automatically
+guaranteed to terminate. It will also at worst not increase $n$.
+
+\Split can always be applied when there are unknown terms, and will always
+eliminate that unknown term in each split. Therefore, it will monotonically
+decrease the number of unknown terms.
+
+\Propagate can be executed whenever there is a term in $T$ not currently known
+to be selected. This means that there are two options. Either it can close the
+proof by materialising finitely many contradicting deselecting statements for a
+selected transition in $T$, effectively terminating the proof procedure
+immediately with a contradiction. Or it can propagate selectedness to an unknown
+transition term, thereby reducing the number of transition terms. Therefore, the
+rule can be executed only finitely many times.
+
+\Subsume, finally, will be applied only once, after which none of the other
+rules can be applied to that predicate. It will be applicable if there are no
+unknown transitions left and the known transitions are guaranteed to not
+contradict the predicate. If they did, one of the other rules would be able to
+execute, generating a contradiction.
+
+It therefore follows that these rules always allows us to always make progress
+towards reducing the number of unknown terms for each predicate in a formula.
+
 
 ### Completeness
 
-completeness: if the predicate holds for some values, it has a succesful
-derivation with these rules.
+We have something sound and terminating; it is enough to show that we can always
+apply a rule. Initially, if we have no predicate instances left, we can close
+the proof with \PresburgerClose.
 
-idea: follows directly form an oracle and subsume? let the oracle give the
-assignment, that will just remove the predicate
+If there is a predicate instance and all of its transition terms are known, we
+can either close the proof by applying \Expand (if it has not been applied
+before) or \Propagate to derive a contradiction, or remove the predicate using
+the $\Subsume$ rule if neither of them can be applied.
 
-### Termination
+If there is at least one unknown transition term, we can always apply at least \Split
+to attempt a proof by cases, removing the unknown term.
 
-termination: each rule will create "smaller" problems
-
-- split always reduces the problem, by at least one transition
-- finitely many transitions
-- after splitting on each one, we have a solution
-
+It follows therefore that because we can always make monotonic progress towards
+a solution, and because the decision procedure is sound, it is also complete.
 
 ![This is an enormous automaton.](img/automata.pdf){#fig:automata}
 
