@@ -163,7 +163,7 @@ $\PredicateInstance$ such that it is true exactly when:
   $t \in \Transitions$'s corresponding term.
 
 \begin{mathpar}
-  \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$, $\exists t \in T \::\: \lnot \Selected(t)$}]
+  \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$, $\exists t \in T \::\: \lnot \Deselected(t)$}]
     {\AndComp
       {\Transitions_t \in T}
       {\TransitionVec_{\Transitions_t} = 0} 
@@ -171,7 +171,7 @@ $\PredicateInstance$ such that it is true exactly when:
     {\PredicateInstance \land \AndComp{\Transitions_c \in C}{\TransitionVec_{\Transitions_c} = 0} \land \SomeClause}
     
   \inferrule*[left=Expand, right=\textnormal{(Only once)}]
-    {\FlowEq \land \AndComp{i \in 1,\ldots,t}{h(\TransitionVec_i) = \PostTransitionVec_i} \land \PredicateInstance \land \SomeClause}
+    {\FlowEq \land \AndComp{i \in 1,\ldots,t}{h(\TransitionVec_i) = \PostTransitionVec_i \land \TransitionVec_i \geq 0 \land \PostTransitionVec \geq 0} \land \PredicateInstance \land \SomeClause}
     {\PredicateInstance \land \SomeClause}
 
   \inferrule*[left=Split, right=\textnormal{if $\Unknown(\TransitionVec_i)(\SomeClause)$}]
@@ -241,13 +241,13 @@ HELP
 
 We assume that we have an instance of the predicate $\PredicateInstance$, along
 with some arbitrary other clauses $\SomeClause$. For our decision procedure to
-be sound would mean to preserve satisfiability. Any valuation function that
-satisfies a formula before evaluating one of the rules would also be a valuation
-of the result of applying the rule.
+be sound would mean to preserve satisfiability. Any valuation that satisfies a
+formula before evaluating a rule would also be a valuation of the result of
+applying the rule.
 
 Structurally, an assignment to $\TransitionVec$ (which can be partial) can be
 outside of the Parikh image of $\Automaton$ only if it is not part of a valid
-derivation of $\Automaton$. A derivation can be outside of the automaton only if:
+run of $\Automaton$. A run can be outside of the automaton only if:
 
 1. The selected graph contains at least one transition $\DeadTransition$ that
    participates in no path from an accepting to a final state. This corresponds
@@ -262,9 +262,9 @@ derivation of $\Automaton$. A derivation can be outside of the automaton only if
 \end{lemma}
 \begin{proof}
 
-Assume that we have a valuation $\Valuation$ where $\Assignment$ that satisfies
-an initial formula $\SomeClause$, where the clauses $\SomeClause'$ is
-$\SomeClause$ without the predicate we are expanding.
+Assume that we have a valuation $\Assignment$ that satisfies an initial formula
+$\SomeClause$, where the clauses $\SomeClause'$ is $\SomeClause$ without the
+predicate we are expanding.
 
 If we have applied $\Propagate$, there must be a separating cut $C =
 \SeparatingCut(T)$ such that $\forall c \in C \Deselected(c)(\SomeClause')$. In
@@ -287,7 +287,7 @@ valuation. Therefore it follows that $\Propagate$ must preserve satisfiability.
 \Expand{} preserves satisifiability.
 \end{lemma}
 \begin{proof}
-Assume that we have a valuation $\Valuation$ that satisfies an initial formula
+Assume that we have a valuation $\Assignment{}$ that satisfies an initial formula
 $\SomeClause$, where the clauses $\SomeClause'$ is $\SomeClause$ without the
 predicate we are expanding. To prove that $\Expand$ preserves satisfiability,
 assume with the goal of reaching contradiction that some application of
@@ -306,7 +306,7 @@ follows that $\Expand$ preserves satisfiability.
 \end{lemma}
 \begin{proof}
 It follows trivially that $\Split$ preserves staisfiability immediately from
-arithmetic axioms; a positive integer is either 0 or greater than 0. Therefore,
+arithmetic axioms; a non-negative integer is either 0 or greater than 0. Therefore,
 if a formula is satisifiable, at least one of its splits has to be for any given
 term.
 \end{proof}
@@ -315,17 +315,17 @@ term.
 \Subsume{} preserves satisfiability.
 \end{lemma}
 \begin{proof}
-Assume there exists a satisfying valuation $\Valuation{}$ that satisfies a formula
+Assume there exists a satisfying valuation $\Assignment{}$ that satisfies a formula
 $\SomeClause$. In that case, if we apply $\Subsume{}$ to $\SomeClause$ it
 follows trivially that satisfiability is preserved, as the rule only removes a
 predicate.
 \end{proof}
 
 \begin{theorem}
-The decision procedure is preserves satisfiability.
+The calculus preserves satisfiability.
 \end{theorem}
 \begin{proof}
-As all the rules preserve satisfiability, so must the decision procedure.
+As all the rules preserve satisfiability, so must the entire calculus.
 \end{proof}
 
 ### Termination
