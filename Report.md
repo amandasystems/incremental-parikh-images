@@ -6,7 +6,7 @@ mathfont: texgyrepagella-math.otf
 header-includes: |
     \usepackage{mathpartir}
     \usepackage{mymacros}
-abstract: We contribute a novel understanding of how Parikh maps can be combined with arbitrary commutative monoid morphisms to efficiently represent a wide range of logics on automata and automata-like structures. Cases studied as examples include epistemic logic and string-length constraints in a string constraint solver. Moreover, we show how this formulation can be efficiently implemented in a theorem prover for succinct formulations of SEVERAL CONSTRAINTS on strings. Finally, we show that this implementation in addition to being Z BETTER also offers X PERFORMANCE improvements on Y real-world instances.
+abstract: The image of the Parikh map is important in automata theory, offering a compact characterisation of an automaton. We contribute a novel understanding of how Parikh maps can be combined with arbitrary commutative monoid morphisms to efficiently represent a wide range of logics on automata and automata-like structures. Cases studied as examples include epistemic logic and string-length constraints in a string constraint solver. Furthermore, we show how this formulation can be efficiently implemented as a calculus in a theorem prover for succinct formulations of \Fudge{several constraints on strings}. In particular, our calculus is versatile enough to efficiently compute the Parikh image of a product of two automata, allowing our solver, \Ostrich{}, to solve \Fudge{X new instances} where it was previously constrained by the memory required to materialise the product. Finally, we show that this implementation in addition to being \Fudge{Z better} also offers \Fudge{X performance} improvements on \Fudge{Y real-world instances}, and in particular \Fudge{yields no regressions} in performance \Fudge{and, in fact, cures cancer, brings about world peace, and ends global hunger.}
 ---
 
 This is revision `!sh(git rev-parse --short HEAD)`.
@@ -222,15 +222,9 @@ many instances of the predicate, this would be enough to induce subsumption; as
 as long as the DFA contains no loops that could be disconnected from a minimum
 spanning tree (MST) of the automaton.
 
-- FIXME: is subsume really correct? We need at least the mapping equations, don't we?
-- FIXME: what happens to Expand under this formulation of h, h'? How do we map h into this?
-- FIXME add precondition that the separating cut is of deselected edges so that
-  it is guaranteed to terminate
-- FIXME introduce and formalise the selected/deselected edges terminology
-- FIXME we will assume a sound, complete and terminating decision procedure for
-  presburger arithmetic such that we can determine the selectedness status of an
-  edge (formalise!)
-
+- FIXME: is subsume really correct?
+- FIXME: what happens to \Expand{} under this formulation of h, h'? How do we
+  map h into this?
 
 #### An Example
 
@@ -240,7 +234,7 @@ HELP
 - TODO there is nothing said here about $\PostTransitionVec$
 
 We assume that we have an instance of the predicate $\PredicateInstance$, along
-with some arbitrary other clauses $\SomeClause$. For our decision procedure to
+with some arbitrary other clauses $\SomeClause$. For our calculus to
 be sound would mean to preserve satisfiability. Any valuation that satisfies a
 formula before evaluating a rule would also be a valuation of the result of
 applying the rule.
@@ -375,11 +369,9 @@ If there is at least one unknown transition term, we can always apply at least \
 to attempt a proof by cases, removing the unknown term.
 
 It follows therefore that because we can always make monotonic progress towards
-a solution, and because the decision procedure is sound, it is also complete.
+a solution, and because the calculus is sound, it is also complete.
 
-![This is an enormous automaton.](img/automata.pdf){#fig:automata}
-
-![This is a small automaton.](img/1.pdf){#fig:one}
+## Parikh Images of Products of Automata
 
 # Use Cases
 
@@ -392,6 +384,8 @@ a solution, and because the decision procedure is sound, it is also complete.
 - a symbolic automata is an isomorphism on DFAs
 
 # Evaluation
+
+# Previous Research
 
 # References
 
