@@ -156,11 +156,17 @@ $\Selected(x)(\SomeClause)$ holds.
 With these preliminaries out of the way, we can define a predicate
 $\PredicateInstance$ such that it is true exactly when:
 
-- $h:\: \Alphabet^* \rightarrow M$, a morphism to a commutative product monoid 
-   $M = \prod_{i} M_i$
+- $h:\: \Alphabet^* \rightarrow \SomeMonoid$, a morphism to a commutative product monoid
+   $\SomeMonoid = \prod_{i} \SomeMonoid_i$. To simplify equations, we let $h(t)$ for some transition
+   $t \in \Transitions$ to mean the application of $h$ to $t$'s label.
+- $\MonoidElement$ is an element of $\SomeMonoid$.
 - $\TransitionVec$ is a vector of terms such that each term correspond to a
-  transition in $\Automaton$. We use the notation $x_t$ to refer to transition
-  $t \in \Transitions$'s corresponding term.
+  transition in $\Automaton$. We use the notation $\TransitionVec_t$ to refer to
+  transition. $t \in \Transitions$'s corresponding term, allowing
+  $\TransitionVec$ to be directly indexed by the transitions w.l.o.g from
+  integer indices.
+  
+  - FIXME: how do we know we have an operation $\MonoidProduct\::\: \Naturals\times{}\SomeMonoid$
 
 \begin{mathpar}
   \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$, $\exists t \in T \::\: \lnot \Deselected(t)$}]
@@ -171,7 +177,7 @@ $\PredicateInstance$ such that it is true exactly when:
     {\PredicateInstance \land \AndComp{\Transitions_c \in C}{\TransitionVec_{\Transitions_c} = 0} \land \SomeClause}
     
   \inferrule*[left=Expand, right=\textnormal{(Only once)}]
-    {\FlowEq \land \AndComp{i \in 1,\ldots,t}{h(\TransitionVec_i) = \PostTransitionVec_i \land \TransitionVec_i \geq 0 \land \PostTransitionVec \geq 0} \land \PredicateInstance \land \SomeClause}
+    {\FlowEq \land y = \sum_{t \in \Transitions}{\TransitionVec_t \MonoidProduct h(t)} \land \AndComp{i \in 1,\ldots,t}{\TransitionVec_i \geq 0} \land \PredicateInstance \land \SomeClause}
     {\PredicateInstance \land \SomeClause}
 
   \inferrule*[left=Split, right=\textnormal{if $\Unknown(\TransitionVec_i)(\SomeClause)$}]
@@ -209,7 +215,7 @@ The $\Propagate{}$ rule allows us to propagate connectedness across
 $\Automaton$. It states that we are only allowed to "use" transitions attached
 to a reachable state, and is necessary to ensure connectedness in the presence
 of cycles. \textsc{Expand} expands the predicate into its most basic rules; one
-set of linear equations connecting $\TransitionVec$ and $\PostTransitionVec$,
+set of linear equations connecting $\TransitionVec$ and $\MonoidElement$,
 and the linear flow equations of the standard Parikh image formulation.
 
 Finally, $\Split{}$ allows us to branch on the proof tree by first trying to
@@ -231,7 +237,7 @@ spanning tree (MST) of the automaton.
 HELP
 
 ### Soundness
-- TODO there is nothing said here about $\PostTransitionVec$
+- TODO there is nothing said here about $\MonoidElement$
 
 We assume that we have an instance of the predicate $\PredicateInstance$, along
 with some arbitrary other clauses $\SomeClause$. For our calculus to
@@ -370,6 +376,7 @@ to attempt a proof by cases, removing the unknown term.
 
 It follows therefore that because we can always make monotonic progress towards
 a solution, and because the calculus is sound, it is also complete.
+
 
 ## Parikh Images of Products of Automata
 

@@ -17,8 +17,8 @@
 \newcommand{\EllipsisSequence}[2]{#1_{1}, \ldots, #1_{#2}}
 \newcommand{\Vector}[1]{\overrightarrow{#1}}
 \newcommand{\TransitionVec}[0]{\Vector{x}}
-\newcommand{\PostTransitionVec}[0]{\Vector{y}}
-\newcommand{\PredicateInstance}[0]{\ParikhPredicate{\Automaton}{h}{\TransitionVec}{\PostTransitionVec}}
+\newcommand{\MonoidElement}[0]{y}
+\newcommand{\PredicateInstance}[0]{\ParikhPredicate{\Automaton}{h}{\TransitionVec}{\MonoidElement}}
 \DeclareMathOperator{\SeparatingCut}{Cut}
 \DeclareMathOperator{\In}{\textsc{In}}
 \DeclareMathOperator{\Out}{\textsc{Out}}
@@ -30,6 +30,8 @@
 \newcommand{\SomeClause}[0]{\phi}
 \newcommand{\SuchThat}[0]{\:\mid\:}
 \newcommand{\Naturals}[0]{\mathbb{N}}
+\newcommand{\SomeMonoid}[0]{M}
+\newcommand{\MonoidProduct}[0]{\cdot_\SomeMonoid}
 \newcommand{\FlowEq}[0]{\textsc{Flow-Eqs}}
 \newcommand{\KnownConnected}[0]{\textsc{Known-Connected}}
 \DeclareFontFamily{U}{skulls}{}
