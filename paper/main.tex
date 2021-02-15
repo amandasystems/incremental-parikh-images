@@ -1,0 +1,99 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage{amssymb,amsmath,mathtools,empheq,fancybox}
+
+\usepackage{paralist}
+\usepackage{url}
+\usepackage{color}
+
+\usepackage{textcomp,listings}
+
+\newif\ifcomments
+\commentstrue
+
+\newcommand{\pr}[1]{{\color{red}``PR: #1''}}
+\newcommand{\as}[1]{{\color{blue}``AS: #1''}}
+
+\newif\ifoutline
+\outlinetrue
+
+\newcommand{\contents}[1]{\ifoutline{\color{blue}
+    \begin{itemize}
+    #1
+    \end{itemize}
+  }\fi}
+
+\allowdisplaybreaks[1]
+
+\title{Generalised Parikh Images of Regular Languages}
+\author{some cool authors}
+\institute{Uppsala University, Sweden}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  bla
+\end{abstract}
+
+\section{Introduction}
+
+\contents{
+\item key challenges: (1) complicated QE problem that was part of
+  previous definitions; (2) languages with large alphabets described
+  by symbolic automata; (3) regular languages described by products
+  of automata
+}
+
+\subsection{Related Work}
+
+\section{Overview}
+
+\subsection{Generalised Parikh Images}
+
+\contents{
+\item Preliminaries, standard definition of the Parikh image of a
+  regular/context-free language
+\item Generalised version, considering arbitrary homomorphisms
+\item Examples
+}
+
+\subsection{Lazy Computation of Parikh Images for Regular Languages}
+
+\contents{
+\item Lazy expansion of the Parikh conditions for a symbolic automaton
+\item Finding elements vs.\ computing the complete Parikh image
+\item Lazy product computation
+}
+
+\section{A Calculus of Parikh Images}
+
+\contents{
+\item Preliminaries, the underlying calculus, what are rules
+\item Predicates used to represent Parikh images
+\item Our calculus rules
+\item Statement of properties, correctness, complexity
+}
+
+\section{Parikh Images from Products of Automata}
+
+\contents{
+\item additional rules needed for products
+\item backjumping and conflict-driven learning
+}
+
+\section{Implementation and Experiments}
+
+\contents{
+\item length constraints
+\item Parikh automata, automata with registers
+\item Model-checking examples
+}
+
+\section{Conclusions}
+
+\clearpage
+%\bibliographystyle{splncs03}
+%\bibliography{refs}
+
+\end{document}
