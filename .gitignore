@@ -2,3 +2,15 @@
 /auto/
 /Report.pdf
 /img/*
+paper/Makefile
+paper/main.aux
+paper/main.bbl
+paper/main.bcf
+paper/main.blg
+paper/main.dvi
+paper/main.fdb_latexmk
+paper/main.fls
+paper/main.log
+paper/main.run.xml
+paper/main.synctex.gz
+paper/main.xdv

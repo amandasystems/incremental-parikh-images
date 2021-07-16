@@ -19,6 +19,8 @@
 \newcommand{\TransitionVec}[0]{\Vector{x}}
 \newcommand{\MonoidElement}[0]{y}
 \newcommand{\PredicateInstance}[0]{\ParikhPredicate{\Automaton}{h}{\TransitionVec}{\MonoidElement}}
+\DeclareMathOperator{\MonoidMap}{\textsc{MonoidMap}}
+\newcommand{\ProductPredicateInstance}[0]{\MonoidMap(\Automaton_1, \ldots, \Automaton_k, \TransitionVec_i, \ldots, \TransitionVec_k, \MonoidElement, h)}
 \DeclareMathOperator{\SeparatingCut}{Cut}
 \DeclareMathOperator{\In}{\textsc{In}}
 \DeclareMathOperator{\Out}{\textsc{Out}}
@@ -27,6 +29,7 @@
 \DeclareMathOperator{\Deselected}{\textsc{Deselected}}
 \DeclareMathOperator{\Unknown}{\textsc{Unknown}}
 \DeclareMathOperator{\AssignFn}{\beta}
+\DeclareMathOperator{\Connected}{\textsc{Connected}}
 \newcommand{\SomeClause}[0]{\phi}
 \newcommand{\SuchThat}[0]{\:\mid\:}
 \newcommand{\Naturals}[0]{\mathbb{N}}
@@ -53,7 +56,9 @@
 \newcommand{\Fudge}[1]{{\color{blue}{\textit{#1}}}}
 
 % Theorems
+\let\proof\relax
+\let\endproof\relax
 \usepackage{amsthm}
-\newtheorem{lemma}{Lemma}
-\newtheorem{theorem}{Theorem}
-\newtheorem{definition}{Definition}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{definition}{Definition}
