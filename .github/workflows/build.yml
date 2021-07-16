@@ -26,15 +26,15 @@ jobs:
         curl file git graphviz &&
         sudo apt-get --no-install-recommends install texlive-{base,fonts-recommended,latex-base,latex-recommended,latex-extra,pictures,pstricks,science,fonts-extra} tex-gyre texlive-xetex lmodern
 
-    - name: Install homebrew
-      run: >
-        git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew &&
-        mkdir ~/.linuxbrew/bin &&
-        ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin &&
-        eval $(~/.linuxbrew/bin/brew shellenv)
+    # - name: Install homebrew
+    #   run: >
+    #     git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew &&
+    #     mkdir ~/.linuxbrew/bin &&
+    #     ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin &&
+    #     eval $(~/.linuxbrew/bin/brew shellenv)
 
-    - name: Install pandoc and friends
-      run: brew install pandoc-crossref pandoc pandoc-citeproc
+    # - name: Install pandoc and friends
+    #   run: brew install pandoc-crossref pandoc pandoc-citeproc
 
     - name: Build the report
       run: cd $GITHUB_WORKSPACE/paper && make
