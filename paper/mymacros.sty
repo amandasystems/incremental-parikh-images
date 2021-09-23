@@ -16,11 +16,14 @@
 \newcommand{\FromLabelTo}[3]{#1 \xrightarrow{#2} #3}
 \newcommand{\EllipsisSequence}[2]{#1_{1}, \ldots, #1_{#2}}
 \newcommand{\Vector}[1]{\overrightarrow{#1}}
-\newcommand{\TransitionVec}[0]{\Vector{x}}
+\newcommand{\TransitionVec}[0]{x}
 \newcommand{\MonoidElement}[0]{y}
 \newcommand{\PredicateInstance}[0]{\ParikhPredicate{\Automaton}{h}{\TransitionVec}{\MonoidElement}}
-\DeclareMathOperator{\MonoidMap}{\textsc{MonoidMap}}
-\newcommand{\ProductPredicateInstance}[0]{\MonoidMap(\Automaton_1, \ldots, \Automaton_k, \TransitionVec_i, \ldots, \TransitionVec_k, \MonoidElement, h)}
+\DeclareMathOperator{\MonoidMap}{\Pi}
+\DeclareMathOperator{\TransitionMask}{TM}
+\newcommand{\AutomatonVector}[0]{\mathbf{A}}
+\newcommand{\TransitionVectors}[0]{\mathbf{Tr}}
+\newcommand{\ProductPredicateInstance}[0]{\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement)}
 \DeclareMathOperator{\SeparatingCut}{Cut}
 \DeclareMathOperator{\In}{\textsc{In}}
 \DeclareMathOperator{\Out}{\textsc{Out}}
@@ -29,7 +32,9 @@
 \DeclareMathOperator{\Deselected}{\textsc{Deselected}}
 \DeclareMathOperator{\Unknown}{\textsc{Unknown}}
 \DeclareMathOperator{\AssignFn}{\beta}
-\DeclareMathOperator{\Connected}{\textsc{Connected}}
+\DeclareMathOperator{\Connected}{\textsc{Conn}}
+\DeclareMathOperator{\TransitionTerm}{TT}
+\DeclareMathOperator{\SourceTransitions}{Source}
 \newcommand{\SomeClause}[0]{\phi}
 \newcommand{\SuchThat}[0]{\:\mid\:}
 \newcommand{\Naturals}[0]{\mathbb{N}}
@@ -42,9 +47,11 @@
 \newcommand{\skull}{\text{\usefont{U}{skulls}{m}{n}\symbol{'101}}}
 \newcommand{\Propagate}[0]{\textsc{Propagate}}
 \newcommand{\Expand}[0]{\textsc{Expand}}
+\newcommand{\Materialise}[0]{\textsc{Materialise}}
 \newcommand{\Ostrich}[0]{\textsc{Ostrich}}
 \newcommand{\Split}[0]{\textsc{Split}}
 \newcommand{\Subsume}[0]{\textsc{Subsume}}
+\newcommand{\RemoveTermConnected}[0]{\textsc{NoConn}}
 \newcommand{\PresburgerClose}[0]{\textsc{Presburger-Close}}
 \newcommand{\DeadTransition}[0]{\delta_{\skull}}
 \newcommand{\Assignment}[0]{\AssignFn = \Set{x_0 \mapsto a_0, \ldots, x_n
