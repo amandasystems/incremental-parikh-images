@@ -1,0 +1,71 @@
+\usepackage{amsmath}
+\DeclareMathOperator{\Image}{Im}
+\newcommand{\ParikhPredicate}[4]{\Image_{#1, #2}(#3, #4)}
+\newcommand{\Automaton}[0]{\mathcal{A}}
+\newcommand{\Tuple}[1]{\left\langle#1\right\rangle}
+\newcommand{\States}[0]{Q}
+\newcommand{\Initial}[0]{I}
+\newcommand{\Accepting}[0]{F}
+\newcommand{\Transitions}[0]{\delta}
+\newcommand{\Alphabet}[0]{\Sigma}
+\newcommand{\Label}[0]{l}
+\newcommand{\AndComp}[2]{\bigwedge_{#1} #2}
+\newcommand{\OrComp}[2]{\bigvee_{#1} #2}
+\newcommand{\Set}[1]{\left\{#1\right\}}
+\newcommand{\NrTransitions}[0]{t}
+\newcommand{\FromLabelTo}[3]{#1 \xrightarrow{#2} #3}
+\newcommand{\EllipsisSequence}[2]{#1_{1}, \ldots, #1_{#2}}
+\newcommand{\Vector}[1]{\overrightarrow{#1}}
+\newcommand{\TransitionVec}[0]{x}
+\newcommand{\MonoidElement}[0]{y}
+\newcommand{\PredicateInstance}[0]{\ParikhPredicate{\Automaton}{h}{\TransitionVec}{\MonoidElement}}
+\DeclareMathOperator{\MonoidMap}{\Pi}
+\DeclareMathOperator{\TransitionMask}{TM}
+\newcommand{\AutomatonVector}[0]{\mathbf{A}}
+\newcommand{\TransitionVectors}[0]{\mathbf{Tr}}
+\newcommand{\ProductPredicateInstance}[0]{\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement)}
+\DeclareMathOperator{\SeparatingCut}{Cut}
+\DeclareMathOperator{\In}{\textsc{In}}
+\DeclareMathOperator{\Out}{\textsc{Out}}
+\DeclareMathOperator{\Val}{Val}
+\DeclareMathOperator{\Selected}{\textsc{Selected}}
+\DeclareMathOperator{\Deselected}{\textsc{Deselected}}
+\DeclareMathOperator{\Unknown}{\textsc{Unknown}}
+\DeclareMathOperator{\AssignFn}{\beta}
+\DeclareMathOperator{\Connected}{\textsc{Conn}}
+\DeclareMathOperator{\TransitionTerm}{TT}
+\DeclareMathOperator{\SourceTransitions}{Source}
+\newcommand{\SomeClause}[0]{\phi}
+\newcommand{\SuchThat}[0]{\:\mid\:}
+\newcommand{\Naturals}[0]{\mathbb{N}}
+\newcommand{\SomeMonoid}[0]{M}
+\newcommand{\MonoidProduct}[0]{\cdot_\SomeMonoid}
+\newcommand{\FlowEq}[0]{\textsc{Flow-Eqs}}
+\newcommand{\KnownConnected}[0]{\textsc{Known-Connected}}
+\DeclareFontFamily{U}{skulls}{}
+\DeclareFontShape{U}{skulls}{m}{n}{ <-> skull }{}
+\newcommand{\skull}{\text{\usefont{U}{skulls}{m}{n}\symbol{'101}}}
+\newcommand{\Propagate}[0]{\textsc{Propagate}}
+\newcommand{\Expand}[0]{\textsc{Expand}}
+\newcommand{\Materialise}[0]{\textsc{Materialise}}
+\newcommand{\Ostrich}[0]{\textsc{Ostrich}}
+\newcommand{\Split}[0]{\textsc{Split}}
+\newcommand{\Subsume}[0]{\textsc{Subsume}}
+\newcommand{\RemoveTermConnected}[0]{\textsc{NoConn}}
+\newcommand{\PresburgerClose}[0]{\textsc{Presburger-Close}}
+\newcommand{\DeadTransition}[0]{\delta_{\skull}}
+\newcommand{\Assignment}[0]{\AssignFn = \Set{x_0 \mapsto a_0, \ldots, x_n
+    \mapsto a_n}}
+\newcommand{\AssignsTo}[2]{\AssignFn(#1 = #2)}
+
+
+
+\newcommand{\Fudge}[1]{{\color{blue}{\textit{#1}}}}
+
+% Theorems
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{definition}{Definition}
