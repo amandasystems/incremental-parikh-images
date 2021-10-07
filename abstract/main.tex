@@ -98,9 +98,52 @@ character counts of the vector: $h':\: (\mathbb{Z}^\Sigma, +, \vec{0}) \to
 (\mathbb{Z}, +, 0) = \vec{x} \to \sum_{i \in \Sigma} x_i$, where the respective
 operators $+$ is element-wise vector addition and integer addition respectively.
 This allows us to apply selective logics, symbolic logics, and arithmetic on
-counter variabels to the Parikh image calculus.
+counter variables to the Parikh image calculus.
 
 \section{Lazy Computation of Parikh Images for Regular Languages}
+
+Starting with the automaton in~\ref{fig:start}, we seek any value in its Parikh image, i.e. a character count.
+
+\begin{figure}[h]
+  \centering
+  \label{fig:start}
+  \includegraphics[width=0.5\textwidth]{trace-0}
+  \end{figure}
+
+  In this case, our calculation will introduce a free (and fresh) integer constant per character ($a$, $b$, $c$, and $d$). It will then start by introducing equations preserving flow through the automaton corresponding to how many times that transition is used in a path from the initial state to an accepting state. Each transition will be given an existentially quantified variable in these equations, and each of our target variables set equal to the sum of their corresponding transitions. This corresponds to the first portion of the formula described in~\cite{generate-parikh-image}, but crucially misses the constraints to ensure connectivity of a path in the presence of cycles. Instead, we enforce these constraints lazily using our own calculus rules to.
+  
+  Note that this formulation allows us to propagate information between the terms of the product without (and before) computing the full product. For many unsatisfiable instances, this corresponds to the method recently introduced in~\cite{approximate-parikh}, where the Parikh-image of a product of automata is over-approximated to the conjunction of their Parikh images.
+  
+Before computation using our rules begin, our automated theorem prover performs reasoning on the linear flow equations to simplify them into:
+$$
+\exists_{x_{0}} : d + a = 1 \land
+c = a
+$$
+
+Note the disappearance of all but one of the transition variables and their replacement with the corresponding linear equations:
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{trace-0-aut-0}
+\end{figure}
+  
+We now have a choice of two paths through the automaton and execute a case split: \textsc{Split}: $a \leq 0$ $\mid$ $a > 0$. The split is performed as close to the initial state as possible and favours deselecting an edge by constraining its corresponding term to be 0.
+
+Since this decision disconnects a loop, the $b$~transition, from the initial state, we evaluate the rule \textsc{Propagate-Connected} and add the constraint $b = 0$. Following this, we can also subsume the propagating machinery for the connectedness constraint, as there are no nonzero loop transitions left. This leaves us with an automaton with just one nonzero transition, as in figure~\ref{fig:final}.
+
+\begin{figure}[h]
+  \centering
+  \label{fig:final}
+  \includegraphics[width=\textwidth]{trace-3-aut-0}
+  \end{figure}
+  
+
+Since this automaton is trivially connected and allows for only one solution, we
+present the solution $a = b = c = 0, d=1$.
+
+\section{Possible Applications}
+Bring your own!
+
 
 %\bibliographystyle{splncs03}
 \printbibliography
