@@ -10,6 +10,8 @@
 \usepackage{biblatex}
 \usepackage{mymacros}
 \usepackage{mathpartir}
+\usepackage{csquotes}
+\usepackage[font={small,it}]{caption}
 \addbibresource{../bibliography.bib}
 
 
@@ -30,9 +32,8 @@
   }\fi}
 
 \allowdisplaybreaks[1]
-
-\title{A Solver for Generalised Parikh Images of Conjunctions of Regular Languages}
-\author{some cool authors}
+\title{A Solver for Generalised Parikh Images of Regular Languages}
+\author{Philipp Rümmer \& Amanda Stjerna}
 \institute{Uppsala University, Sweden}
 
 \begin{document}
@@ -40,30 +41,31 @@
 
 \section{Introduction}
 
-Parikh maps and their image appears naturally as part of many operations in
-model checking and the solving of string constraints in automata-based string
-solvers such as \Ostrich{} \cite{ostrich}. While it is possible to compute the Parikh image of
+Parikh images appears naturally as part of many operations in model checking or
+solving of string constraints in automata-based string solvers such as
+\Ostrich{} \cite{ostrich}. While it is possible to compute the Parikh image of
 an automaton using the method described in \cite{generate-parikh-image}, this
-method produces large existentially quantified clauses which are costly to
-eliminate and in practice make many real-world problems intractable.
-Furthermore, many modern applications require automata with symbolic labels to
-handle large alphabets, which has no immediate correspondence in the methods described. Automata-based string solvers like \Ostrich{} also compute
-Parikh images on products of automata, derived from conjunctions of string
-constraints. Under previous methods this would require the computation of the
-product before the Parikh image can be computed, running the risk of an
-exponential blow-up.
+method produces clauses with many existentially quantified variables which are
+costly to eliminate, in practice making many real-world applications
+intractable. Furthermore, many applications require automata with symbolic
+labels to handle large alphabets like Unicode which would increase the number of
+variables even more. Finally, automata-based string solvers compute Parikh
+images on products of automata, derived from conjunctions of string constraints.
+Using \cite{generate-parikh-image} this would require the up-front computation
+of the product before its Parikh image, running the risk of an exponential
+blow-up.
 
 Addressing these concerns, our approach allows us to extend the computation of
-Parikh images to handle symbolic transition labels naturally, while also
-allowing us to interleave the computation of arbitrarily deep products of
-automata with the Parikh image of their product. This allows us to let both
-calculations inform each other, allowing the computation of partial products to
-inform the computation of the product and vice versa. Moreover, the scheme
-allows us to learn interesting facts (implied clauses) about the problem.
+Parikh images to handle symbolic transition labels ergonomically, while also
+allowing us to interleave the computations of the Parikh image of a product and
+the product itself. This allows both calculations to inform each other, thereby
+eliminating unneccesary work. Moreover, the scheme allows us to learn
+interesting facts (in the form of implied clauses) about the problem.
 
-Based on these insights, we present a tool to solve linear constraints on
-symbolic automata with counters, amounting to constraints on the Parikh image of
-their product. We are able to generate symbolic as well as concrete Parikh images.
+Based on these insights, we present a work-in-progress tool to solve linear
+constraints on symbolic automata with counters, amounting to constraints on the
+Parikh image of their product. We are able to generate symbolic (\enquote{there are
+twice as many \texttt{a}:s as \texttt{b}:s}) as well as concrete Parikh images.
 
 \section{Background}
 
@@ -95,55 +97,52 @@ This viewpoint enables us to generalise the Parikh map and its image further to 
 A useful example of such a morphism might be computing the length of a string,
 which could be recast in terms of the Parikh map by summing the individual
 character counts of the vector: $h':\: (\mathbb{Z}^\Sigma, +, \vec{0}) \to
-(\mathbb{Z}, +, 0) = \vec{x} \to \sum_{i \in \Sigma} x_i$, where the respective
-operators $+$ is element-wise vector addition and integer addition respectively.
-This allows us to apply selective logics, symbolic logics, and arithmetic on
-counter variables to the Parikh image calculus.
+(\mathbb{Z}, +, 0) = \vec{x} \to \sum_{i \in \Sigma} x_i$. This allows us to
+apply e.g. arithmetic on register variables to the Parikh image calculus.
 
 \section{Lazy Computation of Parikh Images for Regular Languages}
 
-Starting with the automaton in~\ref{fig:start}, we seek any value in its Parikh image, i.e. a character count.
+Starting with the automaton shown to the left in figure~\ref{fig:automaton}, we seek
+any value in its Parikh image, i.e. a character count.
 
 \begin{figure}[h]
-  \centering
-  \label{fig:start}
-  \includegraphics[width=0.5\textwidth]{trace-0}
+  \caption{Left to right: the starting automaton, the automaton with its corresponding linear equations, and the solution. Note the replacement of the existentially quantified transition variables with character count constants, and the introduction of a linear equation across the edge for \texttt{d} representing a choice between either an~\texttt{a} or a~\texttt{d}. Transitions with a zero value are not used in the solution.}\label{fig:automaton}
+  \begin{minipage}[t]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{trace-0}
+    \end{minipage}
+    \begin{minipage}[t]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{trace-0-aut-0}
+    \end{minipage}
+    \begin{minipage}[t]{0.3\textwidth}
+      \includegraphics[width=\textwidth]{trace-3-aut-0}
+      \end{minipage}
   \end{figure}
 
-  In this case, our calculation will introduce a free (and fresh) integer constant per character ($a$, $b$, $c$, and $d$). It will then start by introducing equations preserving flow through the automaton corresponding to how many times that transition is used in a path from the initial state to an accepting state. Each transition will be given an existentially quantified variable in these equations, and each of our target variables set equal to the sum of their corresponding transitions. This corresponds to the first portion of the formula described in~\cite{generate-parikh-image}, but crucially misses the constraints to ensure connectivity of a path in the presence of cycles. Instead, we enforce these constraints lazily using our own calculus rules to.
+  In this case, our calculation will introduce a free integer constant per
+  character ($a$, $b$, $c$, and $d$). It will then introduce equations
+  preserving flow through the automaton corresponding to how many times that
+  transition is used in a run of the automaton. Each transition will be given an existentially
+  quantified variable in these equations, and each of our target variables is
+  constrained to the sum of the transitions where it occurs as a label. This
+  corresponds to the first portion of the formula described
+  in~\cite{generate-parikh-image}, but crucially misses the constraints to
+  ensure connectedness in the presence of cycles. Instead, we enforce this
+  constraint lazily using our own deduction rules.
+
+  Note that this formulation allows us to propagate information between terms of
+  a product before materialising it. For many unsatisfiable instances, this
+  corresponds to the method recently introduced in~\cite{approximate-parikh},
+  where the Parikh image of a product of automata is over-approximated as the
+  conjunction of their Parikh images.
   
-  Note that this formulation allows us to propagate information between the terms of the product without (and before) computing the full product. For many unsatisfiable instances, this corresponds to the method recently introduced in~\cite{approximate-parikh}, where the Parikh-image of a product of automata is over-approximated to the conjunction of their Parikh images.
-  
-Before computation using our rules begin, our automated theorem prover performs reasoning on the linear flow equations to simplify them into:
-$$
-\exists_{x_{0}} : d + a = 1 \land
-c = a
-$$
+Before computation using our rules begin, our prover performs reasoning on the flow equations to simplify them into $d + a = 1 \land c = a$.
 
-Note the disappearance of all but one of the transition variables and their replacement with the corresponding linear equations:
+We now have a choice of two paths for our run and execute a case split: \textsc{Split}: $a \leq 0$ $\mid$ $a > 0$. The split is performed as close to the initial state as possible and favours deselecting an edge by constraining its corresponding term to be 0.
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\textwidth]{trace-0-aut-0}
-\end{figure}
-  
-We now have a choice of two paths through the automaton and execute a case split: \textsc{Split}: $a \leq 0$ $\mid$ $a > 0$. The split is performed as close to the initial state as possible and favours deselecting an edge by constraining its corresponding term to be 0.
+Since this decision disconnects a loop, the $b$~transition, from the initial state, we evaluate the rule \textsc{Propagate-Connected} to add the constraint $b = 0$. Afterwards we can subsume the propagating machinery for the connectedness constraint, as no more loop transitions can be positive. This leaves us with an automaton with just one nonzero transition, as seen in figure~\ref{fig:automaton}.
 
-Since this decision disconnects a loop, the $b$~transition, from the initial state, we evaluate the rule \textsc{Propagate-Connected} and add the constraint $b = 0$. Following this, we can also subsume the propagating machinery for the connectedness constraint, as there are no nonzero loop transitions left. This leaves us with an automaton with just one nonzero transition, as in figure~\ref{fig:final}.
-
-\begin{figure}[h]
-  \centering
-  \label{fig:final}
-  \includegraphics[width=\textwidth]{trace-3-aut-0}
-  \end{figure}
-  
-
-Since this automaton is trivially connected and allows for only one solution, we
-present the solution $a = b = c = 0, d=1$.
-
-\section{Possible Applications}
-Bring your own!
-
+As there is just one automaton left, there are no products to compute and this the
+calculation is complete. We present the solution $a = b = c = 0, d=1$.
 
 %\bibliographystyle{splncs03}
 \printbibliography
