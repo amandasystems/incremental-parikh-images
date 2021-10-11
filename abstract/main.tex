@@ -41,10 +41,9 @@
 
 \section{Introduction}
 
-Parikh images are a central notion in automata theory and context-free grammars,
+Parikh images are a central notion in automata and language theory,
 with wide-ranging applications, including the solving
-of string constraints in automata-based solvers such as \Ostrich{}
-\cite{ostrich}. In this work, we focus on the efficient computation
+of string constraints in automata-based solvers such as \Ostrich{}~\cite{ostrich}. In this work, we focus on the efficient computation
 of Parikh images, or points within the Parikh image, of finite-state
 automata. While it is possible to compute the Parikh image of an automaton
 by adapting the method for context-free grammars
@@ -105,10 +104,12 @@ the Parikh map by summing the individual character counts of the vector: $h':\:
 (\mathbb{Z}^\Sigma, +, \vec{0}) \to (\mathbb{Z}, +, 0) = \vec{x} \to \sum_{i \in
 \Sigma} x_i$. More generally, this approach extends to multiple counters to
 produce Parikh automata with one such counter per symbol in the language, as
-used in implementations of many string
-constraints~\cite{path-feasibility-strings}.
+used in some string
+constraint solvers~\cite{path-feasibility-strings}.
 
 \section{Lazy Computation of Parikh Images for Regular Languages}
+In the scope of this abstract, we introduce our calculus for computing
+Parikh images through an example.
 The calculus is based on four principles: linear equations to preserve flow
 through the automaton, case-splitting when there are multiple possible paths a
 run can take, propagation of connectedness constraints, and materialisation of
@@ -162,6 +163,17 @@ the calculation is complete. We present the assignment $a = b = c = 0, d=1$. To
 find the Parikh image rather than an assignment, we would iteratively query
 our calculus for partial solutions and perform quantifier elimination on the
 free constants.
+
+\section{Conclusions}
+
+We are currently in the process of finishing the first version of our
+Parikh image tool. As an evaluation, we will use the tool to compute
+length abstractions of regular expression constraints in string
+solving, and to handle the automata augmented with counters introduced
+in \cite{path-feasibility-strings}. We will compare with the approach
+proposed in \cite{generate-parikh-image}, and with a translation to a
+model checking problem, which can then be solved using (more general)
+symbolic and abstraction-based model checkers.
 
 %\bibliographystyle{splncs03}
 \printbibliography
