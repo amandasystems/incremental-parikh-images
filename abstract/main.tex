@@ -41,10 +41,14 @@
 
 \section{Introduction}
 
-Parikh images have a wide application within automata, including for the solving
+Parikh images are a central notion in automata theory and context-free grammars,
+with wide-ranging applications, including the solving
 of string constraints in automata-based solvers such as \Ostrich{}
-\cite{ostrich}. While it is possible to compute the Parikh image of an automaton
-by adapting the method for CFGs of~\cite{generate-parikh-image}, this method
+\cite{ostrich}. In this work, we focus on the efficient computation
+of Parikh images, or points within the Parikh image, of finite-state
+automata. While it is possible to compute the Parikh image of an automaton
+by adapting the method for context-free grammars
+ of~\cite{generate-parikh-image}, this method
 produces clauses with many existentially quantified variables which are costly
 to eliminate. This makes many real-world applications intractable. Furthermore,
 applications like Unicode require automata with symbolic labels to handle their
