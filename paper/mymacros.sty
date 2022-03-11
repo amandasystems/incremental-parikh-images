@@ -1,29 +1,47 @@
 \usepackage{amsmath}
 \DeclareMathOperator{\Image}{Im}
-\newcommand{\ParikhPredicate}[4]{\Image_{#1, #2}(#3, #4)}
+\newcommand{\ImagePredicate}[4]{\Image_(#1, #2, #3, #4)}
 \newcommand{\Automaton}[0]{\mathcal{A}}
+\newcommand{\Path}[0]{p}
+\newcommand{\PathEnumeration}[0]{\Tuple{\InitialState \Label_1 \State_1 \RepeatSum{,} \State_n}}
+\newcommand{\Transition}[0]{t}
+\newcommand{\AutomatonTuple}[0]{\Tuple{\States, \InitialState, \Accepting, \Transitions}}
 \newcommand{\Tuple}[1]{\left\langle#1\right\rangle}
 \newcommand{\States}[0]{Q}
-\newcommand{\Initial}[0]{I}
 \newcommand{\Accepting}[0]{F}
 \newcommand{\Transitions}[0]{\delta}
+\newcommand{\InitialState}[0]{q_I}
 \newcommand{\Alphabet}[0]{\Sigma}
+\newcommand{\Monoid}[0]{M}
+\newcommand{\MonoidElement}[0]{m}
+\newcommand{\Strings}[0]{\Alphabet^*}
 \newcommand{\Label}[0]{l}
+\newcommand{\State}[0]{q}
 \newcommand{\AndComp}[2]{\bigwedge_{#1} #2}
 \newcommand{\OrComp}[2]{\bigvee_{#1} #2}
 \newcommand{\Set}[1]{\left\{#1\right\}}
+\newcommand{\MapFromTo}[2]{\Sigma^* \rightarrow \mathbb{N}^k}
 \newcommand{\NrTransitions}[0]{t}
 \newcommand{\FromLabelTo}[3]{#1 \xrightarrow{#2} #3}
-\newcommand{\EllipsisSequence}[2]{#1_{1}, \ldots, #1_{#2}}
+\newcommand{\EllipsisSequence}[2]{#1_{1} \RepeatSum{,} #1_{#2}}
 \newcommand{\Vector}[1]{\overrightarrow{#1}}
+\newcommand{\VectorLiteral}[1]{\left[1, 2\right]}
 \newcommand{\TransitionVec}[0]{x}
-\newcommand{\MonoidElement}[0]{y}
-\newcommand{\PredicateInstance}[0]{\ParikhPredicate{\Automaton}{h}{\TransitionVec}{\MonoidElement}}
+\newcommand{\RepeatSum}[1]{#1 \ldots #1}
+\newcommand{\SinglePredicateInstance}[0]{\ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement}}
 \DeclareMathOperator{\MonoidMap}{\Pi}
 \DeclareMathOperator{\TransitionMask}{TM}
 \newcommand{\AutomatonVector}[0]{\mathbf{A}}
 \newcommand{\TransitionVectors}[0]{\mathbf{Tr}}
 \newcommand{\ProductPredicateInstance}[0]{\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement)}
+\DeclareMathOperator{\Language}{\mathcal{L}}
+\DeclareMathOperator{\Map}{h}
+\DeclareMathOperator{\Filter}{\sigma}% Sigma is the select operator!
+\DeclareMathOperator{\WordOf}{w}
+\DeclareMathOperator{\TransitionCount}{\#}
+\DeclareMathOperator{\Concat}{\bullet}
+\DeclareMathOperator{\TransitionsOf}{T}
+\DeclareMathOperator{\ParikhMap}{\psi}
 \DeclareMathOperator{\SeparatingCut}{Cut}
 \DeclareMathOperator{\In}{\textsc{In}}
 \DeclareMathOperator{\Out}{\textsc{Out}}
@@ -35,12 +53,14 @@
 \DeclareMathOperator{\Connected}{\textsc{Conn}}
 \DeclareMathOperator{\TransitionTerm}{TT}
 \DeclareMathOperator{\SourceTransitions}{Source}
-\newcommand{\SomeClause}[0]{\phi}
+\newcommand{\SomeClause}[0]{\varGamma}
+\newcommand{\SomeInequalities}[0]{E}
+\newcommand{\HoldsThat}[0]{\::\:}
 \newcommand{\SuchThat}[0]{\:\mid\:}
 \newcommand{\Naturals}[0]{\mathbb{N}}
 \newcommand{\SomeMonoid}[0]{M}
 \newcommand{\MonoidProduct}[0]{\cdot_\SomeMonoid}
-\newcommand{\FlowEq}[0]{\textsc{Flow-Eqs}}
+\newcommand{\FlowEq}[0]{\textsc{Flow}}
 \newcommand{\KnownConnected}[0]{\textsc{Known-Connected}}
 \DeclareFontFamily{U}{skulls}{}
 \DeclareFontShape{U}{skulls}{m}{n}{ <-> skull }{}
@@ -49,6 +69,7 @@
 \newcommand{\Expand}[0]{\textsc{Expand}}
 \newcommand{\Materialise}[0]{\textsc{Materialise}}
 \newcommand{\Ostrich}[0]{\textsc{Ostrich}}
+\newcommand{\Catra}[0]{\textsc{Catra}}
 \newcommand{\Split}[0]{\textsc{Split}}
 \newcommand{\Subsume}[0]{\textsc{Subsume}}
 \newcommand{\RemoveTermConnected}[0]{\textsc{NoConn}}

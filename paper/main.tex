@@ -1,5 +1,6 @@
-\documentclass[runningheads]{llncs}
+\documentclass{easychair}
 
+\usepackage{amsthm}
 \usepackage{amssymb,amsmath,mathtools,empheq,fancybox}
 
 \usepackage{paralist}
@@ -7,11 +8,14 @@
 \usepackage{color}
 
 \usepackage{textcomp,listings}
-\usepackage{biblatex}
+\usepackage[backend=biber]{biblatex}
 \usepackage{mymacros}
+
 \usepackage{mathpartir}
 \addbibresource{../bibliography.bib}
 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
 
 
 \newif\ifcomments
@@ -31,7 +35,7 @@
 
 \allowdisplaybreaks[1]
 
-\title{Generalised Parikh Images of Regular Languages}
+\title{An Efficient Calculus for Generalised Parikh Images of Regular Languages}
 \author{some cool authors}
 \institute{Uppsala University, Sweden}
 
@@ -39,45 +43,69 @@
 \maketitle
 
 \begin{abstract}
-  The image of the Parikh map is important in automata theory, offering a compact characterisation of an automaton. We contribute a novel understanding of how Parikh maps can be combined with arbitrary commutative monoid morphisms to efficiently represent a wide range of logics on automata and automata-like structures. Cases studied as examples include epistemic logic and string-length constraints in a string constraint solver. Furthermore, we show how this formulation can be efficiently implemented as a calculus in a theorem prover for succinct formulations of \Fudge{several constraints on strings}. In particular, our calculus is versatile enough to efficiently compute the Parikh image of a product of two automata, allowing our solver, \Ostrich{}, to solve \Fudge{X new instances} where it was previously constrained by the memory required to materialise the product. Finally, we show that this implementation in addition to being \Fudge{Z better} also offers \Fudge{X performance} improvements on \Fudge{Y real-world instances}, and in particular \Fudge{yields no regressions} in performance \Fudge{and, in fact, cures cancer, brings about world peace, and ends global hunger.}
+  The image of the Parikh map is important in automata theory, offering a
+  compact characterisation of an automaton. We contribute a novel understanding
+  of how Parikh maps can be combined with arbitrary commutative monoid morphisms
+  to efficiently represent a wide range of logics on automata and automata-like
+  structures. Furthermore, we show how this formulation can be efficiently
+  implemented as a calculus in a theorem prover supporting Presburger logic. In
+  particular, our calculus allows us to solve the common problem in string
+  solvers of computing the Parikh image of products of arbitrarily many
+  automata. We demonstrate this by implementing a tool called \Catra{}, which we
+  use to solve a set of constraints produced by \Fudge{the PyEx benchmarks} when
+  solved by the \Ostrich{} string constraint solver. We show that this
+  implementation in addition to having a lower memory footprint than the
+  standard eager approach executed on the same underlying solver also
+  outperforms the nuxmv model checker on the same problem\Fudge{, as well as the
+  over-approximation recently described in~\cite{approximate-parikh}.}
 \end{abstract}
 
 \section{Introduction}
 
-Parikh maps and their image appears naturally as part of many operations in model checking and the solving of string constraints in automata-based string solvers such as \Ostrich{}. While it is possible to compute the Parikh image of an automaton using the method described in \cite{generate-parikh-image}, this method produces large existentially quantified clauses which are costly to eliminate and in practice make many real-world problems intractable. Furthermore, many modern applications require automata with symbolic labels to handle large alphabets \Fudge{citation needed}. They also compute Parikh images on products of automata, which would require the computation of the product before the Parikh image can be computed, running the risk of an exponential blow-up.
+Parikh maps and their image appears naturally as part of many operations in model checking and the solving of string constraints in automata-based string solvers such as \Ostrich{}, notably in representing constraints on string lengths. While it is possible to compute the Parikh image of an automaton using the method described in \cite{generate-parikh-image}, this method produces large existentially quantified clauses which are costly to eliminate and in practice make many real-world problems intractable. Furthermore, applications to string analysis in theorem provers require symbolic labels to handle Unicode alphabets \Fudge{citation needed}. Conjunctions of string constraints finally, and most crucially, lead to the computation of Parikh images of automata products. Applying the approach in \cite{generate-parikh-image} would require the computation of the product before the Parikh image can be computed. In several instances we have observed, the materialisation of the product of the automata exhausts the memory of any reasonable machine due to the exponential blow-up of the product.
 
-Addressing these concerns, our approach allows us to extend the computation of Parikh images to handle symbolic transition labels naturally, while also allowing us to interleave the computation of arbitrarily deep products of automata with the Parikh image of their product. This allows us to let both calculations inform each other, eliminating unnecessary work.
-
-\Fudge{It's also versatile as heck!}
+Addressing these concerns, our specialised calculus for Parikh images allows us to handle symbolic transition labels naturally, while also allowing us to interleave the computation of arbitrarily deep products of automata with the Parikh image of their product. This allows us to let both calculations inform each other, eliminating unnecessary work, and pruning the size of the partial products used in the computation. Moreover, the method can be used iteratively to, as it were, chew off bite-sized chunks of the product, thereby avoiding the problem of memory-outs.
 
 \subsection{Motivating Example}
 
-\subsection{Related Work}
-
-
 \section{Overview}
 
-Formally, the \textit{Parikh map} over a context-free language $\Sigma = \left\{a_1, \ldots, a_k \right\}$ is defined as in \cite{kozen}:
+We define an non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$
+as $\Automaton = \AutomatonTuple$ where
+$\Transitions = \States \times \Alphabet \times \States$, $\States$ is its
+states, $\InitialState$ is w.l.o.g. assumed to be the single initial state, and
+$\Accepting$ is its set of accepting states. Note that we will later generalise
+the labels of transitions further.
+
+\subsection{The Parikh Map of a Regular language}
+Formally, the \textit{Parikh map} over a context-free language $\Strings=
+\left\{a_1, \ldots, a_k \right\}$ is defined as in \cite{kozen}:
 
 $$
 \begin{aligned}
-& \psi: \Sigma^* \rightarrow \mathbb{N}^k \\
-& \psi(s) = \left[\#a_1(s), \#a_2(s), \ldots, \#a_k(s)\right]
+& \ParikhMap: \MapFromTo{\Strings}{\natural^k} \\
+& \ParikhMap(s) = \left[\#a_1(s), \#a_2(s), \ldots, \#a_k(s)\right]
 \end{aligned}
 $$
 
-That is, $\psi(s)$ is a vector of the number of occurrences of each character in the language for a given string $s$. For example, for  $\Sigma = \left \{ a, b\right\}$, we would have $\psi(abb) = \left[1, 2\right]$.
+That is, $\ParikhMap(s)$ is a vector of the number of occurrences of each
+character in the language for a given string $s$. For example, for  $\Strings =
+\Set{a, b}$, we would have $\ParikhMap(abb) = \VectorLiteral{1, 2}$.
 
-We define the image of this map, the \textit{Parikh image}, of some subset of the language $A \subseteq \Sigma^*$ as:
+We define the image of this map, the \textit{Parikh image}, of some subset of
+the language $\Language \subseteq \Strings$ as:
 
 $$
-\psi(A) = \left\{ \psi(x) | x \in A \right\}
+\ParikhMap(\Language) = \Set{\ParikhMap(x) \SuchThat x \in \Language}
 $$
 
-Thus we would have $\psi(\left\{ab, abb\right\}) = \left\{\left[1, 1\right], \left[1, 2\right]\right\}$.
+Thus we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1, 1\right],
+\left[1, 2\right]\right\}$.
 
-\subsubsection{The Parikh image of a regular language expressed in Presburger arithmetic.}
-Following~\cite{generate-parikh-image}, we define the Parikh Image of a regular language recognised by a DFA $\mathcal{A} =  \langle Q, \Sigma,\delta, I, F \rangle$ as:
+\subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
+
+Following~\cite{generate-parikh-image}, we define the Parikh Image of a regular
+language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
 
 $$
 \begin{aligned}
@@ -103,178 +131,170 @@ z_{q'} = 1 \land t_\delta > 0& \text{if $q \in I$}
 \end{aligned}
 $$
 
-where all variables $z_i, t_i$ are existentially quantified and the variables $c_\alpha$ make up the actual image.
-
-\subsection{An Example}
-
-\subsection{Generalised Parikh Images}\label{sec:generalised}
-
-Another way of viewing the Parikh map is as a monoid homomorphism $p:\: \left(\Sigma^*, \cdot, \epsilon \right) \to (\mathbb{Z}^\Sigma, +, \vec{0})$, where $\cdot$ is the string concatenation operation, the objects of the right-hand-side monoid are character counts, and $+$ is standard vector addition. Note that while the left monoid does not commute, the right one does.
-
-This viewpoint enables us to generalise the Parikh map and its image further to arbitrary monoid morphisms $h:\: \Sigma^* \to M$ where $M$ is a commutative monoid. It then follows from the universal mapping property that any such morphism $h$ can also be expressed in terms of the Parikh map, as $h' \circ p$.
-
-A useful example of such a morphism might be computing the length of a string, which could be recast in terms of the Parikh map by summing the individual character counts of the vector: $h':\: (\mathbb{Z}^\Sigma, +, \vec{0}) \to (\mathbb{Z}, +, 0) = \vec{x} \to \sum_{i \in \Sigma} x_i$, where the respective operators $+$ is element-wise vector addition and integer addition respectively.
+where all variables $z_i, t_i$ are existentially quantified and the variables
+$c_\alpha$ make up the actual image. Feeding this definition into a Presburger
+solver and performing quantifier elimination on $z_i, t_i$ would produce the
+Parikh image in its Presburger form. In this paper we use this example
+(sometimes appropriately modified) as the baseline approach.
 
 \subsubsection{An Example}
 
+\Fudge{AN EXAMPLE!}
+
+\subsection{Generalised Parikh Images}\label{sec:generalised}
+
+To generalise the logic over Parikh images, we intrdouce a morphism $\Map:\: \Sigma
+\to \Monoid$ where $\Monoid$ is a commutative monoid where the following holds:
+\begin{itemize}
+  \item $\Map(\epsilon) = 0$, where $0$ is the neutral element of $\Monoid$
+  \item $\Map(a \Concat b) = \Map(a) + \Map(b)$
+\end{itemize}
+
+\subsubsection{Example~1: String length}
+
+A useful example of such a morphism can express string length. We let $\Monoid =
+\left(\mathbb{Z};+;0\right)$ and let $\Map(x) = 1$. Then the length of a string $s
+= s_1 \RepeatSum{\Concat}  s_n$ is given by $\Map(s) = \sum \Map(s_i) = 1
+\RepeatSum{+} 1$. Similarly, vectors and vector addition can be used to obtain
+the regular Parikh map.
+
+\Fudge{We also expect more efficient computation}
+
+\subsubsection{Example~2: Parikh Automata}
+
+\Fudge{We apply it to Parikh Automata and Magic Happens}
+
 \subsection{Lazy Computation of Parikh Images for Regular Languages}
 
-\contents{
-\item Lazy expansion of the Parikh conditions for a symbolic automaton
-\item Finding elements vs.\ computing the complete Parikh image
-\item Lazy product computation
-}
-
-
-\contents{
-  \item Preliminaries, the underlying calculus, what are rules
-  \item Predicates used to represent Parikh images
-  \item Our calculus rules
-  \item Statement of properties, correctness, complexity
-  }
-
-  \contents{
-  \item remove the monoid map!!!
-}
-
-We assume an NFA $\Automaton = \Tuple{\States, \Alphabet, \Transitions, \Initial,
-\Accepting}$ with $\NrTransitions$ transitions $\Transitions =
+We assume an NFA $\Automaton = \AutomatonTuple$ with $\NrTransitions$
+transitions $\Transitions =
 \Set{\EllipsisSequence{\Transitions}{\NrTransitions}}$ where we describe each
-such transition $\Transitions_i$ from node $q$ to node $q'$ with label $\Label \in \Alphabet$ as
-$\Transitions_i = \FromLabelTo{q}{\Label}{q'}$.
+such transition $\Transitions_i$ from state $\State$ to state $\State'$ with
+label $\Label \in \Alphabet$ as $\Transitions_i =
+\FromLabelTo{\State}{\Label}{\State'}$. When one or more of the states and
+labels of a transition are uninteresting we will omit it.
 
-Treating $\Automaton$ as a graph with vertices $Q$ and edges $\delta$, we use
-the term \textit{separating cut} of a set of \textit{transitions} $T =
-\Set{\Transitions_i, \ldots, \Transitions_n}, \SeparatingCut(T)$ to refer to any
-set of transitions whose removal causes $T$ to be unreachable from any state in
-$\Initial$, with the meaning that $e = \FromLabelTo{v}{\Label}{v'}$ is reachable
-if $v$ is. Note that if $T$ contains a transition  such that $v \in \Initial$,
-$\SeparatingCut(T) = \emptyset$, since we cannot disconnect an initial state by
-removing any transition.
-
-We will follow the notation of~\cite{generate-parikh-image} and simultaneously talk
-about $\Automaton$ as a graph and an automaton. Moreover, we will continuously
-refer to the subgraph produced by keeping only the transitions/edges whose
-corresponding variables in $\TransitionVec$ are positive ($> 0$). An edge will
-be called \textit{selected} if it is in this subgraph. An edge that is known to be zero
-will conversely be called \textit{deselected}. An edge whose corresponding term has no
-known status is called unknown. Formally, we define these as follows:
-
-TODO what happens to $\TransitionVec$ now that we have $\TransitionMask$?
-
-TODO how do we work around the presburger logic here?
+For convenience, we introduce the following supporting concepts and notations:
 
 \begin{definition}
-  $\Selected(\Automaton, t)(\SomeClause)$ means that $\SomeClause$ contains $\TransitionMask(\Automaton, t, x)$ and that $\SomeClause \vDash_{\textsc{Presburger}} x > 0$.
-  \end{definition}
+  A \textit{path} $\Path = \PathEnumeration$ of an
+  automaton $\Automaton$ represents a valid run of the automaton as a path
+  starting in its initial state and taking zero or more transitions to arrive at
+  a final accepting state $\State_n \in \Accepting$, while passing a number of labels
+  $\Label_1, \ldots, \Label_n$. If $\InitialState \in \Accepting$, $\Tuple{\InitialState}$
+  is a valid path.
   
-  \begin{definition}
-    $\Deselected(\Automaton, t)(\SomeClause)$ means that $\SomeClause$ contains $\TransitionMask(\Automaton, t, x)$ and that $\SomeClause \vDash_{\textsc{Presburger}} x \leq 0$.
-    \end{definition}
-    
-  \begin{definition}
-  $\Unknown(\Automaton, t)(\SomeClause) = \lnot\Selected(\Automaton, t)(\SomeClause)\land\lnot\Deselected(\Automaton, t)(\SomeClause)$, while $\TransitionMask(\Automaton, t, x)$ is still a term in $\SomeClause$.
-  \end{definition}
-
-  For all of these cases, we say that a transition $t$ is $\Selected,
-  \Deselected$ or $\Unknown$ respectively, usually leaving out the clause
-  $\SomeClause$ and automaton $\Automaton$. Additionally, we define two helper
-  predicates, one of which we have already used:
-
-  \begin{definition}
-    $\Connected(\Automaton)$ holds when every $\Selected$ or $\Unknown$ transition in $\Automaton$ is reachable from its initial state.
-  \end{definition}
-
-  \begin{definition}
-    $\TransitionTerm(\Automaton, t, x)$ holds when $\Automaton$'s transition $t$ is taken $x$ times (an integer value).
-  \end{definition}
-
-  With these preliminaries out of the way, we can define our main predicate:
-
-\begin{definition}
-$\PredicateInstance$ is true exactly when:
-\begin{itemize}
-\item $h:\: \Alphabet^* \rightarrow \SomeMonoid$, a morphism to a commutative product monoid $\SomeMonoid = \prod_{i} \SomeMonoid_i$.
-\item $\MonoidElement$ is an element of $\SomeMonoid$.
-\item $\TransitionVec$ is a vector of terms such that each term correspond to a
-  transition in $\Automaton$.
-\end{itemize}
+  More formally, we require that:
+  \begin{enumerate}
+    \item $\forall_{k} \Transitions(\State_k, \Label_{k+1}, \State_{k+1})$
+    \item $\State_n \in \Accepting$
+  \end{enumerate}
 \end{definition}
 
-To simplify equations, we let $h(t)$ for some transition $t \in \Transitions$ to
-mean the application of $h$ to $t$'s label. Similarly, we use the notation
-$\TransitionVec_t$ to refer to transition $t \in \Transitions$'s corresponding
-term, allowing $\TransitionVec$ to be directly indexed by the transitions
-w.l.o.g from integer indices. We will also consistently assume that we have only one instance of our main predicate. In the actual implementation, described in \Fudge{the north pole}, we will use an additional, existentially quantified, integer variable to identify the instance of a predicate.
-  
+\begin{definition}
+  The \textit{word} of a path $\WordOf(\Path) = \Label_1 \RepeatSum{\Concat} \Label_n$ is
+  the word read out on its labels.
+\end{definition}
+
+\begin{definition}
+ The \textit{transition count}, $\TransitionCount(\Transition, \Path)$ is the
+ number of times a transition $\Transition =
+ \FromLabelTo{\State_1}{\Label}{\State_2} \in \Transitions$ appears in a path
+ $p$.
+\end{definition}
+
+We then introduce the two predicates into our calculus with the following
+definitions:
+
+\begin{definition}
+  $\SinglePredicateInstance$ where:
+  \begin{itemize}
+    \item $\MonoidElement \in \Monoid$, for some commutative monoid $\Monoid$,
+    as described in Section~\ref{sec:generalised}.
+    \item $\Filter:\: \Transitions \to \Naturals$
+  \end{itemize}
+  holds when $\exists \Path = \PathEnumeration \in \Automaton$ such that:
+  \begin{itemize}
+    \item $\forall_{\Transition_i \in \Path} \Filter(\Transition_i) =
+    \TransitionCount(\Transition_i, \Path)$
+    \item $\WordOf(\Path) \in \Language(\Automaton)$
+    \item $\MonoidElement = \Map(\WordOf(\Path))$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  $\Connected(\Automaton, \Filter)$ holds when
+  $\exists \Path = \PathEnumeration \in \Automaton$ such that:
+  \begin{itemize}
+    \item $\forall_{\Transition_i \in \Transitions} \Filter(\Transition_i) = \TransitionCount(\Transition_i, \Path)$
+    \item $\WordOf(p) \in \Language(\Automaton)$
+  \end{itemize}
+
+Intuitively, it represents the condition that $\Automaton$ is connected with
+respect to the selection function $\Filter$. It is redundant to $\Image$ by
+design.
+\end{definition}
+
+
+Finally, we present the rules of our calculus for one automaton. Note that we
+operate on sets of symbols (terms, clauses). Additionally, we also use the
+convention of splitting the terms into linear inequalities ($\SomeInequalities$)
+and any other clauses ($\SomeClause$).
+
 \begin{mathpar}
-  \inferrule*[left=Propagate, right=\textnormal{$C = \SeparatingCut(T)$, $\exists t \in T \::\: \lnot \Deselected(t)$}]
-    {\AndComp
-      {\Transitions_t \in T}
-      {\TransitionVec_{\Transitions_t} = 0} 
-    \land \PredicateInstance \land \\
-    \AndComp{\Transitions_c \in C}{\TransitionVec_{\Transitions_c} = 0} \land \SomeClause}
-    {\PredicateInstance \land \AndComp{\Transitions_c \in C}{\TransitionVec_{\Transitions_c} = 0} \land \SomeClause}
-    
-  \inferrule*[left=Expand, right=\textnormal{Precisely once}]
-    {\FlowEq(\Automaton) \land \Connected(\Automaton )\: \land \\ 
-    y = \sum_{t \in \Transitions}{\TransitionVec_t \MonoidProduct h(t)} \land \AndComp{i \in 1,\ldots,t}{\TransitionVec_i \geq 0} \land \PredicateInstance \land \SomeClause}
-    {\PredicateInstance \land \SomeClause}
+  \inferrule*[left=Expand]
+  {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
+  {\SinglePredicateInstance, \SomeInequalities, \SomeClause}
 
-  \inferrule*[left=Split, right=\textnormal{if $\Unknown(\TransitionVec_i)(\SomeClause)$}]
-  {\TransitionVec_i = 0 \land \PredicateInstance \land \SomeClause \\ | 
-  \\ \TransitionVec_i > 0 \land \PredicateInstance \land \SomeClause}
-    {\PredicateInstance{} \land \SomeClause}
-    
-\inferrule*[left=Subsume-Main, right=\textnormal{if no instances of $\Connected(\Automaton)$ in $\SomeClause$}]
-  {\SomeClause}
-  {\PredicateInstance{} \land \SomeClause}
+  \inferrule*[left=Split, right=\textnormal{if $\Filter(\Transition) = 0 \not\in \SomeInequalities, \Filter(\Transition) > 0 \not\in \SomeInequalities$}]{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) = 0 \mid \Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) > 0}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause}
 
-  \inferrule*[left=Subsume-Connected, right=\textnormal{if \KnownConnected}]
-  {\SomeClause}
-  {\Connected({\Automaton}) \land \SomeClause}
+  \inferrule*[left=Propagate, right=\textnormal{if $\Filter(\Transition) = 0 \not\in\SomeInequalities, \forall \Path \in \Automaton \HoldsThat \exists c \in \Path \HoldsThat \Filter(c) = 0 \in \SomeInequalities $}]{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) = 0}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause}
+
+  \inferrule*[left=Subsume, right=\textnormal{if $\forall \Transition = \FromLabelTo{s_0}{}{s_1} \in \Transitions, \Filter(\Transition) = 0 \not \in \SomeInequalities \HoldsThat \exists \Path \in \Automaton, s_0 \in \Path \HoldsThat \forall c \in \TransitionsOf(\Path) \HoldsThat \Filter(c) > 0 \in \SomeInequalities$}]{\SomeInequalities,\SomeClause}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause}
 \end{mathpar}
-where $\FlowEq(\Automaton)$ are the flow-balancing part of the Parikh image from Section~\ref{sec:generalised} for an automaton $\Automaton = \Tuple{\States, \Alphabet, \Transitions, \Initial,\Accepting}$:
 
+We use the pseudo-function $\FlowEq(\Automaton, \Filter)$ that generates a set
+of existentially quantified linear inequalities with the following definition:
 $$
 \begin{aligned}
-& \In(q) = \text{$1$ if $q \in I$} + \sum_{i \in 1,\ldots,t \SuchThat \Transitions_i = \FromLabelTo{*}{}{q}} \TransitionVec_i\\
-& \Out(q) = \sum_{i \in 1,\ldots,t \SuchThat \Transitions_i = \FromLabelTo{q}{}{*}} \TransitionVec_i\\
-& \FlowEq = \AndComp{q \in Q}{\In(q) - \Out(q)}
-\text{ $\geq 0$ if $q \in F$, $= 0$ otherwise}
+  & \FlowEq(\Automaton, \Filter) = \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)}
+\text{ $\geq 0$ if $\State \in \Accepting$, $= 0$ otherwise}\\
+  & \In(\State, \Filter) = \left(\text{$1$ if $\State = \InitialState$, otherwise $0$}\right) + \sum_{\Transition = \FromLabelTo{\State_0}{}{\State} \in \Transitions} \Filter(\Transition)\\
+  & \Out(\State, \Filter) = \sum_{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions} \Filter(\Transition)
 \end{aligned}
 $$
-
-and $\KnownConnected$ corresponds to the following, implying guaranteed
-connectedness (or, conversely, the non-existence of cuts disagreeing with $\TransitionVec$):
-$$
-\forall{C, T}\: C = \SeparatingCut(T) \implies \forall{i} \: \Transitions_i \in T \land \TransitionVec_i > 0 \implies \forall{j} \: \Transitions_j \in C \implies \TransitionVec_j = 0
-$$
+Where we transparently assign fresh variables to each state $\State \in \States$
+and existentially quantify them in the whole clause.
 
 Additionally, we assume the existence of a rule \PresburgerClose{},
-corresponding to a sound and complete solver for Presburger formulae.
+corresponding to a sound and complete solver for Presburger formulae, modulo the
+monoid~$\Monoid$.
 
-The $\Propagate{}$ rule allows us to propagate connectedness across
-$\Automaton$. It states that we are only allowed to "use" transitions attached
-to a reachable state, and is necessary to ensure connectedness in the presence
-of cycles. \textsc{Expand} expands the predicate into its most basic rules; one
-set of linear equations connecting $\TransitionVec$ and $\MonoidElement$,
-and the linear flow equations of the standard Parikh image formulation.
+The $\Propagate{}$ rule allows us to propagate (dis-)connectedness across
+$\Automaton$. It states that we are only allowed to use transitions attached to
+a reachable state, and is necessary to ensure connectedness in the presence of
+cycles in~$\Automaton$.
 
-Finally, $\Split{}$ allows us to branch on the proof tree by first trying to
-exclude a contested edge from a potential solution and then concluding that it
-must be included.
+\textsc{Expand} expands the predicate into its most basic rules; one set of
+linear equations synchronising the transitions mentioned by $\Filter$ to the
+corresponding Monoid element~$\MonoidElement$, and the linear flow equations of
+the standard Parikh image formulation, as described by~\FlowEq. Since
+$\Connected$ and $\Image$ are partially redundant and the difference is covered
+by~$\FlowEq$, we can remove the instance of~$\Image$ when applying~$\Expand$. In
+this sense, we split the semantics of the $\Image$~predicate into its counting
+aspect (covered by $\FlowEq$) and its connectedness aspect (covered by
+$\Connected$).
+
+Finally, $\Split{}$ allows us to branch the proof tree by trying to exclude a
+contested transition from a potential solution before concluding that it must be
+included. Intuitively, this is what guarantees our ability to make forward
+progress by eliminating paths through~$\Automaton$.
 
 A decision procedure for our predicate in a tableau-based automated theorem
-prover would start by expanding the predicate using the $\Expand{}$ rule. For
-many instances of the predicate, this would be enough to induce subsumption;
-as long as the DFA contains no loops that could be disconnected from a minimum
-spanning tree (MST) of the automaton.
-
-\subsection{An Example}
-
-\section{Generalising the calculus modulo arbitrary commutative monoid maps}
-
+prover would start by expanding the predicate using the $\Expand{}$~rule.
+If~$\Automaton$ contains no loops that could be disconnected from a minimum
+spanning tree (MST) with its root in~$\InitialState$, the initial state, this
+would be sufficient to reach subsumption immediately.
 
 \subsection{An Example}
 
@@ -285,76 +305,69 @@ spanning tree (MST) of the automaton.
     \item backjumping and conflict-driven learning
     }
 
-To generalise the calculus to calculations on products of automata, we change the main predicate take arbitrarily many automata:
-\begin{definition}
-  $\ProductPredicateInstance$ is true exactly when:
-  \begin{itemize}
-  \item $h:\: \Alphabet^* \rightarrow \SomeMonoid$, a morphism to a commutative product monoid $\SomeMonoid = \prod_{i} \SomeMonoid_i$.
-  \item $\MonoidElement$ is a vector of elements of $\SomeMonoid$.
-  \item $\AutomatonVector$ is a vector of automata.
-  \item $\Automaton = \prod_{i} \AutomatonVector_i$
-  \item each $\TransitionVec_i$ is a vector of terms such that each term correspond to a
-    transition in $\AutomatonVector_i$, and $\TransitionVectors$ is a vector of those vectors. We use the terminology $\TransitionTerm(t)$ to refer to the term of the transition vector for a given transition $t$.
-  \item $y = \sum_{t \in \Transitions} h(t)$
-  \item $\SourceTransitions(\Automaton, t)$ is the set of transitions from the
-  term automata used to produce the transition $t$ in the product automaton
-  $\Automaton$.
-  \end{itemize}
-  \end{definition}
+% To generalise the calculus to calculations on products of automata, we change the main predicate take arbitrarily many automata:
+% \begin{definition}
+%   $\ProductPredicateInstance$ is true exactly when:
+%   \begin{itemize}
+%   \item $h:\: \Alphabet^* \rightarrow \SomeMonoid$, a morphism to a commutative product monoid $\SomeMonoid = \prod_{i} \SomeMonoid_i$.
+%   \item $\MonoidElement$ is a vector of elements of $\SomeMonoid$.
+%   \item $\AutomatonVector$ is a vector of automata.
+%   \item $\Automaton = \prod_{i} \AutomatonVector_i$
+%   \item each $\TransitionVec_i$ is a vector of terms such that each term correspond to a
+%     transition in $\AutomatonVector_i$, and $\TransitionVectors$ is a vector of those vectors. We use the terminology $\TransitionTerm(t)$ to refer to the term of the transition vector for a given transition $t$.
+%   \item $y = \sum_{t \in \Transitions} h(t)$
+%   \item $\SourceTransitions(\Automaton, t)$ is the set of transitions from the
+%   term automata used to produce the transition $t$ in the product automaton
+%   $\Automaton$.
+%   \end{itemize}
+%   \end{definition}
 
+%   First we extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton:
+%   \begin{mathpar}
+%     \inferrule*[left=Expand]
+%       {\AndComp{\Automaton_i \in \AutomatonVector}{\FlowEq(\Automaton_i) \land \Connected(\Automaton_i)}\ldots}
+%       {\ProductPredicateInstance \land \SomeClause}
+%   \end{mathpar}
 
-  % FIXME y is a vector, and the plus of the sum is on the commutative monoid
-  % FIXME backport this to the previous predicate's definition
+%   %  x(t) = sum(e : termProductEdges(t, default=0))
+% Then we introduce the rule $\Materialise$, used to compute a partial product between two terms $\Automaton_i, \Automaton_j$:
+% \begin{mathpar}
+%   \inferrule*[left=Materialise, 
+%   right=\textnormal{where $\Automaton_{k} = \Automaton_i \times \Automaton_j, \AutomatonVector' = (\AutomatonVector \cup \{  \Automaton_k \}) \setminus {\Automaton_i, \Automaton_j}$}]
+%     {\AndComp{t \in \delta(\Automaton_{k})}{\TransitionTerm(t) = \sum_{t' \in \SourceTransitions(t, \Automaton_k)} t'}\\
+%     \FlowEq(\Automaton_{k}) \land \Connected(\Automaton_{k}) \land
+%     \\ \MonoidMap(\AutomatonVector', \TransitionVectors', \MonoidElement) \land \SomeClause} {\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement) \land \SomeClause}
+% \end{mathpar}
 
+% Note that we implicitly existentially quantify the fresh transition terms $\TransitionVec_{k+1}$ for the product.
 
-  First we extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton:
-  \begin{mathpar}
-    \inferrule*[left=Expand]
-      {\AndComp{\Automaton_i \in \AutomatonVector}{\FlowEq(\Automaton_i) \land \Connected(\Automaton_i)}\ldots}
-      {\ProductPredicateInstance \land \SomeClause}
-  \end{mathpar}
+% $\Materialise$ comes with its companion rule $\RemoveTermConnected$ that simply
+% states we are allowed to remove any instances of $\Connected$ from terms that
+% have been used in a product, and whose connectedness we therefore no longer care about:
+% \begin{mathpar}
+%   \inferrule*[left=$\RemoveTermConnected$, right=\textnormal{If $\Automaton_a$ not in $\Automaton_1\ldots\Automaton_k$}]
+%     {\ProductPredicateInstance \land \SomeClause}
+%     {\Connected(\Automaton_a) \land \ProductPredicateInstance \land \SomeClause}
+% \end{mathpar}
 
-  %  x(t) = sum(e : termProductEdges(t, default=0))
-Then we introduce the rule $\Materialise$, used to compute a partial product between two terms $\Automaton_i, \Automaton_j$:
-\begin{mathpar}
-  \inferrule*[left=Materialise, 
-  right=\textnormal{where $\Automaton_{k} = \Automaton_i \times \Automaton_j, \AutomatonVector' = (\AutomatonVector \cup \{  \Automaton_k \}) \setminus {\Automaton_i, \Automaton_j}$}]
-    {\AndComp{t \in \delta(\Automaton_{k})}{\TransitionTerm(t) = \sum_{t' \in \SourceTransitions(t, \Automaton_k)} t'}\\
-    \FlowEq(\Automaton_{k}) \land \Connected(\Automaton_{k}) \land
-    \\ \MonoidMap(\AutomatonVector', \TransitionVectors', \MonoidElement) \land \SomeClause} {\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement) \land \SomeClause}
-\end{mathpar}
-
-Note that we implicitly existentially quantify the fresh transition terms $\TransitionVec_{k+1}$ for the product.
-
-$\Materialise$ comes with its companion rule $\RemoveTermConnected$ that simply
-states we are allowed to remove any instances of $\Connected$ from terms that
-have been used in a product, and whose connectedness we therefore no longer care about:
-\begin{mathpar}
-  \inferrule*[left=$\RemoveTermConnected$, right=\textnormal{If $\Automaton_a$ not in $\Automaton_1\ldots\Automaton_k$}]
-    {\ProductPredicateInstance \land \SomeClause}
-    {\Connected(\Automaton_a) \land \ProductPredicateInstance \land \SomeClause}
-\end{mathpar}
-
-Finally, we add a side condition to $\Subsume$ to only allow subsumption for
-instances of $\MonoidMap$ with just one automaton, ensuring that we do not bail
-out before having computed the entire product.
+% Finally, we add a side condition to $\Subsume$ to only allow subsumption for
+% instances of $\MonoidMap$ with just one automaton, ensuring that we do not bail
+% out before having computed the entire product.
 
 \subsection{An Example}
 
+\subsection{The calculus is correct}
 
-\section{Solving the Travelling Salesperson Problem}
+To be as clear as possible about what it means for our calculus to be correct,
+we use more exact definitions than the traditional soundness and completeness.
 
-If we take an instance of the (decision version of the) TSP as a graph with vertices $N$, edges $E$ and a distance function $\delta(e)$, we can solve it using our method in the following way:
-\begin{enumerate}
-  \item Construct an automaton $\Automaton$ such that all its states are accepting, all the vertices and edges from the TSP graph are present, and the initial state has a transition to each state with weight 0. This encodes the movements in the graph, capturing the constraint that we may take any path through the graph, and that we may end anywhere.
-  \item Use a monoid morphism to an $n +1$-element vector, where the first element is the length of the current path, and the $n = |N|$ elements following it is how many times we visit each node.
-  \item The monoid morphism $m(\langle a, w, b\rangle) = \left[w, 0, \ldots, 1, \ldots, 0 \right] $ would simply map to the transition weight $w$ followed by a 1 for node $b$ and zeroes for all other nodes. The corresponding (commutative) monoid operation would then be simple elementwise addition of the bookkeeping vector.
-  \item Constrain the terms corresponding to the visited status for each state to be at least 1.
-  \item Iteratively query the solver for a looser and looser upper bound on the length. Once we have a solution, we know it to be minimal.
-\end{enumerate}
+\subsubsection{The calculus terminates}
+\subsubsection{The calculus allows no values outside the Parikh image}
+\subsubsection{The calculus allows all values in the Parikh image}
+
+\section{Extending and generalising the calculus}
 
 \section{Implementation and Experiments}
-
 
 \contents{
 \item length constraints

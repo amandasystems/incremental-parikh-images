@@ -1,27 +1,9 @@
-@misc{survey2020,
-  title         = {A Survey on String Constraint Solving},
-  author        = {Roberto Amadini},
-  year          = 2020,
-  eprint        = {2002.02376},
-  archiveprefix = {arXiv},
-  primaryclass  = {cs.AI}
-}
-
-@inproceedings{minizinc-dse-js,
-  author    = {Amadini, Roberto
-and Andrlon, Mak
-and Gange, Graeme
-and Schachte, Peter
-and S{\o}ndergaard, Harald
-and Stuckey, Peter J.},
-  editor    = {Rousseau, Louis-Martin and Stergiou, Kostas},
-  title     = {Constraint Programming for Dynamic Symbolic Execution of JavaScript},
-  booktitle = {Integration of Constraint Programming, Artificial Intelligence, and Operations Research},
-  year      = 2019,
-  publisher = {Springer International Publishing},
-  address   = {Cham},
-  pages     = {1--19},
-  isbn      = {978-3-030-19212-9}
+@inproceedings{approximate-parikh,
+  title     = {Solving String Constraints with Approximate Parikh Image},
+  author    = {Janků, Petr and Turoňová, Lenka},
+  booktitle = {{EUROCAST}},
+  pages     = {491--498},
+  year      = {2019}
 }
 
 @article{concorde,
@@ -33,57 +15,39 @@ and Stuckey, Peter J.},
 
 @inproceedings{generate-parikh-image,
   author    = {Verma, Kumar Neeraj
-and Seidl, Helmut
-and Schwentick, Thomas},
+               and Seidl, Helmut
+               and Schwentick, Thomas},
   title     = {On the Complexity of Equational Horn Clauses},
   booktitle = {{CADE}},
   year      = 2005,
-  pages     = {337--352},
+  pages     = {337--352}
 }
 
-@inproceedings{quantifier-elimination-trick,
-  author    = {Monniaux, David},
-  editor    = {Cervesato, Iliano
-and Veith, Helmut
-and Voronkov, Andrei},
-  title     = {A Quantifier Elimination Algorithm for Linear Real Arithmetic},
-  booktitle = {Logic for Programming, Artificial Intelligence, and Reasoning},
-  year      = 2008,
-  publisher = {Springer Berlin Heidelberg},
-  address   = {Berlin, Heidelberg},
-  pages     = {243--257},
+@book{kozen,
+  author    = {Kozen, Dexter C.},
+  title     = {Automata and computability},
+  publisher = {Springer},
+  address   = {New York},
+  year      = 1997,
+  isbn      = 0387949070
 }
 
-@inproceedings{trau,
-  title        = {Trau: SMT solver for string constraints},
-  author       = {Abdulla, Parosh Aziz and Atig, Mohamed Faouzi and Chen, Yu-Fang and Diep, Bui Phi and Hol{\'\i}k, Luk{\'a}{\v{s}} and Rezine, Ahmed and R{\"u}mmer, Philipp},
-  booktitle    = {2018 Formal Methods in Computer Aided Design (FMCAD)},
-  pages        = {1--5},
-  year         = 2018,
-  organization = {IEEE}
-}
-
-@article{ostrich,
-  title     = {Decision procedures for path feasibility of string-manipulating programs with complex operations},
-  author    = {Chen, Taolue and Hague, Matthew and Lin, Anthony W and R{\"u}mmer, Philipp and Wu, Zhilin},
-  journal   = {{POPL}},
-  volume    = 3,
-  pages     = {1--30},
+@inproceedings{minizinc-dse-js,
+  author    = {Amadini, Roberto
+               and Andrlon, Mak
+               and Gange, Graeme
+               and Schachte, Peter
+               and S{\o}ndergaard, Harald
+               and Stuckey, Peter J.},
+  editor    = {Rousseau, Louis-Martin and Stergiou, Kostas},
+  title     = {Constraint Programming for Dynamic Symbolic Execution of JavaScript},
+  booktitle = {Integration of Constraint Programming, Artificial Intelligence, and Operations Research},
   year      = 2019,
-  publisher = {ACM New York, NY, USA}
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {1--19},
+  isbn      = {978-3-030-19212-9}
 }
-
-
-@inproceedings{path_profiling,
-  title      = {Efficient path profiling},
-  doi        = {10.1109/MICRO.1996.566449},
-  eventtitle = {Proceedings of the 29th Annual {IEEE}/{ACM} International Symposium on Microarchitecture. {MICRO} 29},
-  pages      = {46--57},
-  booktitle  = {Proceedings of the 29th Annual {IEEE}/{ACM} International Symposium on Microarchitecture. {MICRO} 29},
-  author     = {Ball, T. and Larus, J.R.},
-  date       = {1996-12}
-}
-
 
 @article{optimally_profiling,
   title        = {Optimally profiling and tracing programs},
@@ -98,6 +62,49 @@ and Voronkov, Andrei},
   author       = {Ball, Thomas and Larus, James R.},
   urldate      = {2020-05-13},
   date         = {1994-07-01}
+}
+
+@article{ostrich,
+  title     = {Decision procedures for path feasibility of string-manipulating programs with complex operations},
+  author    = {Chen, Taolue and Hague, Matthew and Lin, Anthony W and R{\"u}mmer, Philipp and Wu, Zhilin},
+  journal   = {{POPL}},
+  volume    = 3,
+  pages     = {1--30},
+  year      = 2019,
+  publisher = {ACM New York, NY, USA}
+}
+
+
+@techreport{parikh-logics,
+  author = {Felix Klaedtke and Harald Rueß},
+  title  = {Parikh Automata and Monadic Second-Order Logics with Linear Cardinality Constraints},
+  year   = {2002}
+}
+
+
+@inproceedings{path_profiling,
+  title     = {Efficient path profiling},
+  doi       = {10.1109/MICRO.1996.566449},
+  pages     = {46--57},
+  booktitle = {{MICRO} 29},
+  author    = {Ball, T. and Larus, J.R.},
+  date      = {1996-12}
+}
+
+@inproceedings{path-feasibility-strings,
+  author    = {Taolue Chen and
+               Matthew Hague and
+               Jinlong He and
+               Denghang Hu and
+               Anthony Widjaja Lin and
+               Philipp R{\"{u}}mmer and
+               Zhilin Wu},
+  title     = {A Decision Procedure for Path Feasibility of String Manipulating Programs with Integer Data Type},
+  booktitle = {{ATVA} 2020},
+  volume    = {12302},
+  pages     = {325--342},
+  year      = {2020},
+  doi       = {10.1007/978-3-030-59152-6_18}
 }
 
 @inproceedings{princess,
@@ -115,43 +122,44 @@ and Voronkov, Andrei},
   publisher = {Springer}
 }
 
-@book{kozen,
-  author    = {Kozen, Dexter C.},
-  title     = {Automata and computability},
-  publisher = {Springer},
-  address   = {New York},
-  year      = 1997,
-  isbn      = 0387949070
+@inproceedings{pyex,
+  author    = {Reynolds, Andrew
+               and Woo, Maverick
+               and Barrett, Clark
+               and Brumley, David
+               and Liang, Tianyi
+               and Tinelli, Cesare},
+  title     = {Scaling Up DPLL(T) String Solvers Using Context-Dependent Simplification},
+  booktitle = {{CAV} '17},
+  year      = {2017},
+  pages     = {453--474}
 }
 
-@inproceedings{approximate-parikh,
-  title        = {Solving String Constraints with Approximate Parikh Image},
-  author       = {Janků, Petr and Turoňová, Lenka},
-  booktitle    = {{EUROCAST}},
-  pages        = {491--498},
-  year         = {2019},
-  organization = {Springer}
+@inproceedings{quantifier-elimination-trick,
+  author    = {Monniaux, David},
+  editor    = {Cervesato, Iliano
+               and Veith, Helmut
+               and Voronkov, Andrei},
+  title     = {A Quantifier Elimination Algorithm for Linear Real Arithmetic},
+  booktitle = {Logic for Programming, Artificial Intelligence, and Reasoning},
+  year      = 2008,
+  pages     = {243--257}
 }
 
-@inproceedings{path-feasibility-strings,
-  author    = {Taolue Chen and
-               Matthew Hague and
-               Jinlong He and
-               Denghang Hu and
-               Anthony Widjaja Lin and
-               Philipp R{\"{u}}mmer and
-               Zhilin Wu},
-  title     = {A Decision Procedure for Path Feasibility of String Manipulating Programs with Integer Data Type},
-  booktitle = {{ATVA} 2020},
-  volume    = {12302},
-  pages     = {325--342},
-  year      = {2020},
-  doi       = {10.1007/978-3-030-59152-6_18},
+@misc{survey2020,
+  title         = {A Survey on String Constraint Solving},
+  author        = {Roberto Amadini},
+  year          = 2020,
+  eprint        = {2002.02376},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.AI}
 }
 
-@TECHREPORT{parikh-logics,
-    author = {Felix Klaedtke and Harald Rueß},
-    title = {Parikh Automata and Monadic Second-Order Logics with Linear Cardinality Constraints},
-    institution = {},
-    year = {2002}
+@inproceedings{trau,
+  title     = {Trau: SMT solver for string constraints},
+  author    = {Abdulla, Parosh Aziz and Atig, Mohamed Faouzi and Chen, Yu-Fang and Diep, Bui Phi and Hol{\'\i}k, Luk{\'a}{\v{s}} and Rezine, Ahmed and R{\"u}mmer, Philipp},
+  booktitle = {{FMCAD} '18},
+  pages     = {1--5},
+  year      = 2018
 }
+
