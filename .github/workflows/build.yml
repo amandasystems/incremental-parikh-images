@@ -24,7 +24,7 @@ jobs:
       run: >
         sudo apt-get update &&
         sudo apt-get install curl file git graphviz &&
-        sudo apt-get --no-install-recommends install texlive-{base,fonts-recommended,latex-base,latex-recommended,latex-extra,pictures,pstricks,science,fonts-extra} tex-gyre texlive-xetex lmodern
+        sudo apt-get --no-install-recommends install texlive-{base,fonts-recommended,latex-base,latex-recommended,latex-extra,pictures,pstricks,science,fonts-extra,publishers} tex-gyre texlive-xetex lmodern
 
     - name: Build the report
       run: cd $GITHUB_WORKSPACE/paper && make
