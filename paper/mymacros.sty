@@ -1,14 +1,14 @@
 \usepackage{amsmath}
 \DeclareMathOperator{\Image}{Im}
-\newcommand{\ImagePredicate}[4]{\Image_(#1, #2, #3, #4)}
+\newcommand{\ImagePredicate}[4]{\Image_{#1, #2}(#3, #4)}
 \newcommand{\Automaton}[0]{\mathcal{A}}
 \newcommand{\Path}[0]{p}
-\newcommand{\PathEnumeration}[0]{\Tuple{\InitialState \Label_1 \State_1 \RepeatSum{,} \State_n}}
+\newcommand{\PathEnumeration}[0]{\Tuple{\State_0 \Label_1 \State_1 \RepeatSum{,} \State_n}}
 \newcommand{\Transition}[0]{t}
-\newcommand{\AutomatonTuple}[0]{\Tuple{\States, \InitialState, \Accepting, \Transitions}}
+\newcommand{\AutomatonTuple}[0]{\Tuple{\States, \InitialState, \AcceptingStates, \Transitions}}
 \newcommand{\Tuple}[1]{\left\langle#1\right\rangle}
 \newcommand{\States}[0]{Q}
-\newcommand{\Accepting}[0]{F}
+\newcommand{\AcceptingStates}[0]{F}
 \newcommand{\Transitions}[0]{\delta}
 \newcommand{\InitialState}[0]{q_I}
 \newcommand{\Alphabet}[0]{\Sigma}
@@ -16,6 +16,8 @@
 \newcommand{\MonoidElement}[0]{m}
 \newcommand{\Strings}[0]{\Alphabet^*}
 \newcommand{\Label}[0]{l}
+\newcommand{\Map}[0]{h}
+\newcommand{\WordOf}[0]{w}
 \newcommand{\State}[0]{q}
 \newcommand{\AndComp}[2]{\bigwedge_{#1} #2}
 \newcommand{\OrComp}[2]{\bigvee_{#1} #2}
@@ -35,9 +37,9 @@
 \newcommand{\TransitionVectors}[0]{\mathbf{Tr}}
 \newcommand{\ProductPredicateInstance}[0]{\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement)}
 \DeclareMathOperator{\Language}{\mathcal{L}}
-\DeclareMathOperator{\Map}{h}
+\DeclareMathOperator{\Paths}{Paths}
+\DeclareMathOperator{\StatesOf}{States}
 \DeclareMathOperator{\Filter}{\sigma}% Sigma is the select operator!
-\DeclareMathOperator{\WordOf}{w}
 \DeclareMathOperator{\TransitionCount}{\#}
 \DeclareMathOperator{\Concat}{\bullet}
 \DeclareMathOperator{\TransitionsOf}{T}
@@ -86,7 +88,8 @@
 % Theorems
 \let\proof\relax
 \let\endproof\relax
-\usepackage{amsthm}
 %\newtheorem{lemma}{Lemma}
 %\newtheorem{theorem}{Theorem}
 %\newtheorem{definition}{Definition}
+\newcommand{\Accepting}[1]{#1}
+% \newcommand{\xcrown}[1]{\accentset{\symking}{#1}}

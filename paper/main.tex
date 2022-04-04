@@ -1,29 +1,76 @@
-\documentclass{easychair}
+%% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
+\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=true}
+%% For double-blind review submission, w/ CCS and ACM Reference
+%\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true}
+%% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
+%\documentclass[acmsmall,review]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+%% For single-blind review submission, w/ CCS and ACM Reference
+%\documentclass[acmsmall,review]{acmart}\settopmatter{printfolios=true}
+%% For final camera-ready submission, w/ required CCS and ACM Reference
+%\documentclass[acmsmall]{acmart}\settopmatter{}
+
+
+%% Journal information
+%% Supplied to authors by publisher for camera-ready submission;
+%% use defaults for review submission.
+\acmJournal{PACMPL}
+\acmVolume{1}
+\acmNumber{POPL} % CONF = POPL or ICFP or OOPSLA
+\acmArticle{1}
+\acmYear{2023}
+\acmMonth{1}
+\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
+\startPage{1}
+
+%% Copyright information
+%% Supplied to authors (based on authors' rights management selection;
+%% see authors.acm.org) by publisher for camera-ready submission;
+%% use 'none' for review submission.
+\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+%\copyrightyear{2018}           %% If different from \acmYear
+
+%% Bibliography style
+\bibliographystyle{ACM-Reference-Format}
+%% Citation style
+%% Note: author/year citations are required for papers published as an
+%% issue of PACMPL.
+\citestyle{acmauthoryear}   %% For author/year citations
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Note: Authors migrating a paper from PACMPL format to traditional
+%% SIGPLAN proceedings format must update the '\documentclass' and
+%% topmatter commands above; see 'acmart-sigplanproc-template.tex'.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% Some recommended packages.
+\usepackage{booktabs}   %% For formal tables:
+                        %% http://ctan.org/pkg/booktabs
+\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
+                        %% http://ctan.org/pkg/subcaption
+
+
 
 \usepackage{amsthm}
-\usepackage{amssymb,amsmath,mathtools,empheq,fancybox}
-
+\usepackage{amsmath,mathtools,empheq,fancybox}
 \usepackage{paralist}
 \usepackage{url}
 \usepackage{color}
-
 \usepackage{textcomp,listings}
-\usepackage[backend=biber]{biblatex}
-\usepackage{mymacros}
+\usepackage{array}
+\usepackage{mymacros}      
 
 \usepackage{mathpartir}
-\addbibresource{../bibliography.bib}
-
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 
 
 \newif\ifcomments
 \commentstrue
-
-\newcommand{\pr}[1]{{\color{red}``PR: #1''}}
-\newcommand{\as}[1]{{\color{blue}``AS: #1''}}
-
 \newif\ifoutline
 \outlinetrue
 
@@ -35,56 +82,180 @@
 
 \allowdisplaybreaks[1]
 
-\title{An Efficient Calculus for Generalised Parikh Images of Regular Languages}
-\author{some cool authors}
-\institute{Uppsala University, Sweden}
 
 \begin{document}
-\maketitle
 
+%% Title information
+\title{An Efficient Calculus for Generalised Parikh Images of Regular Languages}
+                                        %% when present, will be used in
+                                        %% header instead of Full Title.
+\titlenote{with title note}             %% \titlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
+
+%% Author information
+%% Contents and number of authors suppressed with 'anonymous'.
+%% Each author should be introduced by \author, followed by
+%% \authornote (optional), \orcid (optional), \affiliation, and
+%% \email.
+%% An author may have multiple affiliations and/or emails; repeat the
+%% appropriate command.
+%% Many elements are not rendered, but should be provided for metadata
+%% extraction tools.
+
+%% Author with single affiliation.
+\author{First1 Last1}
+\authornote{with author1 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  \position{Position1}
+  \department{Department1}              %% \department is recommended
+  \institution{Institution1}            %% \institution is required
+  \streetaddress{Street1 Address1}
+  \city{City1}
+  \state{State1}
+  \postcode{Post-Code1}
+  \country{Country1}                    %% \country is recommended
+}
+\email{first1.last1@inst1.edu}          %% \email is recommended
+
+%% Author with two affiliations and emails.
+\author{First2 Last2}
+\authornote{with author2 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+  \position{Position2a}
+  \department{Department2a}             %% \department is recommended
+  \institution{Institution2a}           %% \institution is required
+  \streetaddress{Street2a Address2a}
+  \city{City2a}
+  \state{State2a}
+  \postcode{Post-Code2a}
+  \country{Country2a}                   %% \country is recommended
+}
+\email{first2.last2@inst2a.com}         %% \email is recommended
+\affiliation{
+  \position{Position2b}
+  \department{Department2b}             %% \department is recommended
+  \institution{Institution2b}           %% \institution is required
+  \streetaddress{Street3b Address2b}
+  \city{City2b}
+  \state{State2b}
+  \postcode{Post-Code2b}
+  \country{Country2b}                   %% \country is recommended
+}
+\email{first2.last2@inst2b.org}         %% \email is recommended
+
+
+%% Abstract
+%% Note: \begin{abstract}...\end{abstract} environment must come
+%% before \maketitle command
 \begin{abstract}
   The image of the Parikh map is important in automata theory, offering a
   compact characterisation of an automaton. We contribute a novel understanding
   of how Parikh maps can be combined with arbitrary commutative monoid morphisms
   to efficiently represent a wide range of logics on automata and automata-like
-  structures. Furthermore, we show how this formulation can be efficiently
-  implemented as a calculus in a theorem prover supporting Presburger logic. In
-  particular, our calculus allows us to solve the common problem in string
-  solvers of computing the Parikh image of products of arbitrarily many
-  automata. We demonstrate this by implementing a tool called \Catra{}, which we
-  use to solve a set of constraints produced by \Fudge{the PyEx benchmarks} when
-  solved by the \Ostrich{} string constraint solver. We show that this
-  implementation in addition to having a lower memory footprint than the
-  standard eager approach executed on the same underlying solver also
+  structures. This allows us to \Fudge{ensure world peace forever and express
+  loop invariants that solve the halting problem for any practical program}.
+  Furthermore, we show how this formulation can be efficiently implemented as a
+  calculus in a theorem prover supporting Presburger logic. In particular, our
+  calculus allows us to solve the common problem in string solvers of computing
+  the Parikh image of products of arbitrarily many automata. We demonstrate this
+  by implementing a tool called \Catra{}, which we use to solve a set of
+  constraints produced by \Fudge{the PyEx benchmarks} when solved by the
+  \Ostrich{} string constraint solver. We show that this implementation in
+  addition to \Fudge{having a lower memory footprint} than the standard eager
+  approach executed on the same underlying solver also \Fudge{strictly}
   outperforms the nuxmv model checker on the same problem\Fudge{, as well as the
-  over-approximation recently described in~\cite{approximate-parikh}.}
+  over-approximation recently described by~\citeauthor{approximate-parikh} and
+  the original approach described by \citeauthor{generate-parikh-image}.}
+
 \end{abstract}
+
+
+%% 2012 ACM Computing Classification System (CSS) concepts
+%% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10011007.10011006.10011008</concept_id>
+<concept_desc>Software and its engineering~General programming languages</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003456.10003457.10003521.10003525</concept_id>
+<concept_desc>Social and professional topics~History of programming languages</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~General programming languages}
+\ccsdesc[300]{Social and professional topics~History of programming languages}
+%% End of generated code
+
+
+%% Keywords
+%% comma separated list
+\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
+
+
+%% \maketitle
+%% Note: \maketitle command must come after title commands, author
+%% commands, abstract environment, Computing Classification System
+%% environment and commands, and keywords command.
+\maketitle
+
 
 \section{Introduction}
 
-Parikh maps and their image appears naturally as part of many operations in model checking and the solving of string constraints in automata-based string solvers such as \Ostrich{}, notably in representing constraints on string lengths. While it is possible to compute the Parikh image of an automaton using the method described in \cite{generate-parikh-image}, this method produces large existentially quantified clauses which are costly to eliminate and in practice make many real-world problems intractable. Furthermore, applications to string analysis in theorem provers require symbolic labels to handle Unicode alphabets \Fudge{citation needed}. Conjunctions of string constraints finally, and most crucially, lead to the computation of Parikh images of automata products. Applying the approach in \cite{generate-parikh-image} would require the computation of the product before the Parikh image can be computed. In several instances we have observed, the materialisation of the product of the automata exhausts the memory of any reasonable machine due to the exponential blow-up of the product.
+Parikh maps and their image appears naturally as part of many operations in
+model checking and the solving of string constraints in automata-based string
+solvers such as \Ostrich{}, notably in representing constraints on string
+lengths. While it is possible to compute the Parikh image of any context-free
+language using the method described in~\cite{generate-parikh-image}, this method
+produces existentially quantified clauses and take at most linear time to
+produce~\cite{muscholl-linear}. However, the resulting existentially quantified
+clauses are costly to eliminate, in practice making many real-world problems
+intractable. Furthermore, applications to string analysis in theorem provers
+require symbolic labels to handle Unicode alphabets \Fudge{citation needed}.
+Conjunctions of string constraints finally, and most crucially, lead to the
+computation of Parikh images of products of regular languages. Applying the
+approach in \cite{generate-parikh-image} would require the computation of the
+product before the Parikh image can be computed. In several instances we have
+observed, the materialisation of the product of the automata exhausts the memory
+of any reasonable machine due to the exponential blow-up of the product.
 
-Addressing these concerns, our specialised calculus for Parikh images allows us to handle symbolic transition labels naturally, while also allowing us to interleave the computation of arbitrarily deep products of automata with the Parikh image of their product. This allows us to let both calculations inform each other, eliminating unnecessary work, and pruning the size of the partial products used in the computation. Moreover, the method can be used iteratively to, as it were, chew off bite-sized chunks of the product, thereby avoiding the problem of memory-outs.
+Addressing these concerns, our specialised calculus for Parikh images of
+products of regular languages allows us to handle symbolic transition labels
+naturally, while also allowing us to interleave the computation of arbitrarily
+deep products of automata with the Parikh image of their product. This allows us
+to let both calculations inform each other, eliminating unnecessary work, and
+pruning the size of the partial products used in the computation. Moreover, the
+method can be used iteratively to, as it were, chew off bite-sized chunks of the
+product, thereby avoiding the problem of memory-outs.
 
 \subsection{Motivating Example}
 
+
 \section{Overview}
 
-We define an non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$
-as $\Automaton = \AutomatonTuple$ where
-$\Transitions = \States \times \Alphabet \times \States$, $\States$ is its
-states, $\InitialState$ is w.l.o.g. assumed to be the single initial state, and
-$\Accepting$ is its set of accepting states. Note that we will later generalise
-the labels of transitions further.
+We define a non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$
+as $\Automaton = \AutomatonTuple$ where $\Transitions = \States \times \Alphabet
+\times \States$, $\States$ is its states, $\InitialState$ is w.l.o.g. assumed to
+be the single initial state, and $\AcceptingStates$ is its set of accepting
+states. Note that we will later generalise the labels of transitions further.
 
-\subsection{The Parikh Map of a Regular language}
+\subsection{The Parikh Map}
 Formally, the \textit{Parikh map} over a context-free language $\Strings=
 \left\{a_1, \ldots, a_k \right\}$ is defined as in \cite{kozen}:
 
 $$
 \begin{aligned}
 & \ParikhMap: \MapFromTo{\Strings}{\natural^k} \\
-& \ParikhMap(s) = \left[\#a_1(s), \#a_2(s), \ldots, \#a_k(s)\right]
+& \ParikhMap(s) = \VectorLiteral{\#a_1(s), \#a_2(s), \ldots, \#a_k(s)}
 \end{aligned}
 $$
 
@@ -95,19 +266,31 @@ character in the language for a given string $s$. For example, for  $\Strings =
 We define the image of this map, the \textit{Parikh image}, of some subset of
 the language $\Language \subseteq \Strings$ as:
 
-$$
+\[
 \ParikhMap(\Language) = \Set{\ParikhMap(x) \SuchThat x \in \Language}
-$$
+\]
 
-Thus we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1, 1\right],
-\left[1, 2\right]\right\}$.
+Thus, we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1,
+1\right], \left[1, 2\right]\right\}$.
+
+Parikh's theorem states that ignoring order, any context-free grammar has a
+letter-equivalent regular language (c.f.~\cite{construction} for a construction of
+such automata from context-free grammars). However, there are languages that are
+not context-free that also have semilinear images under~$\ParikhMap$ (e.g.
+$\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) = \ParikhMap((abc)^*) = \#a =
+\#b = \#c \land \#a \geq 0$).
+
+\contents {
+  \item parikh images of regular images are semilinear, therefore presburger
+  \item presburger is semilinear
+}
 
 \subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
 
 Following~\cite{generate-parikh-image}, we define the Parikh Image of a regular
 language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
 
-$$
+\[
 \begin{aligned}
 \psi(\mathcal{A}) := 
 & \bigwedge_{\alpha \in \Sigma}
@@ -129,13 +312,18 @@ c_\alpha = \sum_{\delta \in \delta} t_\delta
 z_{q'} = 1 \land t_\delta > 0& \text{if $q \in I$}
 \end{cases}
 \end{aligned}
-$$
+\]
 
 where all variables $z_i, t_i$ are existentially quantified and the variables
 $c_\alpha$ make up the actual image. Feeding this definition into a Presburger
 solver and performing quantifier elimination on $z_i, t_i$ would produce the
-Parikh image in its Presburger form. In this paper we use this example
-(sometimes appropriately modified) as the baseline approach.
+Parikh image in its Presburger form.
+
+In this paper we use this example (sometimes appropriately modified) as the
+baseline approach. Notably, the approach presented in this paper can at its core
+be described as lazily enforcing the connectedness constraint of this method
+(the final two clauses) while also interleaving the (similarly lazy) computation
+of products of automata.
 
 \subsubsection{An Example}
 
@@ -143,12 +331,17 @@ Parikh image in its Presburger form. In this paper we use this example
 
 \subsection{Generalised Parikh Images}\label{sec:generalised}
 
-To generalise the logic over Parikh images, we intrdouce a morphism $\Map:\: \Sigma
+To generalise the logic over Parikh images, we introdouce a morphism $\Map:\: \Sigma
 \to \Monoid$ where $\Monoid$ is a commutative monoid where the following holds:
 \begin{itemize}
   \item $\Map(\epsilon) = 0$, where $0$ is the neutral element of $\Monoid$
   \item $\Map(a \Concat b) = \Map(a) + \Map(b)$
 \end{itemize}
+
+\contents{
+  \item The Anca Muscholl paper?
+  \item Describe how a "simpler" function can accelerate solving
+}
 
 \subsubsection{Example~1: String length}
 
@@ -158,11 +351,18 @@ A useful example of such a morphism can express string length. We let $\Monoid =
 \RepeatSum{+} 1$. Similarly, vectors and vector addition can be used to obtain
 the regular Parikh map.
 
-\Fudge{We also expect more efficient computation}
 
 \subsubsection{Example~2: Parikh Automata}
 
-\Fudge{We apply it to Parikh Automata and Magic Happens}
+Another application for this generalisation is to express Parikh
+automata~\cite{parikh-automata}, and this is indeed what the implementation
+described in Section~\ref{sec:implementation} does.
+
+
+\contents{
+ \item what is parikh automata
+ \item Give an actual example of a parikh automata
+}
 
 \subsection{Lazy Computation of Parikh Images for Regular Languages}
 
@@ -177,23 +377,43 @@ labels of a transition are uninteresting we will omit it.
 For convenience, we introduce the following supporting concepts and notations:
 
 \begin{definition}
-  A \textit{path} $\Path = \PathEnumeration$ of an
-  automaton $\Automaton$ represents a valid run of the automaton as a path
-  starting in its initial state and taking zero or more transitions to arrive at
-  a final accepting state $\State_n \in \Accepting$, while passing a number of labels
-  $\Label_1, \ldots, \Label_n$. If $\InitialState \in \Accepting$, $\Tuple{\InitialState}$
-  is a valid path.
-  
-  More formally, we require that:
-  \begin{enumerate}
-    \item $\forall_{k} \Transitions(\State_k, \Label_{k+1}, \State_{k+1})$
-    \item $\State_n \in \Accepting$
-  \end{enumerate}
+  A \textit{path} $\Path = \PathEnumeration$ of an automaton~$\Automaton$ with
+  transitions $\Transitions$ represents a path through $\Automaton$ using
+  transitions in $\Transitions$ (i.e. $\Transitions(\State_k, \Label_{k+1},
+  \State_{k+1})$ holds for every $k$), passing zero or more labels $\Label_1,
+  \ldots, \Label_n$. The path must begin in the initial state, i.e.~$\State_0 =
+  \InitialState$. However, the ending state, $\State_n$, is not necessarily an
+  accepting state.
+  \end{definition}
+
+\begin{definition}
+  Moreover, we also talk about the \textit{set of paths} of an automaton,
+  $\Paths(\Automaton)$, a possibly infinite (if $\Automaton$ has loops) set of
+  valid paths through $\Automaton$. Additionally, we use the
+  notation~$\Paths(\Automaton, \State)$ to mean all paths ending in
+  state~$\State$.
 \end{definition}
 
 \begin{definition}
   The \textit{word} of a path $\WordOf(\Path) = \Label_1 \RepeatSum{\Concat} \Label_n$ is
   the word read out on its labels.
+\end{definition}
+
+\begin{definition}
+  The \textit{states} of a path $\StatesOf(\Path) = \Set{\State \SuchThat
+  \FromLabelTo{\State}{}{\State'} \in \Path \text{ or }
+  \FromLabelTo{\State'}{}{\State} \in \Path}$ are the states visited along a
+  path. Note that $\InitialState \in \StatesOf(\Path)$ for every path since all
+  paths start in the initial state.
+\end{definition}
+
+\begin{definition}
+  A \textit{cut}, $C$ of an automaton~$\Automaton = \AutomatonTuple$,
+  $\SeparatingCut(C, \Automaton, \State)$, is a minimal set of transitions whose
+  removal from~$\Transitions$ would cause~$\State \in \States$ to be unreachable
+  from the initial state~$\InitialState$. $\SeparatingCut(\Automaton,
+  \InitialState)$ is crucially undefined since it cannot be made unreachable
+  from itself by definition.
 \end{definition}
 
 \begin{definition}
@@ -207,64 +427,107 @@ We then introduce the two predicates into our calculus with the following
 definitions:
 
 \begin{definition}
-  $\SinglePredicateInstance$ where:
+  The Parikh predicate, $\SinglePredicateInstance$, for some automaton
+  $\Automaton = \AutomatonTuple$, modulo some map $\Map$ to a commutative monoid
+  $\Monoid$ as described in Section~\ref{sec:generalised} and with a transition
+  selection function $\Filter:\: \Transitions \to \Naturals$ holds when
+  $\MonoidElement \in \Monoid$ is the Parikh image of $\Automaton$ modulo
+  $\Map$, or more formally when there is an accepting path $\Path =
+  \PathEnumeration \in \Accepting{\Paths(\Automaton)}$ such that:
   \begin{itemize}
-    \item $\MonoidElement \in \Monoid$, for some commutative monoid $\Monoid$,
-    as described in Section~\ref{sec:generalised}.
-    \item $\Filter:\: \Transitions \to \Naturals$
-  \end{itemize}
-  holds when $\exists \Path = \PathEnumeration \in \Automaton$ such that:
-  \begin{itemize}
-    \item $\forall_{\Transition_i \in \Path} \Filter(\Transition_i) =
-    \TransitionCount(\Transition_i, \Path)$
-    \item $\WordOf(\Path) \in \Language(\Automaton)$
+    \item $\Filter(\Transition) = \TransitionCount(\Transition, \Path)$
     \item $\MonoidElement = \Map(\WordOf(\Path))$
   \end{itemize}
 \end{definition}
 
 \begin{definition}
-  $\Connected(\Automaton, \Filter)$ holds when
-  $\exists \Path = \PathEnumeration \in \Automaton$ such that:
-  \begin{itemize}
-    \item $\forall_{\Transition_i \in \Transitions} \Filter(\Transition_i) = \TransitionCount(\Transition_i, \Path)$
-    \item $\WordOf(p) \in \Language(\Automaton)$
-  \end{itemize}
-
-Intuitively, it represents the condition that $\Automaton$ is connected with
-respect to the selection function $\Filter$. It is redundant to $\Image$ by
-design.
+  $\Connected(\Automaton, \Filter)$ for some automaton $\Automaton =
+  \AutomatonTuple$ holds when for every $\Transition =
+  \FromLabelTo{\State}{}{\State'} \in \Transitions$, $\Filter(\Transition) > 0
+  \implies \exists \Path \in \Paths(\Automaton)$ $\Filter(\Transition_i) > 0$
+  for $\Transition_i \in p$, and $\State \in \StatesOf(p)$, or in words that
+  there exists some $\Filter$-selected valid path that reaches $\Transition$'s
+  starting state, $\State$. Intuitively, it represents the condition that
+  $\Automaton$ is connected with respect to the selection function $\Filter$ for
+  every transition. It is redundant to $\Image$ by design.
 \end{definition}
 
-
-Finally, we present the rules of our calculus for one automaton. Note that we
+Finally, we present the rules of our calculus for one automaton in Table~\ref{tbl:rules:single}. Note that we
 operate on sets of symbols (terms, clauses). Additionally, we also use the
-convention of splitting the terms into linear inequalities ($\SomeInequalities$)
+convention of splitting the formulas into linear inequalities ($\SomeInequalities$)
 and any other clauses ($\SomeClause$).
 
-\begin{mathpar}
-  \inferrule*[left=Expand]
-  {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
-  {\SinglePredicateInstance, \SomeInequalities, \SomeClause}
+We use the shorthand notation~$\Transitions_\Automaton$ to refer to the
+transitions of an automaton~$\Automaton$. Additionally, for an
+automaton~$\Automaton = \AutomatonTuple$ we allow mapping the selection function
+like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
+\Set{\Transition \in \Transitions \SuchThat \Filter(\Transition) > 0}}$, i.e.
+$\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
+instance, the basis for the matched linear inequalities is
+implicitly~$\SomeInequalities$.
 
-  \inferrule*[left=Split, right=\textnormal{if $\Filter(\Transition) = 0 \not\in \SomeInequalities, \Filter(\Transition) > 0 \not\in \SomeInequalities$}]{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) = 0 \mid \Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) > 0}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause}
+These rules are meant to be executed in an automated theorem prover, and are
+read bottom-up. Since a large part of our rules operate by adding and literally
+matching linear (in)equalities in a proof goal, we use the shorthand of listing
+the matched inequalities as antecedents. An example of this can be seen in
+the~\Propagate{} rule.
 
-  \inferrule*[left=Propagate, right=\textnormal{if $\Filter(\Transition) = 0 \not\in\SomeInequalities, \forall \Path \in \Automaton \HoldsThat \exists c \in \Path \HoldsThat \Filter(c) = 0 \in \SomeInequalities $}]{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) = 0}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause}
+Please note that the filtering function~$\Filter$ is evaluated symbolically in
+these rules, and can in practice be read as a symbolic function from transitions
+to terms (e.g.~\texttt{t} or~\texttt{t+1}), not dissimilar to~$\FlowEq$ below.
+In our implementation, $\Filter$~is a vector of fresh unknown constants with the
+same size as~$\Transitions$.
 
-  \inferrule*[left=Subsume, right=\textnormal{if $\forall \Transition = \FromLabelTo{s_0}{}{s_1} \in \Transitions, \Filter(\Transition) = 0 \not \in \SomeInequalities \HoldsThat \exists \Path \in \Automaton, s_0 \in \Path \HoldsThat \forall c \in \TransitionsOf(\Path) \HoldsThat \Filter(c) > 0 \in \SomeInequalities$}]{\SomeInequalities,\SomeClause}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause}
-\end{mathpar}
+% Use a table!
 
-We use the pseudo-function $\FlowEq(\Automaton, \Filter)$ that generates a set
+We assume that every rule only fires when it would add a new clause. For
+example, this means that we cannot use~\Split{} to split on the same term twice.
+This suggests a proof strategy where you \Propagate{} when you can, \Split{}
+when you must, and \Subsume{} when neither is possible anymore.
+
+\begin{table}[h]
+\begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
+  Name & Rule & Prerequisites\\
+  \midrule
+
+  % EXPAND
+  \Expand & 
+    \inferrule
+  {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions_\Automaton} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
+  {\SinglePredicateInstance, \SomeInequalities, \SomeClause} & 
+  None \\
+
+  % SPLIT
+  \Split & 
+  \inferrule{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) = 0 \mid \Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) > 0}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause} &
+  if $\Transition \in \Transitions_\Automaton$ \\
+
+  % PROPAGATE
+  \Propagate &
+  \inferrule{\Connected(\Automaton, \Filter), \Set{\Filter(\Transition') = 0 \SuchThat \Transition' \in C}, \SomeInequalities, \SomeClause, \Filter(\Transition) = 0}{\Connected(\Automaton, \Filter), \Set{\Filter(\Transition') = 0 \SuchThat \Transition' \in C}, \SomeInequalities, \SomeClause} &
+  if $t = \FromLabelTo{\State}{}{\State'} \in \Transitions_\Automaton, \SeparatingCut(C, \Automaton, \State)$\\
+
+  % SUBSUME
+  \Subsume &
+  \inferrule{\SomeInequalities,\SomeClause}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause} &
+  \Split{} and \Propagate{} cannot be applied \\
+  \bottomrule
+  \end{tabular}
+  \caption{Derivation rules for one automaton.}\label{tbl:rules:single}
+\end{table}
+
+We use the symbolic function $\FlowEq(\Automaton, \Filter)$ that generates a set
 of existentially quantified linear inequalities with the following definition:
 $$
 \begin{aligned}
   & \FlowEq(\Automaton, \Filter) = \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)}
-\text{ $\geq 0$ if $\State \in \Accepting$, $= 0$ otherwise}\\
+\text{ $\geq 0$ if $\State \in \AcceptingStates$, $= 0$ otherwise}\\
   & \In(\State, \Filter) = \left(\text{$1$ if $\State = \InitialState$, otherwise $0$}\right) + \sum_{\Transition = \FromLabelTo{\State_0}{}{\State} \in \Transitions} \Filter(\Transition)\\
   & \Out(\State, \Filter) = \sum_{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions} \Filter(\Transition)
 \end{aligned}
 $$
 Where we transparently assign fresh variables to each state $\State \in \States$
-and existentially quantify them in the whole clause.
+and existentially quantify them in the whole clause. 
 
 Additionally, we assume the existence of a rule \PresburgerClose{},
 corresponding to a sound and complete solver for Presburger formulae, modulo the
@@ -276,7 +539,7 @@ a reachable state, and is necessary to ensure connectedness in the presence of
 cycles in~$\Automaton$.
 
 \textsc{Expand} expands the predicate into its most basic rules; one set of
-linear equations synchronising the transitions mentioned by $\Filter$ to the
+linear equations synchronising the transitions mentioned by~$\Filter$ to the
 corresponding Monoid element~$\MonoidElement$, and the linear flow equations of
 the standard Parikh image formulation, as described by~\FlowEq. Since
 $\Connected$ and $\Image$ are partially redundant and the difference is covered
@@ -291,19 +554,38 @@ included. Intuitively, this is what guarantees our ability to make forward
 progress by eliminating paths through~$\Automaton$.
 
 A decision procedure for our predicate in a tableau-based automated theorem
-prover would start by expanding the predicate using the $\Expand{}$~rule.
-If~$\Automaton$ contains no loops that could be disconnected from a minimum
-spanning tree (MST) with its root in~$\InitialState$, the initial state, this
-would be sufficient to reach subsumption immediately.
+prover would start by expanding the predicate using the $\Expand{}$~rule. A
+modestly clever theorem prover would perform algebraic substitution on the
+underlying constants of~$\Filter$, boiling them down to choices of branches,
+which depend on one single variable, and loop transitions. This logic
+corresponds to the placement of counters for optimally edge-profiling the CFG of
+a program, making up a MST of the automaton~\cite{path-profiling}.
 
 \subsection{An Example}
+
+\subsection{Finding the Presburger representation of a Parikh Image}
+\contents{
+  \item lazy qe
+}
+
+\subsection{The calculus is correct}
+
+To be as clear as possible about what it means for our calculus to be correct,
+we use more exact definitions than the traditional soundness and completeness.
+
+\subsubsection{The calculus terminates}
+\subsubsection{The calculus allows no values outside the Parikh image}
+\subsubsection{The calculus excludes no values in the Parikh image}
+
+\section{Extending and generalising the calculus}
 
 \section{Parikh Images from Products of Automata}
   
 \contents{
     \item additional rules needed for products
-    \item backjumping and conflict-driven learning
     }
+
+\section{Backjumping and Learning No-Goods}
 
 % To generalise the calculus to calculations on products of automata, we change the main predicate take arbitrarily many automata:
 % \begin{definition}
@@ -356,29 +638,46 @@ would be sufficient to reach subsumption immediately.
 
 \subsection{An Example}
 
-\subsection{The calculus is correct}
-
-To be as clear as possible about what it means for our calculus to be correct,
-we use more exact definitions than the traditional soundness and completeness.
-
-\subsubsection{The calculus terminates}
-\subsubsection{The calculus allows no values outside the Parikh image}
-\subsubsection{The calculus allows all values in the Parikh image}
-
-\section{Extending and generalising the calculus}
-
 \section{Implementation and Experiments}
 
 \contents{
 \item length constraints
 \item Parikh automata, automata with registers
-\item Model-checking examples
+\item Model-checking examples e.g. \cite{epistemic-logic}
 }
 
 \section{Conclusions}
 
-\clearpage
-%\bibliographystyle{splncs03}
-\printbibliography
+
+
+%% Acknowledgments
+\begin{acks}                            %% acks environment is optional
+                                        %% contents suppressed with 'anonymous'
+  %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
+  %% \grantnum[<url>]{<sponsorID>}{<number>} should be used to
+  %% acknowledge financial support and will be used by metadata
+  %% extraction tools.
+  This material is based upon work supported by the
+  \grantsponsor{GS100000001}{National Science
+    Foundation}{http://dx.doi.org/10.13039/100000001} under Grant
+  No.~\grantnum{GS100000001}{nnnnnnn} and Grant
+  No.~\grantnum{GS100000001}{mmmmmmm}.  Any opinions, findings, and
+  conclusions or recommendations expressed in this material are those
+  of the author and do not necessarily reflect the views of the
+  National Science Foundation.
+\end{acks}
+
+
+
+
+%% Bibliography
+\bibliography{bibliography}
+
+
+%% Appendix
+\appendix
+\section{Appendix}
+
+Text of appendix \ldots
 
 \end{document}
