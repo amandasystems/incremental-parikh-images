@@ -155,23 +155,24 @@
 %% before \maketitle command
 \begin{abstract}
   The image of the Parikh map is important in automata theory, offering a
-  compact characterisation of an automaton. We contribute a novel understanding
-  of how Parikh maps can be combined with arbitrary commutative monoid morphisms
-  to efficiently represent a wide range of logics on automata and automata-like
-  structures. This allows us to \Fudge{ensure world peace forever and express
-  loop invariants that solve the halting problem for any practical program}.
-  Furthermore, we show how this formulation can be efficiently implemented as a
-  calculus in a theorem prover supporting Presburger logic. In particular, our
-  calculus allows us to solve the common problem in string solvers of computing
-  the Parikh image of products of arbitrarily many automata. We demonstrate this
-  by implementing a tool called \Catra{}, which we use to solve a set of
-  constraints produced by \Fudge{the PyEx benchmarks} when solved by the
-  \Ostrich{} string constraint solver. We show that this implementation in
-  addition to \Fudge{having a lower memory footprint} than the standard eager
-  approach executed on the same underlying solver also \Fudge{strictly}
-  outperforms the nuxmv model checker on the same problem\Fudge{, as well as the
-  over-approximation recently described by~\citeauthor{approximate-parikh} and
-  the original approach described by \citeauthor{generate-parikh-image}.}
+  compact characterisation of an automaton. We contribute \Fudge{a novel}
+  understanding of how Parikh maps can be combined with arbitrary commutative
+  monoid morphisms to efficiently represent a wide range of logics on automata
+  and automata-like structures. This allows us to \Fudge{ensure world peace
+  forever and express loop invariants that solve the halting problem for any
+  practical program}. Furthermore, we show how this formulation can be
+  efficiently implemented as a calculus in a theorem prover supporting
+  Presburger logic. In particular, our calculus allows us to solve the common
+  problem in string solvers of computing the Parikh image of products of
+  arbitrarily many automata. We demonstrate this by implementing a tool called
+  \Catra{}, which we use to solve a set of constraints produced by \Fudge{the
+  PyEx benchmarks} when solved by the \Ostrich{} string constraint solver. We
+  show that this implementation in addition to \Fudge{having a lower memory
+  footprint} than the standard eager approach executed on the same underlying
+  solver also \Fudge{strictly} outperforms the \Nuxmv{} model checker on the
+  same problem\Fudge{, as well as both the over-approximation recently described
+  by~\citeauthor{approximate-parikh} and the original approach described by
+  \citeauthor{generate-parikh-image}.}
 
 \end{abstract}
 
@@ -653,14 +654,15 @@ as an acronym, please read it as CAtegory Theory on Register Automata, or
 alternatively if you find this whole paper to be too much of a theoretical
 exercise as Can Anyone Think of A Real Application.}
 
-\Catra{} is implemented in Scala, with the calculus described in this paper
+\Catra{} is written in Scala, with the calculus described in this paper
 implemented as a theory plug-in for the \Princess{} automated theorem
-prover~\cite{princess}. For comparison, we also provide an implementation of the
-baseline method from~\cite{generate-parikh-image}, a direct translation that
-uses the~\Nuxmv{} symbolic model checker~\cite{nuxmv} to solve our constraints,
-and \Fudge{the approximation described in~\cite{approximate-parikh}}. An example
-of an input file \Fudge{illustrating every feature of the file format} can be
-seen in Listing~\ref{lst:input-example}.
+prover~\cite{princess}, which also performs the Presburger reasoning. For
+comparison, we also provide an implementation of the baseline method
+from~\cite{generate-parikh-image}, a direct translation that uses the~\Nuxmv{}
+symbolic model checker~\cite{nuxmv} to solve our constraints, and \Fudge{the
+approximation described in~\cite{approximate-parikh} on top of the standard
+Verma back-end}. An example of an input file \Fudge{illustrating every feature
+of the file format} can be seen in Listing~\ref{lst:input-example}.
 
 \contents{
   \item Listing: a nice input example
@@ -668,9 +670,12 @@ seen in Listing~\ref{lst:input-example}.
   \item Optimisations and tricks
 }
 
-In standard mode, supported by all back-ends, \Catra{} tries to satisfy the
-constraints expressed by the input file, reporting satisfiable or unsatisfiable
-much like traditional~SAT- or SMT solvers. Additionally, \Fudge{the baseline and} our own back-end also supports generating the Presburger formula describing the constraints of the input file \Fudge{using the method described in Section~\ref{}}
+In satisfaction mode, supported by all back-ends, \Catra{} tries to satisfy the
+constraints expressed by the input file, reporting satisfiable with register
+assignments or unsatisfiable much like traditional~SAT- or SMT solvers would.
+Additionally, \Fudge{the baseline and} our own back-end also supports generating
+the Presburger formula describing the constraints of the input file \Fudge{using
+the method described in Section~\ref{sec:presburger-representation}}
 
 \subsection{\Catra{} is Versatile: Encoding Epistemic Logic Problems}
 
@@ -696,6 +701,9 @@ much like traditional~SAT- or SMT solvers. Additionally, \Fudge{the baseline and
   \item Future extensions: more logics
   \item Loop invariants?
   \item Integration into string solvers?
+  \item We have shown fastest
+  \item We have shown versatile
+  \item We have shown concretely useful
 }
 
 
