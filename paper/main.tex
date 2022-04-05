@@ -62,7 +62,8 @@
 \usepackage{color}
 \usepackage{textcomp,listings}
 \usepackage{array}
-\usepackage{mymacros}      
+\usepackage{mymacros}
+\usepackage{microtype}      
 
 \usepackage{mathpartir}
 \theoremstyle{definition}
@@ -478,8 +479,6 @@ to terms (e.g.~\texttt{t} or~\texttt{t+1}), not dissimilar to~$\FlowEq$ below.
 In our implementation, $\Filter$~is a vector of fresh unknown constants with the
 same size as~$\Transitions$.
 
-% Use a table!
-
 We assume that every rule only fires when it would add a new clause. For
 example, this means that we cannot use~\Split{} to split on the same term twice.
 This suggests a proof strategy where you \Propagate{} when you can, \Split{}
@@ -580,12 +579,6 @@ we use more exact definitions than the traditional soundness and completeness.
 \section{Extending and generalising the calculus}
 
 \section{Parikh Images from Products of Automata}
-  
-\contents{
-    \item additional rules needed for products
-    }
-
-\section{Backjumping and Learning No-Goods}
 
 % To generalise the calculus to calculations on products of automata, we change the main predicate take arbitrarily many automata:
 % \begin{definition}
@@ -635,18 +628,75 @@ we use more exact definitions than the traditional soundness and completeness.
 % Finally, we add a side condition to $\Subsume$ to only allow subsumption for
 % instances of $\MonoidMap$ with just one automaton, ensuring that we do not bail
 % out before having computed the entire product.
+  
+\contents{
+    \item additional rules needed for products
+    }
 
 \subsection{An Example}
 
-\section{Implementation and Experiments}
+
+\section{Backjumping and Learning No-Goods}
+
+\subsection{An Example}
+
+\section{Implementation and Experiments}\label{sec:implementation}
+
+We implement a calculus for Parikh automata as described in
+Section~\ref{sec:parikh-automata}. The artefact submitted along with this paper
+is a program that reads one or more products of one or more DFA, the
+register incrementations performed along the edges of their transitions, and the
+labels of the transitions as ranges of Unicode characters, along with a set of
+constraints on the final values of their registers expressed as Presburger
+arithmetic. We call this program \Catra{}.\footnote{If you really must read it
+as an acronym, please read it as CAtegory Theory on Register Automata, or
+alternatively if you find this whole paper to be too much of a theoretical
+exercise as Can Anyone Think of A Real Application.}
+
+\Catra{} is implemented in Scala, with the calculus described in this paper
+implemented as a theory plug-in for the \Princess{} automated theorem
+prover~\cite{princess}. For comparison, we also provide an implementation of the
+baseline method from~\cite{generate-parikh-image}, a direct translation that
+uses the~\Nuxmv{} symbolic model checker~\cite{nuxmv} to solve our constraints,
+and \Fudge{the approximation described in~\cite{approximate-parikh}}. An example
+of an input file \Fudge{illustrating every feature of the file format} can be
+seen in Listing~\ref{lst:input-example}.
+
+\contents{
+  \item Listing: a nice input example
+  \item Do we need to say any more about the nuxmv backend?
+  \item Optimisations and tricks
+}
+
+In standard mode, supported by all back-ends, \Catra{} tries to satisfy the
+constraints expressed by the input file, reporting satisfiable or unsatisfiable
+much like traditional~SAT- or SMT solvers. Additionally, \Fudge{the baseline and} our own back-end also supports generating the Presburger formula describing the constraints of the input file \Fudge{using the method described in Section~\ref{}}
+
+\subsection{\Catra{} is Versatile: Encoding Epistemic Logic Problems}
+
+\contents{
+\item Model-checking examples e.g. \cite{epistemic-logic}
+}
+
+\subsection{\Catra{} is Faster Than The Competition: Benchmarks and Their Results}
 
 \contents{
 \item length constraints
 \item Parikh automata, automata with registers
-\item Model-checking examples e.g. \cite{epistemic-logic}
+\item Where do the instances come from!? Why?
+\item Result table
+\item Definition of winning
 }
 
+
+
 \section{Conclusions}
+
+\contents{
+  \item Future extensions: more logics
+  \item Loop invariants?
+  \item Integration into string solvers?
+}
 
 
 
