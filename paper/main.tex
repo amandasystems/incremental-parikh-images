@@ -63,7 +63,9 @@
 \usepackage{textcomp,listings}
 \usepackage{array}
 \usepackage{mymacros}
-\usepackage{microtype}      
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{csquotes}      
 
 \usepackage{mathpartir}
 \theoremstyle{definition}
@@ -201,7 +203,7 @@
 
 %% Keywords
 %% comma separated list
-\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
+\keywords{parikh images, string solvers, model checking}  %% \keywords are mandatory in final camera-ready submission
 
 
 %% \maketitle
@@ -213,31 +215,36 @@
 
 \section{Introduction}
 
-Parikh maps and their image appears naturally as part of many operations in
-model checking and the solving of string constraints in automata-based string
-solvers such as \Ostrich{}, notably in representing constraints on string
-lengths. While it is possible to compute the Parikh image of any context-free
-language using the method described in~\cite{generate-parikh-image}, this method
-produces existentially quantified clauses and take at most linear time to
+The Parikh map is a characterisation of a context-free language as a vector of
+its character counts, famously a semilinear set~\cite{parikh-theorem}. It
+appears naturally as part of many operations in model checking and the solving
+of string constraints in automata-based string solvers such as \Ostrich{},
+notably in representing constraints on string lengths.
+
+It is possible to compute the Parikh image of any context-free language using
+the method described in~\cite{generate-parikh-image}. Later improvements have
+produced a construction taking at most linear time to
 produce~\cite{muscholl-linear}. However, the resulting existentially quantified
 clauses are costly to eliminate, in practice making many real-world problems
-intractable. Furthermore, applications to string analysis in theorem provers
-require symbolic labels to handle Unicode alphabets \Fudge{citation needed}.
-Conjunctions of string constraints finally, and most crucially, lead to the
-computation of Parikh images of products of regular languages. Applying the
-approach in \cite{generate-parikh-image} would require the computation of the
-product before the Parikh image can be computed. In several instances we have
-observed, the materialisation of the product of the automata exhausts the memory
-of any reasonable machine due to the exponential blow-up of the product.
+intractable.
+
+In addition to costly elimination of the existentially quantified variables,
+another problem arises for the common case of solving length constraints in
+string solvers. Conjunctions of string constraints lead to the computation of
+Parikh images of products of regular languages. Applying the approach
+in~\cite{generate-parikh-image} would require the computation of the product
+before its Parikh image. In several instances we have observed while solving
+real-world string constraints, the computation the product of automata exhausts
+the memory of any machine due to the exponential blow-up in size of the product,
+quickly becoming intractable as the number of terms in the product increases.
 
 Addressing these concerns, our specialised calculus for Parikh images of
-products of regular languages allows us to handle symbolic transition labels
-naturally, while also allowing us to interleave the computation of arbitrarily
-deep products of automata with the Parikh image of their product. This allows us
-to let both calculations inform each other, eliminating unnecessary work, and
-pruning the size of the partial products used in the computation. Moreover, the
-method can be used iteratively to, as it were, chew off bite-sized chunks of the
-product, thereby avoiding the problem of memory-outs.
+products of regular languages allows us to interleave the computation of
+arbitrarily deep products of automata with the product's Parikh image. This
+allows us to let both calculations inform each other, eliminating unnecessary
+work, and pruning the size of the partial products considered in the
+computation. Moreover, the method can be used iteratively to tackle smaller
+chunks of the product incrementally, thereby avoiding running out of memory.
 
 \subsection{Motivating Example}
 
@@ -277,7 +284,7 @@ Thus, we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1,
 
 Parikh's theorem states that ignoring order, any context-free grammar has a
 letter-equivalent regular language (c.f.~\cite{construction} for a construction of
-such automata from context-free grammars). However, there are languages that are
+such automata from context-free grammars and~\cite{bounds} for bounds on its size). However, there are languages that are
 not context-free that also have semilinear images under~$\ParikhMap$ (e.g.
 $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) = \ParikhMap((abc)^*) = \#a =
 \#b = \#c \land \#a \geq 0$).
@@ -343,6 +350,7 @@ To generalise the logic over Parikh images, we introdouce a morphism $\Map:\: \S
 \contents{
   \item The Anca Muscholl paper?
   \item Describe how a "simpler" function can accelerate solving
+  \item Describe the relationship of this generalisation to Parikh matrices!
 }
 
 \subsubsection{Example~1: String length}
@@ -577,64 +585,59 @@ we use more exact definitions than the traditional soundness and completeness.
 \subsubsection{The calculus allows no values outside the Parikh image}
 \subsubsection{The calculus excludes no values in the Parikh image}
 
-\section{Extending and generalising the calculus}
-
 \section{Parikh Images from Products of Automata}
 
-% To generalise the calculus to calculations on products of automata, we change the main predicate take arbitrarily many automata:
-% \begin{definition}
-%   $\ProductPredicateInstance$ is true exactly when:
-%   \begin{itemize}
-%   \item $h:\: \Alphabet^* \rightarrow \SomeMonoid$, a morphism to a commutative product monoid $\SomeMonoid = \prod_{i} \SomeMonoid_i$.
-%   \item $\MonoidElement$ is a vector of elements of $\SomeMonoid$.
-%   \item $\AutomatonVector$ is a vector of automata.
-%   \item $\Automaton = \prod_{i} \AutomatonVector_i$
-%   \item each $\TransitionVec_i$ is a vector of terms such that each term correspond to a
-%     transition in $\AutomatonVector_i$, and $\TransitionVectors$ is a vector of those vectors. We use the terminology $\TransitionTerm(t)$ to refer to the term of the transition vector for a given transition $t$.
-%   \item $y = \sum_{t \in \Transitions} h(t)$
-%   \item $\SourceTransitions(\Automaton, t)$ is the set of transitions from the
-%   term automata used to produce the transition $t$ in the product automaton
-%   $\Automaton$.
-%   \end{itemize}
-%   \end{definition}
+To generalise the calculus to calculations on products of automata, we change the main predicate to take arbitrarily many automata:
+\begin{definition}
+  $\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}$
+  is true exactly when the single-automaton version of the predicate would hold
+  for the automaton.
 
-%   First we extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton:
-%   \begin{mathpar}
-%     \inferrule*[left=Expand]
-%       {\AndComp{\Automaton_i \in \AutomatonVector}{\FlowEq(\Automaton_i) \land \Connected(\Automaton_i)}\ldots}
-%       {\ProductPredicateInstance \land \SomeClause}
-%   \end{mathpar}
+  \contents{
+    \item Is the enumeration correct?
+    \item Do we need a new name for the predicate?
+    \item Should the automata still be subscripted?
+  }
+\end{definition}
 
-%   %  x(t) = sum(e : termProductEdges(t, default=0))
-% Then we introduce the rule $\Materialise$, used to compute a partial product between two terms $\Automaton_i, \Automaton_j$:
-% \begin{mathpar}
-%   \inferrule*[left=Materialise, 
-%   right=\textnormal{where $\Automaton_{k} = \Automaton_i \times \Automaton_j, \AutomatonVector' = (\AutomatonVector \cup \{  \Automaton_k \}) \setminus {\Automaton_i, \Automaton_j}$}]
-%     {\AndComp{t \in \delta(\Automaton_{k})}{\TransitionTerm(t) = \sum_{t' \in \SourceTransitions(t, \Automaton_k)} t'}\\
-%     \FlowEq(\Automaton_{k}) \land \Connected(\Automaton_{k}) \land
-%     \\ \MonoidMap(\AutomatonVector', \TransitionVectors', \MonoidElement) \land \SomeClause} {\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement) \land \SomeClause}
-% \end{mathpar}
+\begin{definition}
+When computing a product of two automata, $\Automaton_1 \times \Automaton_2$, we
+need to be able to reason about the sources of a transition. For that, we
+introduce the relation $\ComesFrom(\Transition, \Transition',
+\Automaton_1\times\Automaton_2)$. The predicate holds when $\Transition \in
+\Transitions_{\Automaton_2 \times \Automaton_2}$ is created from $\Transition', \Transition''
+\in \Transitions_{\Automaton_1} \cup \Transitions_{\Automaton_2}$.\Fudge{Do I need to be more specific?}
+\end{definition}
 
-% Note that we implicitly existentially quantify the fresh transition terms $\TransitionVec_{k+1}$ for the product.
+  First we extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton:
+  \begin{mathpar}
+    \inferrule*[left=ExpandM]
+      {\Set{\Automaton_i}{\FlowEq(\Automaton_i), \Connected(\Automaton_i)}, \ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+      {\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+  \end{mathpar}
 
-% $\Materialise$ comes with its companion rule $\RemoveTermConnected$ that simply
-% states we are allowed to remove any instances of $\Connected$ from terms that
-% have been used in a product, and whose connectedness we therefore no longer care about:
-% \begin{mathpar}
-%   \inferrule*[left=$\RemoveTermConnected$, right=\textnormal{If $\Automaton_a$ not in $\Automaton_1\ldots\Automaton_k$}]
-%     {\ProductPredicateInstance \land \SomeClause}
-%     {\Connected(\Automaton_a) \land \ProductPredicateInstance \land \SomeClause}
-% \end{mathpar}
+\ExpandM{} must be applied before any other rule, like \Expand{}, but unlike \Expand{}, \ExpandM{} does not remove the $\Image$~predicate since it is needed to keep track of the product.
 
-% Finally, we add a side condition to $\Subsume$ to only allow subsumption for
-% instances of $\MonoidMap$ with just one automaton, ensuring that we do not bail
-% out before having computed the entire product.
-  
-\contents{
-    \item additional rules needed for products
-    }
+Then we introduce the rule $\Materialise$, used to compute a partial product between two terms:
+\begin{mathpar}
+  \inferrule*[left=Materialise,right=\textnormal{where $\Automaton' = \Automaton_1\times\Automaton_2$}]
+    {\Set{\Filter(\Transition) = \sum \Filter(\Transition') \HoldsThat \Transition' \in \Transitions_{\Automaton'}, \ComesFrom(\Transition', \Transition, \Automaton') \SuchThat \Transition \in \Transitions_{\Automaton_1} \cup \Transitions_{\Automaton_2}},\\\ImagePredicate{\Automaton'\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+    {\ImagePredicate{\Automaton_1\times\Automaton_2\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+\end{mathpar}
+
+Note that we implicitly map $\Filter$ to fresh terms for each transition in the
+product just like before.
+
+Finally, for instances of precisely one automaton, neither rule applies and we
+perform the calculus as before.
 
 \subsection{An Example}
+
+
+\subsection{The extended calculus is also correct}
+\subsubsection{The calculus terminates}
+\subsubsection{The calculus allows no values outside the Parikh image}
+\subsubsection{The calculus excludes no values in the Parikh image}
 
 
 \section{Backjumping and Learning No-Goods}
@@ -664,8 +667,52 @@ approximation described in~\cite{approximate-parikh} on top of the standard
 Verma back-end}. An example of an input file \Fudge{illustrating every feature
 of the file format} can be seen in Listing~\ref{lst:input-example}.
 
+\begin{lstlisting}[caption={An example input file for \Catra{}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), range labels, and their single-character shorthand syntax, register increments, and constraints on the final values of their counters.}, label=lst:input-example]
+  /* Declare counters. Initially only integers, but other data-types
+ could be considered as well. All counters start at zero. */
+counter int x, y, z, length;
+
+// List automata. Automata transitions are labelled with intervals,
+// and can specify counter increments/decrements. A counter can only
+// be used in at most one automaton.
+
+synchronised {
+    automaton A {
+    init s0;
+
+    s0 -> s1 [0, 10] { x += 1};
+
+    accepting s1, s2;
+    };
+
+
+    automaton B {
+    init t1;
+
+    t1 -> t2 [11, 22] { y += 1};
+
+
+    accepting t1, t2;
+    };
+};
+
+automaton C {
+    init s0;
+
+    s0 -> s1 [15] { z += 1 };
+    s1 -> s1 [15] { z += 1};
+
+    accepting s1;
+};
+
+
+// Specify a constraint on the final values of counters; check whether
+// there is a word accepted by all automata for which the final counter
+// values satisfy this constraints.
+constraint z = 2x + 2y && !(x = 0);
+\end{lstlisting}
+
 \contents{
-  \item Listing: a nice input example
   \item Do we need to say any more about the nuxmv backend?
   \item Optimisations and tricks
 }
@@ -677,7 +724,7 @@ Additionally, \Fudge{the baseline and} our own back-end also supports generating
 the Presburger formula describing the constraints of the input file \Fudge{using
 the method described in Section~\ref{sec:presburger-representation}}
 
-\subsection{\Catra{} is Versatile: Encoding Epistemic Logic Problems}
+\subsection{\Catra{} is Versatile: Encoding Epistemic Logic Problems As Parikh Automata}
 
 \contents{
 \item Model-checking examples e.g. \cite{epistemic-logic}
@@ -691,6 +738,7 @@ the method described in Section~\ref{sec:presburger-representation}}
 \item Where do the instances come from!? Why?
 \item Result table
 \item Definition of winning
+\item We compare to an implementation using the same automated theorem prover, the same product implementation
 }
 
 
