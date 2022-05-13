@@ -13,6 +13,7 @@
 \newcommand{\InitialState}[0]{q_I}
 \newcommand{\Alphabet}[0]{\Sigma}
 \newcommand{\Monoid}[0]{M}
+\newcommand{\NProduct}[0]{\Automaton_1 \times \ldots \times \Automaton_n}
 \newcommand{\MonoidElement}[0]{m}
 \newcommand{\Strings}[0]{\Alphabet^*}
 \newcommand{\Label}[0]{l}
@@ -33,9 +34,9 @@
 \newcommand{\SinglePredicateInstance}[0]{\ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement}}
 \DeclareMathOperator{\MonoidMap}{\Pi}
 \DeclareMathOperator{\TransitionMask}{TM}
+%\DeclareMathOperator{\ComesFrom}{ComesFrom}
 \newcommand{\AutomatonVector}[0]{\mathbf{A}}
 \newcommand{\TransitionVectors}[0]{\mathbf{Tr}}
-\newcommand{\ProductPredicateInstance}[0]{\MonoidMap(\AutomatonVector, \TransitionVectors, \MonoidElement)}
 \DeclareMathOperator{\Language}{\mathcal{L}}
 \DeclareMathOperator{\Paths}{Paths}
 \DeclareMathOperator{\StatesOf}{States}
@@ -55,6 +56,7 @@
 \DeclareMathOperator{\Connected}{\textsc{Conn}}
 \DeclareMathOperator{\TransitionTerm}{TT}
 \DeclareMathOperator{\SourceTransitions}{Source}
+\DeclareMathOperator{\TargetTransitions}{TargetTransitions}
 \newcommand{\SomeClause}[0]{\varGamma}
 \newcommand{\SomeInequalities}[0]{E}
 \newcommand{\HoldsThat}[0]{\::\:}
@@ -63,12 +65,14 @@
 \newcommand{\SomeMonoid}[0]{M}
 \newcommand{\MonoidProduct}[0]{\cdot_\SomeMonoid}
 \newcommand{\FlowEq}[0]{\textsc{Flow}}
+\newcommand{\BindingSum}[0]{\textsc{Bind}}
 \newcommand{\KnownConnected}[0]{\textsc{Known-Connected}}
 \DeclareFontFamily{U}{skulls}{}
 \DeclareFontShape{U}{skulls}{m}{n}{ <-> skull }{}
 \newcommand{\skull}{\text{\usefont{U}{skulls}{m}{n}\symbol{'101}}}
 \newcommand{\Propagate}[0]{\textsc{Propagate}}
 \newcommand{\Expand}[0]{\textsc{Expand}}
+\newcommand{\ExpandM}[0]{\textsc{ExpandM}}
 \newcommand{\Materialise}[0]{\textsc{Materialise}}
 \newcommand{\Ostrich}[0]{\textsc{Ostrich}}
 \newcommand{\Catra}[0]{\textsc{Catra}}

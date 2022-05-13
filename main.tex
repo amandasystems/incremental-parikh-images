@@ -65,11 +65,32 @@
 \usepackage{mymacros}
 \usepackage{microtype}
 \usepackage{listings}
-\usepackage{csquotes}      
+\usepackage{csquotes}
+\usepackage{proof}
+      
 
 \usepackage{mathpartir}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+
+\lstset{
+    columns=fullflexible,
+    showspaces=false,
+    showtabs=false,
+    breaklines=true,
+    showstringspaces=false,
+    breakatwhitespace=true,
+    escapeinside={(*@}{@*)},
+    commentstyle=\color{greencomments},
+    keywordstyle=\color{bluekeywords},
+    stringstyle=\color{redstrings},
+    numberstyle=\color{graynumbers},
+    basicstyle=\ttfamily\small,
+    framesep=12pt,
+    xleftmargin=12pt,
+    tabsize=4,
+    captionpos=b
+}
 
 
 \newif\ifcomments
@@ -249,15 +270,34 @@ chunks of the product incrementally, thereby avoiding running out of memory.
 \subsection{Motivating Example}
 
 
-\section{Overview}
+\section{Preliminaries}
 
+\subsection{Finite-state Automata and their Products}
 We define a non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$
 as $\Automaton = \AutomatonTuple$ where $\Transitions = \States \times \Alphabet
 \times \States$, $\States$ is its states, $\InitialState$ is w.l.o.g. assumed to
 be the single initial state, and $\AcceptingStates$ is its set of accepting
-states. Note that we will later generalise the labels of transitions further.
+states.  We describe a transition $\Transition$ from state $\State$ to state
+$\State'$ with label $\Label \in \Alphabet$ as $\Transition =
+\FromLabelTo{\State}{\Label}{\State'}$. When one or more of the states and
+labels of a transition are uninteresting we will omit it.
 
-\subsection{The Parikh Map}
+We will let variables $\Transition, \Transition', \Transition_1, \ldots, \Transition_n$ etc describe transitions, $\State, \ldots, \State_n$ states, and $\Automaton, \ldots, \Automaton_n$ automata, and use subscript indexing ($\Transitions_\Automaton$) to refer to the transitions, states, etc of a given automaton.
+
+By a \emph{product} of two automata $\Automaton_1, \Automaton_2$, written
+$\Automaton_1 \times \Automaton_2$, we mean an automaton constructed to run
+$\Automaton_1$ and $\Automaton_2$ in parallel on an input and only accept the
+input if both automata would do so.
+
+We refer to the resulting product states as tuples, $\Tuple{\State, \State'}$,
+which represent the state of the product automaton where $\Automaton_1$ would be
+in $\State$ and $\Automaton_2$ would be in $\State'$. Note that since we use
+ordered tuples the product is technically (but w.l.o.g) not commutative; the
+left-hand-side must come from the left-hand term. The sole purpose of this
+matching is to allow us to speak with precision about the origins of components
+in a product.
+
+\subsection{The Parikh Map and its Image}
 Formally, the \textit{Parikh map} over a context-free language $\Strings=
 \left\{a_1, \ldots, a_k \right\}$ is defined as in \cite{kozen}:
 
@@ -289,17 +329,14 @@ not context-free that also have semilinear images under~$\ParikhMap$ (e.g.
 $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) = \ParikhMap((abc)^*) = \#a =
 \#b = \#c \land \#a \geq 0$).
 
-\contents {
-  \item parikh images of regular images are semilinear, therefore presburger
-  \item presburger is semilinear
-}
-
 \subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
 
-Following~\cite{generate-parikh-image}, we define the Parikh Image of a regular
-language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
+Since Parikh images are semilinear, they can be fully expressed by Presburger
+arithmetic. This means that any Parikh image can be written as a set of linear
+equation. Following~\cite{generate-parikh-image}, we define the Parikh Image of
+a regular language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
 
-\[
+\begin{equation}
 \begin{aligned}
 \psi(\mathcal{A}) := 
 & \bigwedge_{\alpha \in \Sigma}
@@ -321,7 +358,8 @@ c_\alpha = \sum_{\delta \in \delta} t_\delta
 z_{q'} = 1 \land t_\delta > 0& \text{if $q \in I$}
 \end{cases}
 \end{aligned}
-\]
+\label{eq:generate-parikh}
+\end{equation}
 
 where all variables $z_i, t_i$ are existentially quantified and the variables
 $c_\alpha$ make up the actual image. Feeding this definition into a Presburger
@@ -338,28 +376,66 @@ of products of automata.
 
 \Fudge{AN EXAMPLE!}
 
+\section{A Calculus for Generalised Parikh Images}
+
 \subsection{Generalised Parikh Images}\label{sec:generalised}
 
 To generalise the logic over Parikh images, we introdouce a morphism $\Map:\: \Sigma
-\to \Monoid$ where $\Monoid$ is a commutative monoid where the following holds:
+\to \Monoid$ where $\Monoid = \left(X;+_{\Monoid};0_{\Monoid}\right)$ is a commutative monoid where the following holds:
 \begin{itemize}
-  \item $\Map(\epsilon) = 0$, where $0$ is the neutral element of $\Monoid$
-  \item $\Map(a \Concat b) = \Map(a) + \Map(b)$
+  \item $\Map(\epsilon) = 0_{\Monoid}$
+  \item $\Map(a \Concat b) = \Map(a) +_{\Monoid} \Map(b)$, where $\Concat$ is
+  the string concatenation operation
 \end{itemize}
 
-\contents{
-  \item The Anca Muscholl paper?
-  \item Describe how a "simpler" function can accelerate solving
-  \item Describe the relationship of this generalisation to Parikh matrices!
-}
+Many other generalisations of the Parikh map have been studied, most of them
+less plain than this one. Prominent examples include generalising the Parikh map
+to segments of a fixed length \cite{KARHUMAKI1980155} and the more general
+Parikh matrix, which gives more information about a word than the standard
+Parikh image \cite{parikh-matrix}. Another notable generalisation is the
+p-vector, introduced in~\cite{infinite-words}, which denotes the position of
+each letter in the word rather than the number of their occurrences and allows
+for generalisations into infinite alphabets. All of these, in some sense, add
+something which is not already there in the Parikh map. By contrast, the main
+utility of the formulation introduced here is that it allows us to \emph{remove}
+something, thereby obtaining an easier problem.
 
 \subsubsection{Example~1: String length}
 
-A useful example of such a morphism can express string length. We let $\Monoid =
-\left(\mathbb{Z};+;0\right)$ and let $\Map(x) = 1$. Then the length of a string $s
-= s_1 \RepeatSum{\Concat}  s_n$ is given by $\Map(s) = \sum \Map(s_i) = 1
-\RepeatSum{+} 1$. Similarly, vectors and vector addition can be used to obtain
-the regular Parikh map.
+A useful example of such a simplifying morphism can express string length, the
+problem that originally motivated our study of the Parikh map. We let $\Monoid =
+\left(\mathbb{Z};+;0\right)$ and let $\Map(x) = 1$. Then the length of a string
+$s = s_1 \RepeatSum{\Concat}  s_n$ is given by $\Map(s) = \sum \Map(s_i) = 1
+\RepeatSum{+} 1$. Note that if we substitute vectors and vector addition for
+this monoid, we obtain the regular Parikh map.
+
+Intuitively, this produces a simpler problem than computing the Parikh image, as
+we now ignore not just the order of characters but also their differences. This
+means that the branching automaton of Figure~\ref{fig:len-branch} becomes
+equivalent to the non-branching automaton of Figure~\ref{fig:len-branch-free}.
+Note that the elimination of the choice of paths also effectively eliminates the
+possibility of disconnecting one of the self-loops. This, in turn, means that we
+can eliminate all of the connectedness implications of the quantified formula,
+which would in turn simplify it (and the quantifier elimination of it)
+considerably.
+
+\begin{figure}
+  \includegraphics[width=0.5\linewidth]{choice}
+  \caption{An example automaton with a choice of two paths: either we start with an a or a b.}
+  \label{fig:len-branch}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=0.5\linewidth]{no-choice}
+  \caption{An equivalent automaton to the one in Figure~\ref{fig:len-branch}
+  when treating any letter the same as would be the case with a length
+  constraint.}\label{fig:len-branch-free}
+\end{figure}
+
+
+\contents{
+  \item Formally analyse the complexity of how much easier the length problem is
+}
 
 
 \subsubsection{Example~2: Parikh Automata}
@@ -378,13 +454,7 @@ described in Section~\ref{sec:implementation} does.
 
 We assume an NFA $\Automaton = \AutomatonTuple$ with $\NrTransitions$
 transitions $\Transitions =
-\Set{\EllipsisSequence{\Transitions}{\NrTransitions}}$ where we describe each
-such transition $\Transitions_i$ from state $\State$ to state $\State'$ with
-label $\Label \in \Alphabet$ as $\Transitions_i =
-\FromLabelTo{\State}{\Label}{\State'}$. When one or more of the states and
-labels of a transition are uninteresting we will omit it.
-
-For convenience, we introduce the following supporting concepts and notations:
+\Set{\EllipsisSequence{\Transitions}{\NrTransitions}}$. For convenience, we then introduce the following supporting notations:
 
 \begin{definition}
   A \textit{path} $\Path = \PathEnumeration$ of an automaton~$\Automaton$ with
@@ -593,40 +663,47 @@ To generalise the calculus to calculations on products of automata, we change th
   is true exactly when the single-automaton version of the predicate would hold
   for the automaton.
 
-  \contents{
-    \item Is the enumeration correct?
-    \item Do we need a new name for the predicate?
-    \item Should the automata still be subscripted?
-  }
-\end{definition}
-
-\begin{definition}
-When computing a product of two automata, $\Automaton_1 \times \Automaton_2$, we
-need to be able to reason about the sources of a transition. For that, we
-introduce the relation $\ComesFrom(\Transition, \Transition',
-\Automaton_1\times\Automaton_2)$. The predicate holds when $\Transition \in
-\Transitions_{\Automaton_2 \times \Automaton_2}$ is created from $\Transition', \Transition''
-\in \Transitions_{\Automaton_1} \cup \Transitions_{\Automaton_2}$.\Fudge{Do I need to be more specific?}
 \end{definition}
 
   First we extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton:
   \begin{mathpar}
     \inferrule*[left=ExpandM]
-      {\Set{\Automaton_i}{\FlowEq(\Automaton_i), \Connected(\Automaton_i)}, \ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+      {\Set{\FlowEq(\Automaton_i), \Connected(\Automaton_i) \SuchThat \Automaton_i \in \Automaton_1,\ldots,\Automaton_k}, \ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
       {\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
   \end{mathpar}
 
 \ExpandM{} must be applied before any other rule, like \Expand{}, but unlike \Expand{}, \ExpandM{} does not remove the $\Image$~predicate since it is needed to keep track of the product.
 
+Before we can begin to define our final rule, we need to talk about product states.
+
 Then we introduce the rule $\Materialise$, used to compute a partial product between two terms:
 \begin{mathpar}
   \inferrule*[left=Materialise,right=\textnormal{where $\Automaton' = \Automaton_1\times\Automaton_2$}]
-    {\Set{\Filter(\Transition) = \sum \Filter(\Transition') \HoldsThat \Transition' \in \Transitions_{\Automaton'}, \ComesFrom(\Transition', \Transition, \Automaton') \SuchThat \Transition \in \Transitions_{\Automaton_1} \cup \Transitions_{\Automaton_2}},\\\ImagePredicate{\Automaton'\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+    {    \BindingSum(\Automaton', \Filter),\ImagePredicate{\Automaton'\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
     {\ImagePredicate{\Automaton_1\times\Automaton_2\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
 \end{mathpar}
 
-Note that we implicitly map $\Filter$ to fresh terms for each transition in the
-product just like before.
+  With the following helper symbolic function:
+
+  $$
+  \BindingSum(\Automaton_1 \times \Automaton_2, \Filter) = \bigcup
+  \begin{aligned}
+  & \Set{
+    \Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State_R}}} \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_1}
+  }, \\ 
+  & \Set{
+    \Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State_L, \State'}}} \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_2}
+  }
+  \end{aligned}
+$$
+
+Note that this definition implies that $\Filter(\Transition) =
+\Filter(\Transition')$ whenever two transitions $\Transition \in
+\Transitions_{\Automaton_1}, \Transition' \in \Transitions_{\Automaton_2}$
+produces a product transition $\Transition'' \in \Transitions_{\Automaton_1
+\times \Automaton_2}$. This corresponds to our intuition that the terms of the
+product must agree on the value they accept. As before, we implicitly map
+$\Filter$ to fresh terms for each transition in the product.
 
 Finally, for instances of precisely one automaton, neither rule applies and we
 perform the calculus as before.
@@ -712,17 +789,54 @@ automaton C {
 constraint z = 2x + 2y && !(x = 0);
 \end{lstlisting}
 
-\contents{
-  \item Do we need to say any more about the nuxmv backend?
-  \item Optimisations and tricks
-}
+Please note that \Catra{} uses symbolic labels for automata. A symbolic label is
+defined as a range of matching single Unicode code points. This allows succinct
+representation of many regular expression patterns such as \lstinline{(a-z).*}
+which would have otherwise required $27$~nearly identical transitions. In this
+instance, the transition would be defined as \lstinline{a -> b [97, 122]}, as the
+interval is closed from both edges.
 
 In satisfaction mode, supported by all back-ends, \Catra{} tries to satisfy the
 constraints expressed by the input file, reporting satisfiable with register
 assignments or unsatisfiable much like traditional~SAT- or SMT solvers would.
-Additionally, \Fudge{the baseline and} our own back-end also supports generating
+Additionally, the baseline and our own back-end also support generating
 the Presburger formula describing the constraints of the input file \Fudge{using
-the method described in Section~\ref{sec:presburger-representation}}
+the method described in Section~\ref{sec:presburger-representation}}.
+
+Note that \Catra{} can solve equations of Parikh images. An equation like
+$\ParikhMap(\Automaton_1 \times \Automaton_2) = \ParikhMap(\Automaton_3 \times
+\Automaton_4)$ would be expressed as one \lstinline{synchronised} block per side of
+the equation containing their respective terms followed by a
+\lstinline{constraint} requiring all their counters to agree (e.g
+\lstinline|Aa = Ba && Ab = Bb ...|). Note that the product construction will implicitly require the counters of each term to agree with each other (and the product), so equalities between all counters of all automata are not necessary.
+
+\subsection{Implementing the Baseline}
+
+We implement the baseline approach using the same Presburger solver
+(\Princess{}), input file parser, and automaton implementation as \Catra{}. We
+do this in order to make the comparison between methods as fair as possible, and
+give us the ability to compare the efficiency of the calculus rules themselves.
+Using the formula of Equation~\ref{eq:generate-parikh}, we produce quantified
+Presburger formulae for each successive term and add them to Princess. In this
+fashion we compute the product incrementally term by term, checking
+satisfiability in each step. We use \Fudge{a priority queue} to select which
+term to use for the next step of the product, and order it by \Fudge{the number
+of transitions} as a heuristic for the size of the term. We use this heuristic
+to avoid computing large (and therefore slow) products until we have to, banking
+our hopes on finding a source of unsatisfiability earlier.
+
+It should be noted that our automata (including the successive products) are
+always by construction forward- and backward- reachable-minimal. We avoid
+computing fully minimal automata since it is unclear when an automaton with
+registers can be safely minimised. This guarantees that any automaton we produce
+only contains states that are both reachable from the initial state and has a
+path to an accepting state.
+
+\subsection{Tuning and optimising our Implementation}
+\contents{
+  \item Optimisations and tricks
+}
+
 
 \subsection{\Catra{} is Versatile: Encoding Epistemic Logic Problems As Parikh Automata}
 
@@ -733,15 +847,17 @@ the method described in Section~\ref{sec:presburger-representation}}
 \subsection{\Catra{} is Faster Than The Competition: Benchmarks and Their Results}
 
 \contents{
+  \item Do we need to say any more about the nuxmv backend?
+  \item How did we run the Benchmarks
+
 \item length constraints
 \item Parikh automata, automata with registers
 \item Where do the instances come from!? Why?
 \item Result table
 \item Definition of winning
 \item We compare to an implementation using the same automated theorem prover, the same product implementation
+\item nuXmv has weird differences in runtime
 }
-
-
 
 \section{Conclusions}
 
@@ -754,7 +870,22 @@ the method described in Section~\ref{sec:presburger-representation}}
   \item We have shown concretely useful
 }
 
+\section{Discussions}
 
+\contents{
+\item cf Parikh Images of Grammars: Complexity and Applications -- what is the best complexity we can do? https://ieeexplore.ieee.org/abstract/document/5571050
+
+}
+
+\section{Threats to Validity}
+\contents{
+  \item There might be better implementations
+  \item We might have over-biased
+  \item Our benchmarks might be biased
+  \item The underlying automata implementation might be bad and therefore skew
+  the results.
+  
+}
 
 %% Acknowledgments
 \begin{acks}                            %% acks environment is optional
