@@ -67,7 +67,7 @@
 \usepackage{listings}
 \usepackage{csquotes}
 \usepackage{proof}
-      
+\usepackage{algorithm2e}      
 
 \usepackage{mathpartir}
 \theoremstyle{definition}
@@ -259,16 +259,15 @@ real-world string constraints, the computation the product of automata exhausts
 the memory of any machine due to the exponential blow-up in size of the product,
 quickly becoming intractable as the number of terms in the product increases.
 
-Addressing these concerns, our specialised calculus for Parikh images of
-products of regular languages allows us to interleave the computation of
-arbitrarily deep products of automata with the product's Parikh image. This
-allows us to let both calculations inform each other, eliminating unnecessary
-work, and pruning the size of the partial products considered in the
-computation. Moreover, the method can be used iteratively to tackle smaller
-chunks of the product incrementally, thereby avoiding running out of memory.
+Addressing these concerns, our calculus for Parikh images of products of regular
+languages allows us to interleave the computation of arbitrarily deep products
+of automata with the product's Parikh image. This allows us to let both
+calculations inform each other, eliminating unnecessary work, and pruning the
+size of the partial products considered in the computation. Moreover, the method
+can be used iteratively to tackle smaller chunks of the product incrementally,
+thereby avoiding running out of memory.
 
-\subsection{Motivating Example}
-
+\subsection{A demonstration of our approach}
 
 \section{Preliminaries}
 
@@ -338,32 +337,36 @@ a regular language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
 
 \begin{equation}
 \begin{aligned}
-\psi(\mathcal{A}) := 
-& \bigwedge_{\alpha \in \Sigma}
-c_\alpha = \sum_{\delta \in \delta} t_\delta  
-\text{ where $\alpha \in \delta$}\\
-&\bigwedge_{q \in Q} \left (\text{$1$ if $q \in I$} +
-\sum_{\delta = q' \xrightarrow{} q} t_\delta 
-- \sum_{\delta = q\xrightarrow{}q'} t_\delta \right)
-\begin{cases}
-\geq 0 & \text{if $q \in I$} \\
-= 0 & \text{ otherwise}
-\end{cases}\\
-& \bigwedge_{\delta = q \xrightarrow{} q'} t_\delta > 0 
-\implies z_{'q} > 0 \\
-& \bigwedge_{q, q' \in Q} z_{q'} > 0 
-\implies 
-\begin{cases}
-\bigvee\limits_{\delta = q \xrightarrow{} q'} z_{q'} = z_{q} + 1 \land t_\delta > 0 \land z_{q} > 0 & \text{if $q \not\in  I$} \\
-z_{q'} = 1 \land t_\delta > 0& \text{if $q \in I$}
-\end{cases}
+\ParikhMap(\Automaton) := 
+& \AndComp{\Letter \in \Alphabet}{\LetterVar_{\Letter} = \sum_{\Transition = \FromLabelTo{}{\Letter}{} \in \Transitions} \TransitionVar_{\Transition}
+}\\
+& \AndComp{\State \in \AcceptingStates}{\FinalStateVar_{\State} > 0 \implies \StateVar_{\State} > 0}\\
+& \AndComp{\State \in \States}{
+  \left(\FinalStateVar_{\State} \text{ if } \State \in \AcceptingStates \text{ otherwise } 0 \right) +
+  \sum_{\Transition = \FromLabelTo{\State}{}{}} - \sum_{\Transition = \FromLabelTo{}{}{\State}}
+= \begin{cases}
+    1 \text{  if $\State = \InitialState$} \\
+    0 \text{ otherwise}
+  \end{cases}
+}\\
+& \AndComp{\Transition = \FromLabelTo{}{}{\State} \in \Transitions}{
+  \TransitionVar_{\Transition} > 0 \implies \StateVar_{\State}
+} \\
+& \AndComp{\State \in \States}{
+  \StateVar_{\State} > 0 \implies
+  \left(\FinalStateVar_{\State} = 1 \text{ if } \State \in \AcceptingStates\right) \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
+    \StateVar_{\State} = \StateVar_{\State'} + 1 \land 
+    \TransitionVar_{\Transition} \geq 1 \land
+  \StateVar_{\State'} \geq 1
+    }
+}
 \end{aligned}
 \label{eq:generate-parikh}
 \end{equation}
 
-where all variables $z_i, t_i$ are existentially quantified and the variables
-$c_\alpha$ make up the actual image. Feeding this definition into a Presburger
-solver and performing quantifier elimination on $z_i, t_i$ would produce the
+where all variables $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ are existentially quantified and the variables
+$\LetterVar_\Letter$ make up the actual image. Feeding this definition into a Presburger
+solver and performing quantifier elimination on $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ with $\LetterVar_\Letter$ as free variables would produce the
 Parikh image in its Presburger form.
 
 In this paper we use this example (sometimes appropriately modified) as the
@@ -373,10 +376,26 @@ be described as lazily enforcing the connectedness constraint of this method
 of products of automata.
 
 \subsubsection{An Example}
+We apply Equation~\ref{eq:generate-parikh} to the automaton of Figure~\ref{fig:len-branch}. We then get the following quantified Presburger formula. As before, we omit the implicit existential quantifiers for brevity, along with the constranints requiring all variables to be nonnegative. We also omit the $\land$-clauses between each line. In other words, in this example, only the variables $\LetterVar_a, \LetterVar_b, \LetterVar_c, \LetterVar_d, \LetterVar_e$, and $\LetterVar_f$ are free, and corresponds to the counts of the respective subscript letter. Note that since they here uniquely identify a transition due to the one-to-one mapping between character labels and transitions in the example, the first clause can be trivially eliminated by substituting $\LetterVar_a$ for $\TransitionVar_{\FromLabelTo{0}{a}{1}}$, etc. This is not generally the case.
 
-\Fudge{AN EXAMPLE!}
+\begin{equation}
+  \begin{aligned}
+  \ParikhMap(\Automaton):=\:
+  &\LetterVar_{a} = \TransitionVar_{\FromLabelTo{0}{a}{1}} \land \LetterVar_{b} = \TransitionVar_{\FromLabelTo{0}{b}{2}} \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}} \land \LetterVar_{d} = \TransitionVar_{\FromLabelTo{2}{d}{3}} \land \LetterVar_{e} = \TransitionVar_{\FromLabelTo{2}{e}{2}} \land \LetterVar_{f} = \TransitionVar_{\FromLabelTo{1}{f}{3}}\\
+  &\FinalStateVar_{3} > 0 \implies \StateVar_{3} > 0\\
+  & \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{0}{a}{1}} - 0 = 1 \land  \TransitionVar_{\FromLabelTo{1}{f}{3}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
+  & \TransitionVar_{\FromLabelTo{2}{d}{3}} - \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0 \land \FinalStateVar_{3} + 0 - \TransitionVar_{\FromLabelTo{2}{d}{3}} - \TransitionVar_{\FromLabelTo{1}{f}{3}} = 0\\
+  &\TransitionVar_{\FromLabelTo{0}{a}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} > 0 \implies \StateVar_{2} > 0\\
+  &\TransitionVar_{\FromLabelTo{1}{c}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{2}{e}{2}} > 0 \implies \StateVar_{2} > 0\\
+  &\TransitionVar_{\FromLabelTo{1}{f}{3}} > 0 \implies \StateVar_{3} > 0 \land \TransitionVar_{\FromLabelTo{2}{d}{3}} > 0 \implies \StateVar_{3} > 0\\
+  &\StateVar_{0} > 0 \implies \left(\StateVar_{0} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{0}{a}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{0} = \StateVar_{2} + 1 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} \geq 1 \land \StateVar_{2} \geq 1\right)\\
+  &\StateVar_{1} > 0 \implies \left(\StateVar_{1} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{1}{c}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{1} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{1}{f}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
+  &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{2} + 1 \land \TransitionVar_{\FromLabelTo{2}{e}{2}} \geq 1 \land \StateVar_{2} \geq 1\right) \lor \left(\StateVar_{2} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{2}{d}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
+  &\StateVar_{3} > 0 \implies \FinalStateVar_{3} = 1
+  \end{aligned}
+  \end{equation}
 
-\section{A Calculus for Generalised Parikh Images}
+\section{Overview of our generalised Parikh images}
 
 \subsection{Generalised Parikh Images}\label{sec:generalised}
 
@@ -399,6 +418,8 @@ for generalisations into infinite alphabets. All of these, in some sense, add
 something which is not already there in the Parikh map. By contrast, the main
 utility of the formulation introduced here is that it allows us to \emph{remove}
 something, thereby obtaining an easier problem.
+
+\subsection{Applications}
 
 \subsubsection{Example~1: String length}
 
@@ -450,7 +471,8 @@ described in Section~\ref{sec:implementation} does.
  \item Give an actual example of a parikh automata
 }
 
-\subsection{Lazy Computation of Parikh Images for Regular Languages}
+
+\section{A Calculus for Generalised Parikh Images}\label{sec:calculus}
 
 We assume an NFA $\Automaton = \AutomatonTuple$ with $\NrTransitions$
 transitions $\Transitions =
@@ -641,11 +663,6 @@ a program, making up a MST of the automaton~\cite{path-profiling}.
 
 \subsection{An Example}
 
-\subsection{Finding the Presburger representation of a Parikh Image}
-\contents{
-  \item lazy qe
-}
-
 \subsection{The calculus is correct}
 
 To be as clear as possible about what it means for our calculus to be correct,
@@ -654,6 +671,11 @@ we use more exact definitions than the traditional soundness and completeness.
 \subsubsection{The calculus terminates}
 \subsubsection{The calculus allows no values outside the Parikh image}
 \subsubsection{The calculus excludes no values in the Parikh image}
+
+\subsection{Finding the Presburger representation of a Parikh Image}
+\contents{
+  \item lazy qe
+}
 
 \section{Parikh Images from Products of Automata}
 
@@ -717,9 +739,11 @@ perform the calculus as before.
 \subsubsection{The calculus excludes no values in the Parikh image}
 
 
-\section{Backjumping and Learning No-Goods}
+\section{Extensions}
+\subsection{Backjumping and Learning No-Goods}
+\subsubsection{An Example}
+\subsection{Symbolic Automata}\label{sec:ext:symbolic}
 
-\subsection{An Example}
 
 \section{Implementation and Experiments}\label{sec:implementation}
 
@@ -823,7 +847,44 @@ satisfiability in each step. We use \Fudge{a priority queue} to select which
 term to use for the next step of the product, and order it by \Fudge{the number
 of transitions} as a heuristic for the size of the term. We use this heuristic
 to avoid computing large (and therefore slow) products until we have to, banking
-our hopes on finding a source of unsatisfiability earlier.
+our hopes on finding a source of unsatisfiability earlier. The pseudocode for
+our implementation can be seen in Algorithm~\ref{alg:baseline}.
+
+\begin{algorithm}
+  \caption{An algorithm with caption}\label{alg:baseline}
+  \KwData{$\Automaton_1, \ldots, \Automaton_n$ automata, other constraints $\SomeClause$}
+  \KwResult{\textsc{Sat} or \textsc{Unsat}}
+  \SetKwFunction{NewTheoremProver}{newTheoremProver}
+  \SetKwFunction{NewPriorityQueue}{newPriorityQueue}
+  \SetKwFunction{Dequeue}{dequeue}
+  \SetKwFunction{Enqueue}{enqueue}
+  \SetKwFunction{Assert}{assert}
+
+  $p \gets \NewTheoremProver{}$
+
+  \Assert{$p$, $\SomeClause$}
+
+  \ForEach{$\Automaton_i$}{
+    \Assert{$p, \ParikhMap(\Automaton_i)$}
+
+    \If{$p$ is \textsc{Unsat}}{break}
+
+  }
+
+  $q \gets \NewPriorityQueue{}$
+
+
+  \While{$p$ not \textsc{Unsat} and $|q| > 1$}{
+    $\Automaton, \Automaton' \gets \Dequeue{q}$ 
+    
+    \Assert{$p, \ParikhMap(\Automaton \times \Automaton')$}
+
+    \Enqueue{$q, \Automaton \times \Automaton'$}
+  }
+  
+  \KwRet{$p$'s SAT status}
+
+  \end{algorithm}
 
 It should be noted that our automata (including the successive products) are
 always by construction forward- and backward- reachable-minimal. We avoid
@@ -832,7 +893,7 @@ registers can be safely minimised. This guarantees that any automaton we produce
 only contains states that are both reachable from the initial state and has a
 path to an accepting state.
 
-\subsection{Tuning and optimising our Implementation}
+\subsection{Heuristics and search strategies}
 \contents{
   \item Optimisations and tricks
 }
@@ -846,6 +907,7 @@ path to an accepting state.
 
 \subsection{\Catra{} is Faster Than The Competition: Benchmarks and Their Results}
 
+
 \contents{
   \item Do we need to say any more about the nuxmv backend?
   \item How did we run the Benchmarks
@@ -857,6 +919,16 @@ path to an accepting state.
 \item Definition of winning
 \item We compare to an implementation using the same automated theorem prover, the same product implementation
 \item nuXmv has weird differences in runtime
+}
+
+\subsection{Threats to Validity}
+\contents{
+  \item There might be better implementations
+  \item We might have over-biased
+  \item Our benchmarks might be biased
+  \item The underlying automata implementation might be bad and therefore skew
+  the results.
+  
 }
 
 \section{Conclusions}
@@ -875,16 +947,6 @@ path to an accepting state.
 \contents{
 \item cf Parikh Images of Grammars: Complexity and Applications -- what is the best complexity we can do? https://ieeexplore.ieee.org/abstract/document/5571050
 
-}
-
-\section{Threats to Validity}
-\contents{
-  \item There might be better implementations
-  \item We might have over-biased
-  \item Our benchmarks might be biased
-  \item The underlying automata implementation might be bad and therefore skew
-  the results.
-  
 }
 
 %% Acknowledgments
@@ -913,8 +975,8 @@ path to an accepting state.
 
 %% Appendix
 \appendix
-\section{Appendix}
+% \section{Appendix}
 
-Text of appendix \ldots
+% Text of appendix \ldots
 
 \end{document}
