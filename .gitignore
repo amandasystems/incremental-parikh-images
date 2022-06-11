@@ -29,3 +29,6 @@ abstract/main.pdf
 *.run.xml
 __pycache__
 main.synctex.gz
+main.pdf
+choice.pdf
+no-choice.pdf

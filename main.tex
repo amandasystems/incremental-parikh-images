@@ -178,25 +178,24 @@
 %% before \maketitle command
 \begin{abstract}
   The image of the Parikh map is important in automata theory, offering a
-  compact characterisation of an automaton. We contribute \Fudge{a novel}
-  understanding of how Parikh maps can be combined with arbitrary commutative
-  monoid morphisms to efficiently represent a wide range of logics on automata
-  and automata-like structures. This allows us to \Fudge{ensure world peace
-  forever and express loop invariants that solve the halting problem for any
-  practical program}. Furthermore, we show how this formulation can be
-  efficiently implemented as a calculus in a theorem prover supporting
-  Presburger logic. In particular, our calculus allows us to solve the common
-  problem in string solvers of computing the Parikh image of products of
-  arbitrarily many automata. We demonstrate this by implementing a tool called
-  \Catra{}, which we use to solve a set of constraints produced by \Fudge{the
-  PyEx benchmarks} when solved by the \Ostrich{} string constraint solver. We
-  show that this implementation in addition to \Fudge{having a lower memory
-  footprint} than the standard eager approach executed on the same underlying
-  solver also \Fudge{strictly} outperforms the \Nuxmv{} model checker on the
-  same problem\Fudge{, as well as both the over-approximation recently described
-  by~\citeauthor{approximate-parikh} and the original approach described by
-  \citeauthor{generate-parikh-image}.}
-
+  compact characterisation of an automaton. We contribute a novel understanding
+  of how Parikh maps can be combined with arbitrary commutative monoid morphisms
+  to efficiently represent real-world constraints found in String solvers.
+  Furthermore, we show how this formulation can be efficiently implemented as a
+  calculus that we call \Calculus{} in a theorem prover supporting Presburger
+  logic. In particular, our calculus allows us to solve the common problem in
+  string solvers of computing the Parikh image of products of arbitrarily many
+  automata. We demonstrate this by implementing a tool called \Catra{}, which we
+  evaluate on constraints produced by \Fudge{the PyEx benchmarks} when solved by
+  the \Ostrich{} string constraint solver. We show that \Calculus{} strictly
+  outperforms the standard eager approach described
+  in~\citeauthor{generate-parikh-image} as well as the improved
+  over-approximating method recently described
+  by~\citeauthor{approximate-parikh}. \Calculus{} typically also outperforms
+  the~\Nuxmv{} model checker, in particularly on unsatisfiable instances.
+  Finally, \Fudge{\Calculus{} and therefore \Catra{} provides an efficient
+  method for deriving the Presburger formula of a given Parikh image that
+  outperforms any previously published method.}
 \end{abstract}
 
 
@@ -249,7 +248,7 @@ produce~\cite{muscholl-linear}. However, the resulting existentially quantified
 clauses are costly to eliminate, in practice making many real-world problems
 intractable.
 
-In addition to costly elimination of the existentially quantified variables,
+In addition to the costly elimination of the existentially quantified variables,
 another problem arises for the common case of solving length constraints in
 string solvers. Conjunctions of string constraints lead to the computation of
 Parikh images of products of regular languages. Applying the approach
@@ -259,13 +258,31 @@ real-world string constraints, the computation the product of automata exhausts
 the memory of any machine due to the exponential blow-up in size of the product,
 quickly becoming intractable as the number of terms in the product increases.
 
-Addressing these concerns, our calculus for Parikh images of products of regular
-languages allows us to interleave the computation of arbitrarily deep products
-of automata with the product's Parikh image. This allows us to let both
-calculations inform each other, eliminating unnecessary work, and pruning the
-size of the partial products considered in the computation. Moreover, the method
-can be used iteratively to tackle smaller chunks of the product incrementally,
-thereby avoiding running out of memory.
+Addressing these concerns, we have developed a calculus for Parikh images of
+products of regular languages that we call \Calculus{}. It allows us to
+interleave the computation of arbitrarily deep products of automata with the
+product's Parikh image. This enables us to let both calculations inform each
+other, eliminating unnecessary work, and pruning the size of the partial
+products considered in the computation for a smaller memory footprint. Moreover,
+the method can be used iteratively to tackle smaller chunks of the product
+incrementally, thereby avoiding running out of memory. We implement this
+calculus, along with the approximate method of~\cite{approximate-parikh}, its
+fall-back variant adapted from~\cite{generate-parikh-image}, and an adapter for
+the \Nuxmv{} model checker, in a tool that we call \Catra{}. \Catra{} allows
+solving constraints over groups of synchronised (products of) Parikh automata,
+that is symbolic automata with transitions that increment and decrement integer
+registers and that allows checking the constraints on these registers after
+executing automata.
+
+Additionally, \Catra{} is able to efficiently generate a quantifier-free
+Presburger formula form of such an instance of constraints and automata,
+something beyond the reach of general model checkers like~\Nuxmv{}.
+
+In general we contribute:
+\begin{itemize}
+\item A Calculus
+\item QE-implementation
+\end{itemize}
 
 \subsection{A demonstration of our approach}
 
@@ -905,21 +922,56 @@ path to an accepting state.
 \item Model-checking examples e.g. \cite{epistemic-logic}
 }
 
-\subsection{\Catra{} is Faster Than The Competition: Benchmarks and Their Results}
+\subsection{\Catra{} is Faster Than The Competition: Benchmarks and Their Results}\label{sec:experiments}
 
+We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances generated by the \Ostrich{} string constraint solver when solving the \Fudge{pyex benchmarks}. \Fudge{The instances are all enormous and have some on average 900 products of 400000 automata with 97 counters each and 9999 constraints}. After generating an initial~\InitialNrBenchmarks{}, we remove~\NrBroken{} misgenerated instances that did not parse, as well as~\NrTrivial{} instances solved in under five seconds by the baseline backend.
 
-\contents{
-  \item Do we need to say any more about the nuxmv backend?
-  \item How did we run the Benchmarks
+The benchmarks are executed in parallel, since they are mostly single-threaded and initial results showed negligible interference on performance, on \BenchmarkRig{}. We compiled the code using Scala~\ScalaVersion{}, and executed the experiments on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{} version~\NuxmvVersion{} invoked as a subprocess for each instance. Experiments were executed on a fresh JVM per backend, but the JVM was kept active for all benchmarks, meaning that JIT compilation would make subsequent executions faster. We believe this represents a realistic use case where \Calculus{} is integrated into a string solver or other system and be called repeatedly. To mitigate systemic impacts of this decision on our results, experiments were executed in random order for all backends. We run all  with a timeout of~\RuntimeTimeout{}.
 
-\item length constraints
-\item Parikh automata, automata with registers
-\item Where do the instances come from!? Why?
-\item Result table
-\item Definition of winning
-\item We compare to an implementation using the same automated theorem prover, the same product implementation
-\item nuXmv has weird differences in runtime
-}
+As a way of gauging the differences in overhead between the native backends and \Nuxmv{}, we executed a small experiment where we ran the same trivial instance 30 times and observed the runtimes for all solvers. All backends saw an improvement from JIT compilation within the first three runs, but subsequent runs only improved the native backends. The final measured overhead for the fully warm JVMs was less than~\OverheadSeconds{}. From this we draw the conclusion that major differences in runtime between the native backends and \Nuxmv{} is more likely to stem from innate differences rather than unfair overhead resulting from our particular configuration.
+
+All runtimes are measured in wall-clock time as observed by the JVM when executing the instance, and exclude time spent parsing, which in all observed cases was minimal in comparison to the runtime, usually far below 0.1 second.
+
+It should be noted that despite running in the standard, deterministic configuration, we observed some degree of nondeterminism in \Nuxmv{}. Instances that were solved or unsolved would sometimes be solved or timed out in subsequent runs. This observation was made even without randomised execution order, suggesting that the nondeterminism likely stemmed either from our encoding of the instances into \Nuxmv{}'s format, the execution environment. Similarly, \Calculus{} showed similar signs of nondeterminism, but only for satisfiable instances. To address this, we increasded the runtime from our initial experiments to give us a wider marigin. By contrast, the baseline implementation showed no signs of nondeterminism. It should be noted that for both backends exhibiting nondeterminism, the nondeterminism did not change the general trend of the experiments, even for experiments with few instances. Therefore, we believe that our large set of benchmarks will protect us from bias since any backend is unlikely to be neither consistently lucky nor consistently unlucky.
+
+\subsubsection{Execution Time and Ability to Solve Instances}\label{sec:runtime}
+
+In Figures~\ref{fig:solve-nr} and~\ref{fig:solve-division} we show how many of the~\NrBenchmarks{} the respective back-ends could solve and with which status. A full summary of their outcomes is also available in Table~\ref{tab:solve-status}. We see here \Fudge{that some solver is better than the others}.
+
+\begin{figure}
+  \caption{The number of solved instances per backend.}
+  \label{fig:solve-nr}
+\end{figure}
+
+\begin{figure}
+  \caption{The division of statuses per backend.}
+  \label{fig:solve-division}
+\end{figure}
+
+\subsubsection{Scalability}\label{sec:scaling}
+
+A cactus plot showing the number of instances solved within a given timeout for each backend can be seen in Figure~\ref{fig:cactus}. \Fudge{We see here that some solver is fast and some other is not}.
+
+\begin{figure}
+  \caption{The number of instances solved within a given number of seconds per backend.}
+  \label{fig:cactus}
+\end{figure}
+
+\subsubsection{Finding a Presburger Formula}
+
+For baseline and \Calculus{}, \Catra{} offers the ability to find the equivalent Presburger formula representing a given instance. For baseline, we use the built-in quantifier elimination facilities of the underlying \Princess{} theorem prover, while for \Catra{} \Fudge{we use the specially tailored approach described in some section}. For this experiment, we use only the~\NrKnownSat{} instances known to be satisfiable from the previous experiment detailed in Sections~\ref{sec:scaling} and~\ref{sec:runtime}. 
+
+To make sure baseline puts up as much competition as possible, we disable
+checking intermittent satisfiability and configure \Catra{} to run in the
+maximally eager mode where the product is first computed before any
+satisifiability check is performed. We run the experiments with a timeout of~\ImageTimeout{}. The results of the experiment is summarised
+in Figure~\ref{fig:cactus:image} and Table~\ref{tab:image-results}. \Fudge{We see here that something happens}.
+
+\begin{figure}
+  \caption{The number of instances solved within a given number of seconds per backend.}
+  \label{fig:cactus:image}
+\end{figure}
+
 
 \subsection{Threats to Validity}
 \contents{
