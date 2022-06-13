@@ -701,26 +701,37 @@ To generalise the calculus to calculations on products of automata, we change th
   $\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}$
   is true exactly when the single-automaton version of the predicate would hold
   for the automaton.
-
 \end{definition}
 
-  First we extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton:
-  \begin{mathpar}
-    \inferrule*[left=ExpandM]
+  For the calculus, we first extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton.
+
+
+  \begin{table}[h]
+    \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
+      Name & Rule & Prerequisites\\
+      \midrule
+    
+      % EXPAND
+      \ExpandM & 
+      \inferrule
       {\Set{\FlowEq(\Automaton_i), \Connected(\Automaton_i) \SuchThat \Automaton_i \in \Automaton_1,\ldots,\Automaton_k}, \ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
-      {\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
-  \end{mathpar}
+      {\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} & 
+      None \\
+      \Materialise &
+      \inferrule
+      {    \BindingSum(\Automaton', \Filter),\ImagePredicate{\Automaton'\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+      {\ImagePredicate{\Automaton_1\times\Automaton_2\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} &
+      $\Automaton' = \Automaton_1\times\Automaton_2$ \\
+      \bottomrule
+      \end{tabular}
+      \caption{Additional derivation rules for products of arbitrarily many automata.}\label{tbl:rules:multi}
+    \end{table}
 
 \ExpandM{} must be applied before any other rule, like \Expand{}, but unlike \Expand{}, \ExpandM{} does not remove the $\Image$~predicate since it is needed to keep track of the product.
 
 Before we can begin to define our final rule, we need to talk about product states.
 
 Then we introduce the rule $\Materialise$, used to compute a partial product between two terms:
-\begin{mathpar}
-  \inferrule*[left=Materialise,right=\textnormal{where $\Automaton' = \Automaton_1\times\Automaton_2$}]
-    {    \BindingSum(\Automaton', \Filter),\ImagePredicate{\Automaton'\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
-    {\ImagePredicate{\Automaton_1\times\Automaton_2\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
-\end{mathpar}
 
   With the following helper symbolic function:
 
