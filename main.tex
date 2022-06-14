@@ -276,7 +276,7 @@ executing automata.
 
 Additionally, \Catra{} is able to efficiently generate a quantifier-free
 Presburger formula form of such an instance of constraints and automata,
-something beyond the reach of general model checkers like~\Nuxmv{}.
+something beyond the reach of general model checkers like~\Nuxmv.
 
 In general we contribute:
 \begin{itemize}
@@ -381,26 +381,37 @@ a regular language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
 \label{eq:generate-parikh}
 \end{equation}
 
-where all variables $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ are existentially quantified and the variables
-$\LetterVar_\Letter$ make up the actual image. Feeding this definition into a Presburger
-solver and performing quantifier elimination on $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ with $\LetterVar_\Letter$ as free variables would produce the
-Parikh image in its Presburger form.
+where all variables $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ are
+existentially quantified and the free variables $\LetterVar_\Letter$ make up the
+actual image. Performing standard quantifier elimination on $\TransitionVar_i,
+\StateVar_i, \FinalStateVar_i$ with $\LetterVar_\Letter$ would produce the
+Parikh image in its Presburger form. Note that compared to the method described
+in~\cite{generate-parikh-image}, ours is backwards. Intuitively the approaches
+are equivalent since the Parikh image, by definition, disregards order. The
+approach can be described as either following paths through the automaton
+forwards from an (in our case, \emph{the}) initial state, or conversely as in
+the case here, choose an accepting state and trace a path backwards to the
+initial state. 
 
-In this paper we use this example (sometimes appropriately modified) as the
-baseline approach. Notably, the approach presented in this paper can at its core
-be described as lazily enforcing the connectedness constraint of this method
-(the final two clauses) while also interleaving the (similarly lazy) computation
-of products of automata.
+\contents{
+  \item mention the bug here!
+}
+
+In this paper we refer to this model as the baseline approach, though we also
+apply some optimisations that allow us to detect unsatisfiability early,
+described in Section~\ref{sec:implementing-baseline}. Notably, the calculus
+introduced in this paper can at its core be described as lazily enforcing the
+connectedness constraint of this method (the final two clauses) while also
+interleaving the (similarly lazy) computation of products of automata.
 
 \subsubsection{An Example}
-We apply Equation~\ref{eq:generate-parikh} to the automaton of Figure~\ref{fig:len-branch}. We then get the following quantified Presburger formula. As before, we omit the implicit existential quantifiers for brevity, along with the constranints requiring all variables to be nonnegative. We also omit the $\land$-clauses between each line. In other words, in this example, only the variables $\LetterVar_a, \LetterVar_b, \LetterVar_c, \LetterVar_d, \LetterVar_e$, and $\LetterVar_f$ are free, and corresponds to the counts of the respective subscript letter. Note that since they here uniquely identify a transition due to the one-to-one mapping between character labels and transitions in the example, the first clause can be trivially eliminated by substituting $\LetterVar_a$ for $\TransitionVar_{\FromLabelTo{0}{a}{1}}$, etc. This is not generally the case.
+We apply Equation~\ref{eq:generate-parikh} to the automaton of Figure~\ref{fig:len-branch}. We then get the quantified Presburger formula seen in Equation~\ref{eq:parikh-formula}. As before, we omit the implicit existential quantifiers for brevity, along with the constranints requiring all variables to be nonnegative. We also omit the $\land$-clauses between each line. In other words, in this example, only the variables $\LetterVar_a, \LetterVar_b, \LetterVar_c, \LetterVar_d, \LetterVar_e$, and $\LetterVar_f$ are free, and corresponds to the counts of the respective subscript letter. Note that since they here uniquely identify a transition due to the one-to-one mapping between character labels and transitions in the example, the first clause can be trivially eliminated by substituting $\LetterVar_a$ for $\TransitionVar_{\FromLabelTo{0}{a}{1}}$, etc. This is not generally the case.
 
 \begin{equation}
   \begin{aligned}
-  \ParikhMap(\Automaton):=\:
   &\LetterVar_{a} = \TransitionVar_{\FromLabelTo{0}{a}{1}} \land \LetterVar_{b} = \TransitionVar_{\FromLabelTo{0}{b}{2}} \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}} \land \LetterVar_{d} = \TransitionVar_{\FromLabelTo{2}{d}{3}} \land \LetterVar_{e} = \TransitionVar_{\FromLabelTo{2}{e}{2}} \land \LetterVar_{f} = \TransitionVar_{\FromLabelTo{1}{f}{3}}\\
   &\FinalStateVar_{3} > 0 \implies \StateVar_{3} > 0\\
-  & \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{0}{a}{1}} - 0 = 1 \land  \TransitionVar_{\FromLabelTo{1}{f}{3}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
+  & \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{0}{a}{1}} = 1 \land  \TransitionVar_{\FromLabelTo{1}{f}{3}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
   & \TransitionVar_{\FromLabelTo{2}{d}{3}} - \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0 \land \FinalStateVar_{3} + 0 - \TransitionVar_{\FromLabelTo{2}{d}{3}} - \TransitionVar_{\FromLabelTo{1}{f}{3}} = 0\\
   &\TransitionVar_{\FromLabelTo{0}{a}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} > 0 \implies \StateVar_{2} > 0\\
   &\TransitionVar_{\FromLabelTo{1}{c}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{2}{e}{2}} > 0 \implies \StateVar_{2} > 0\\
@@ -410,7 +421,72 @@ We apply Equation~\ref{eq:generate-parikh} to the automaton of Figure~\ref{fig:l
   &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{2} + 1 \land \TransitionVar_{\FromLabelTo{2}{e}{2}} \geq 1 \land \StateVar_{2} \geq 1\right) \lor \left(\StateVar_{2} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{2}{d}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
   &\StateVar_{3} > 0 \implies \FinalStateVar_{3} = 1
   \end{aligned}
+  \label{eq:parikh-formula}
   \end{equation}
+
+  We see here that the formula encodes the choice of path at the start of the
+  automaton ($\TransitionVar_{\FromLabelTo{0}{b}{2}} +
+  \TransitionVar_{\FromLabelTo{0}{a}{1}} = 1$), and the dependency between that
+  choice and the following outgoing transition, e.g. in
+  $\TransitionVar_{\FromLabelTo{2}{d}{3}} -
+  \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0$. Here we only have one choice of
+  incoming flow; from $\FinalStateVar_3$, corresponding to the only accepting
+  state. Simplifying the equation using standard algebra gives us this smaller
+  set of clauses:
+
+  \begin{equation}
+    \begin{aligned}
+    &\FinalStateVar_{3} > 0 \implies \StateVar_{3} > 0\\
+    & \LetterVar_{d} + \LetterVar_{a} = 1\\
+    & \FinalStateVar_{3}  > \LetterVar_{d} \implies \StateVar_{1} > 0 \land \LetterVar_{d} > 0 \implies \StateVar_{2} > 0\\
+    &\LetterVar_{c} > 0 \implies \StateVar_{1} > 0 \land \LetterVar_{e} > 0 \implies \StateVar_{2} > 0\\
+    &\FinalStateVar_{3}  > \LetterVar_{d} \implies \StateVar_{3} > 0 \land \LetterVar_{d} > 0 \implies \StateVar_{3} > 0\\
+    &\StateVar_{0} > 0 \implies \left(\StateVar_{0} = \StateVar_{1} + 1 \land (\FinalStateVar_{3}  - \LetterVar_{d}) \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{0} = \StateVar_{2} + 1 \land \LetterVar_{d} \geq 1 \land \StateVar_{2} \geq 1\right)\\
+    &\StateVar_{1} > 0 \implies \left(\StateVar_{1} = \StateVar_{3} + 1 \land (\FinalStateVar_{3}  - \LetterVar_{d}) \geq 1 \land \StateVar_{3} \geq 1\right)\\
+    &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{3} + 1 \land \LetterVar_{d} \geq 1 \land \StateVar_{3} \geq 1\right)\\
+    &\StateVar_{3} > 0 \implies \FinalStateVar_{3} = 1
+    \end{aligned}
+    \label{eq:parikh-formula:reduced}
+    \end{equation}
+  
+Note that some of the or-clauses disappear since they contain false
+inequalities of the type $x = x + 1$, arising from cycles. These clauses encode
+the distance in a spanning tree from an accepting state, and the
+unsatisfiability is by design, essentially ensuring that two states in a cycle
+cannot vouch for each other's connectedness.
+
+Assume we are really interested in occurrences with the letter e, i.e. we solve
+for $\LetterVar_e > 0$. This implies that $\StateVar_{2} > 0$ (essentially, that
+the state our transition of interest started in is reachable), in turn implying
+that $\StateVar_{2} = \StateVar_{3} + 1 \land \LetterVar_{d} \geq 1 \land
+\StateVar_{3} \geq 1$. Armed with this knowledge, we now know that $\StateVar_3
+> 0$, which means that $\FinalStateVar_3 = 1$. Since we also know that
+$\LetterVar_d \geq 1$, we know that $\LetterVar_a = 0$. This corresponds to
+choosing the bottom path through the automaton. Applying this to the equation
+and performing standard boolean logic propagation gives the following:
+
+\begin{equation}
+  \begin{aligned}
+  &\LetterVar_{d} = 1 \land \LetterVar_{a} = 0 \\
+  & \StateVar_{3} > -1 \\
+  &\LetterVar_{c} = 0\\
+  &\StateVar_{0} > 0 \implies \StateVar_{0} = \StateVar_{3} + 2\\
+  \end{aligned}
+  \label{eq:parikh-formula:choose-a}
+  \end{equation}
+
+  Since the final implication holds (we know $\StateVar_3 \geq 0$, and therefore
+  $\StateVar_3 + 2 > 0$), we can disregard it. Thereby we have eliminated all
+  quantified variables and are left with a formula containing only the free
+  ones. Note that all constraints on $\LetterVar_e$ have disappeared after we
+  asserted that it was strictly positive. This is no coincidence: since it is a
+  loop, it can take any positive value.
+
+  This example, in addition to showing how the encoding works, has hopefully
+  also illustrated one of the key insights behind the design of \Calculus: the
+  fact that even few additional constraints on the Parikh image can dramatically
+  reduce the difficulty of computing it, as in this extreme case where only one
+  additional choice in practice fixes the values of all other symbols in the image.
 
 \section{Overview of our generalised Parikh images}
 
@@ -777,14 +853,16 @@ perform the calculus as before.
 
 We implement a calculus for Parikh automata as described in
 Section~\ref{sec:parikh-automata}. The artefact submitted along with this paper
-is a program that reads one or more products of one or more DFA, the
-register incrementations performed along the edges of their transitions, and the
-labels of the transitions as ranges of Unicode characters, along with a set of
+is a program that reads one or more products of one or more DFA, the register
+incrementations performed along the edges of their transitions, and the labels
+of the transitions as ranges of Unicode characters, along with a set of
 constraints on the final values of their registers expressed as Presburger
 arithmetic. We call this program \Catra{}.\footnote{If you really must read it
-as an acronym, please read it as CAtegory Theory on Register Automata, or
-alternatively if you find this whole paper to be too much of a theoretical
-exercise as Can Anyone Think of A Real Application.}
+as an acronym, please read it as CAtegory Theory on Register Automata, or if you
+object to the somewhat nonstandard use of register automata and category theory,
+as Check Assignments of The Registers Afterwards, or alternatively if you find it
+all to be too much of a theoretical exercise as Can Anyone Think of A Real
+Application.}
 
 \Catra{} is written in Scala, with the calculus described in this paper
 implemented as a theory plug-in for the \Princess{} automated theorem
@@ -793,7 +871,7 @@ comparison, we also provide an implementation of the baseline method
 from~\cite{generate-parikh-image}, a direct translation that uses the~\Nuxmv{}
 symbolic model checker~\cite{nuxmv} to solve our constraints, and \Fudge{the
 approximation described in~\cite{approximate-parikh} on top of the standard
-Verma back-end}. An example of an input file \Fudge{illustrating every feature
+baseline back-end}. An example of an input file \Fudge{illustrating every feature
 of the file format} can be seen in Listing~\ref{lst:input-example}.
 
 \begin{lstlisting}[caption={An example input file for \Catra{}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), range labels, and their single-character shorthand syntax, register increments, and constraints on the final values of their counters.}, label=lst:input-example]
@@ -862,7 +940,7 @@ the equation containing their respective terms followed by a
 \lstinline{constraint} requiring all their counters to agree (e.g
 \lstinline|Aa = Ba && Ab = Bb ...|). Note that the product construction will implicitly require the counters of each term to agree with each other (and the product), so equalities between all counters of all automata are not necessary.
 
-\subsection{Implementing the Baseline}
+\subsection{Implementing the Baseline}\label{sec:implementing-baseline}
 
 We implement the baseline approach using the same Presburger solver
 (\Princess{}), input file parser, and automaton implementation as \Catra{}. We
@@ -939,11 +1017,11 @@ We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances generated b
 
 The benchmarks are executed in parallel, since they are mostly single-threaded and initial results showed negligible interference on performance, on \BenchmarkRig{}. We compiled the code using Scala~\ScalaVersion{}, and executed the experiments on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{} version~\NuxmvVersion{} invoked as a subprocess for each instance. Experiments were executed on a fresh JVM per backend, but the JVM was kept active for all benchmarks, meaning that JIT compilation would make subsequent executions faster. We believe this represents a realistic use case where \Calculus{} is integrated into a string solver or other system and be called repeatedly. To mitigate systemic impacts of this decision on our results, experiments were executed in random order for all backends. We run all  with a timeout of~\RuntimeTimeout{}.
 
-As a way of gauging the differences in overhead between the native backends and \Nuxmv{}, we executed a small experiment where we ran the same trivial instance 30 times and observed the runtimes for all solvers. All backends saw an improvement from JIT compilation within the first three runs, but subsequent runs only improved the native backends. The final measured overhead for the fully warm JVMs was less than~\OverheadSeconds{}. From this we draw the conclusion that major differences in runtime between the native backends and \Nuxmv{} is more likely to stem from innate differences rather than unfair overhead resulting from our particular configuration.
+As a way of gauging the differences in overhead between the native backends and \Nuxmv, we executed a small experiment where we ran the same trivial instance 30 times and observed the runtimes for all solvers. All backends saw an improvement from JIT compilation within the first three runs, but subsequent runs only improved the native backends. The final measured overhead for the fully warm JVMs was less than~\OverheadSeconds. From this we draw the conclusion that major differences in runtime between the native backends and \Nuxmv{} is more likely to stem from innate differences rather than unfair overhead resulting from our particular configuration.
 
 All runtimes are measured in wall-clock time as observed by the JVM when executing the instance, and exclude time spent parsing, which in all observed cases was minimal in comparison to the runtime, usually far below 0.1 second.
 
-It should be noted that despite running in the standard, deterministic configuration, we observed some degree of nondeterminism in \Nuxmv{}. Instances that were solved or unsolved would sometimes be solved or timed out in subsequent runs. This observation was made even without randomised execution order, suggesting that the nondeterminism likely stemmed either from our encoding of the instances into \Nuxmv{}'s format, the execution environment. Similarly, \Calculus{} showed similar signs of nondeterminism, but only for satisfiable instances. To address this, we increasded the runtime from our initial experiments to give us a wider marigin. By contrast, the baseline implementation showed no signs of nondeterminism. It should be noted that for both backends exhibiting nondeterminism, the nondeterminism did not change the general trend of the experiments, even for experiments with few instances. Therefore, we believe that our large set of benchmarks will protect us from bias since any backend is unlikely to be neither consistently lucky nor consistently unlucky.
+It should be noted that despite running in the standard, deterministic configuration, we observed some degree of nondeterminism in \Nuxmv. Instances that were solved or unsolved would sometimes be solved or timed out in subsequent runs. This observation was made even without randomised execution order, suggesting that the nondeterminism likely stemmed either from our encoding of the instances into \Nuxmv's format, or the execution environment. Similarly, \Calculus{} showed similar signs of nondeterminism, but only for satisfiable instances. To address this, we increased the runtime from our initial experiments to give us a wider marigin. By contrast, the baseline implementation showed no signs of nondeterminism. It should be noted that for both backends exhibiting nondeterminism, the nondeterminism did not change the general trend of the experiments, even for experiments with few instances. Therefore, we believe that our large set of benchmarks will protect us from bias since any backend is unlikely to be neither consistently lucky nor consistently unlucky.
 
 \subsubsection{Execution Time and Ability to Solve Instances}\label{sec:runtime}
 
