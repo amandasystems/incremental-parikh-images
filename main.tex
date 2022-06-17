@@ -275,16 +275,121 @@ registers and that allows checking the constraints on these registers after
 executing automata.
 
 Additionally, \Catra{} is able to efficiently generate a quantifier-free
-Presburger formula form of such an instance of constraints and automata,
+Presburger formula representing such an instance of constraints and automata,
 something beyond the reach of general model checkers like~\Nuxmv.
 
-In general we contribute:
+In summary, we contribute:
 \begin{itemize}
-\item A Calculus
-\item QE-implementation
+\item The \Calculus{} calculus to efficiently compute the Parikh image of products of Parikh automata.
+\item A specialised method for quantifier elimination that blends well with \Calculus{} to efficiently compute quantifier-free Presburger representations of a given Parikh image.
+\item Experiments illustrating the performance of \Calculus{} on real-world examples from string solving, including \NrBenchmarks{} instances in a standardised format made available for future studies.
+\item The \Catra{} tool for solving such instances, containing an implementation of \Calculus{}, the over-approximation described in~\cite{approximate-parikh}, and an adapter for the~\Nuxmv{} model checker~\cite{nuxmv}.
+\item Suggestions for how to efficiently implement \Calculus{} in a modern automated theorem prover, including strategies for case splitting, clause learning, and constraint propagation for connectedness.
+\item Finally, a published description of the well-known bug in~\cite{generate-parikh-image} previously only described in folklore.
 \end{itemize}
 
 \subsection{A demonstration of our approach}
+
+Consider the two automata $\SomethingCSomething{}$
+(Figure~\ref{fig:something-c-something}) and $\AcaOrBc{}$
+(Figure~\ref{fig:aca-or-bc}). Assume we want to find a value in the Parikh image
+of their product where $\TransitionCount{a} > \TransitionCount{b}$, that is find
+a count of characters in a string accepted by both automata where there are more
+a:s than b:s.
+
+The na\"ive approach would be to first compute the product of the automata and
+then compute the Parikh image of its product. However, we can take advantage of
+the constraint to prune the automata before computing the product and help
+reduce the blow-up. To give an intuition for the core idea of \Calculus{}, we
+will annotate the transitions of $\SomethingCSomething$ and $\AcaOrBc$ with
+variables illustrating how many times they are taken, and perform informal
+reasoning on them corresponding to the reasoning performed by our calculus.
+
+\begin{figure}[ht]
+  \begin{minipage}[b]{0.75\linewidth}
+  \centering 
+    \includegraphics[width=\textwidth]{aca_or_bc}
+    \caption{An automaton recognising the regular expression
+    $\mathtt{ac^*a|b(bb)^*c}$.}\label{fig:aca-or-bc}
+
+    \includegraphics[width=\textwidth]{something_c_something}
+    \caption{An automaton recognising the regular expression
+    $\mathtt{.^*c.^*}$.}\label{fig:something-c-something}
+  \end{minipage}
+  \end{figure}
+
+
+Note that we have already performed some reasoning in the starting figures -- we
+use the same symbol for the number of times each of the upper transitions of
+$\AcaOrBc$ are taken, since we know that they must be taken the same number of
+times, and we introduced the constant $1$ for the middle transition in
+$\SomethingCSomething$, since it must always be taken precisely once to reach
+the accepting state. We set the initial flow into the starting state to 1 and
+use linear equations to enforce balanced flow throughout the automaton to
+determine the relations between the counting variables on each transition (e.g.
+$1 + {l_b}' = l_a + l_b$, or $l_a + l_c' = 1$). Using standard linear equation
+reasoning loses additional variables and gives us the annotations in
+Figure~\ref{fig:example-simplify-1}. 
+
+
+\begin{figure}[h]
+  \begin{minipage}[b]{0.75\linewidth}
+  \centering 
+    \includegraphics[width=\textwidth]{aca_or_bc_simplified}
+    \caption{$\AcaOrBc{}$ with its symbolic transition counters after
+    simplification of their equations.}\label{fig:example-simplify-1}
+  \end{minipage}
+  \end{figure}
+
+  We now need to relate the number of times a transition was taken to the
+  character counts we are really interested in. Note that this also puts the two
+  automata into contact with each other, before any product has been computed.
+  Some consideration leads us to the definition that the number of occurrence of
+  a each character corresponds to the sum of usages of transitions containing
+  it, e.g. relations of the kind $\TransitionCount{a} = 2 - 2l_c$, and
+  $\TransitionCount{b} = 2 l_b' + l_c'$.\footnote{For the attentive reader: in this
+  example, we leave the catch-all transitions of $\SomethingCSomething$
+  unconstrained since they will be taken care of by the product and would
+  complicate the reasoning since we cannot yet know which character they will
+  correspond to in the final product. In other words, this is a safe
+  under-approximation that only limits our ability to reason before
+  computing the product.}
+
+This relation can be combined with the constraint that $\TransitionCount{a} >
+\TransitionCount{b}$ to obtain $2 - 2l_c > 2 l_b' + l_c'$. Combining this
+equation with the requirement from $\SomethingCSomething$ that
+$\TransitionCount{c} \geq 1$ and $\TransitionCount{c} = l_c + l_c'$ from
+$\AcaOrBc$ gives $0 \geq l_b'$, and since we cannot use a transition a negative
+number of times $l_b' = 0$, which gives the automaton in
+Figure~\ref{fig:example-simplify-2}.
+
+\begin{figure}[h]
+  \begin{minipage}[b]{0.75\linewidth}
+  \centering 
+    \includegraphics[width=\textwidth]{aca_or_bc_simplified_2}
+    \caption{$\AcaOrBc{}$ after removing the now unused b-transition.}\label{fig:example-simplify-2}
+  \end{minipage}
+  \end{figure}
+
+  Plugging in the same inequality again on the same principle, we get $2(1 -
+  l_c') > l_c' \equiv 1 > l_c'$ since we are working with integers, and
+  therefore that $l_c' = 0$. This gives us the even smaller automaton of
+  Figure~\ref{fig:example-simplify-3}.
+
+  \begin{figure}[h]
+    \begin{minipage}[b]{0.75\linewidth}
+    \centering 
+      \includegraphics[width=\textwidth]{aca_or_bc_simplified_3}
+      \caption{$\AcaOrBc{}$ after further constraint propagation.}\label{fig:example-simplify-3}
+    \end{minipage}
+    \end{figure}
+
+This will produce a straightforward product since both automata now have the
+same shape, where we essentially only need to expand the self-loops of
+$\SomethingCSomething$ and reduce its range labels to only capture a:s. Note
+that we got this result by only performing linear inequality reasoning on the
+automata of the product versus the number of times each transition would be
+used.
 
 \section{Preliminaries}
 
