@@ -1199,7 +1199,13 @@ In Figures~\ref{fig:solve-division} we show how many of the~\NrBenchmarks{} the 
 
 
 \begin{figure}
-  \includegraphics[width=0.75\linewidth]{graphs/\commit-duels-scatter.pdf}
+  \begin{minipage}[b]{0.75\linewidth}
+    \centering 
+      \includegraphics[width=\textwidth]{graphs/\commit-duels-lazy-baseline-scatter}
+      \caption{Runtime duel: \Calculus{} versus baseline.}
+      \includegraphics[width=\textwidth]{graphs/\commit-duels-lazy-nuxmv-scatter}
+      \caption{Runtime duel: \Calculus{} versus \Nuxmv.}
+    \end{minipage}  
   \caption{The pairwise runtime of each instance for instances solved by any backend. Timeouts are reported as a runtime of \RuntimeTimeout.}
   \label{fig:duels}
 \end{figure}
