@@ -356,7 +356,8 @@ Figure~\ref{fig:example-simplify-1}.
   computing the product.}
 
 This relation can be combined with the constraint that $\TransitionCount{a} >
-\TransitionCount{b}$ to obtain $2 - 2l_c > 2 l_b' + l_c'$. Combining this
+\TransitionCount{b}$, that is that there are more instances in the accepted
+string of letters a than b, to obtain $2 - 2l_c > 2 l_b' + l_c'$. Combining this
 equation with the requirement from $\SomethingCSomething$ that
 $\TransitionCount{c} \geq 1$ and $\TransitionCount{c} = l_c + l_c'$ from
 $\AcaOrBc$ gives $0 \geq l_b'$, and since we cannot use a transition a negative
@@ -377,19 +378,49 @@ Figure~\ref{fig:example-simplify-2}.
   Figure~\ref{fig:example-simplify-3}.
 
   \begin{figure}[h]
-    \begin{minipage}[b]{0.75\linewidth}
     \centering 
-      \includegraphics[width=\textwidth]{aca_or_bc_simplified_3}
+      \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified_3}
       \caption{$\AcaOrBc{}$ after further constraint propagation.}\label{fig:example-simplify-3}
-    \end{minipage}
     \end{figure}
 
 This will produce a straightforward product since both automata now have the
 same shape, where we essentially only need to expand the self-loops of
-$\SomethingCSomething$ and reduce its range labels to only capture a:s. Note
-that we got this result by only performing linear inequality reasoning on the
-automata of the product versus the number of times each transition would be
-used.
+$\SomethingCSomething$ and reduce its range labels to only capture a:s, as seen
+in Figure~\ref{fig:final-example}. Note that we got this result by only
+performing linear inequality reasoning on the automata of the product versus the
+number of times each transition would be used.
+
+\begin{figure}[h]
+\centering
+    \includegraphics[width=0.75\linewidth]{aca_or_bc_times_something_c_something}
+    \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ under the constraint
+    $\TransitionCount{a} > \TransitionCount{b}$. Note the fresh variables
+    introduced for the transitions (for most transitions the same one, since
+    they are all linearly dependent).}\label{fig:final-example}
+  \end{figure}
+
+
+  \begin{figure}[h]
+\centering
+    \includegraphics[width=0.75\linewidth]{original_product}
+    \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ as it would have
+    appeared if we had computed it from the initial
+    automata.}\label{fig:original-product}
+  \end{figure}
+
+
+To obtain the final Parikh image, we need to tie the inequalities for the
+transitions of the automata of the product to the new transition counters we
+introduced in the product automaton. The only interesting transition is the one
+carrying the c, so we will choose that one for illustration. In that case, the
+bridging equation is $r_2 = l_c \land r_2 = r_{\Sigma}$ (and for all others
+$=1$), which gives the Parikh image $\exists_{r_2} \TransitionCount{a} = 1 \land
+\TransitionCount{b} = 0 \land \TransitionCount{c} = r_2 + 1$, and after trivial
+existence-elimination using reasoning on lower bounds (e.g. $r_2 \geq 0$) we
+arrive at $\TransitionCount{c} \geq 1$. For comparison, the $\AcaOrBc{} \times
+\SomethingCSomething{}$ we would have obtained if we had eagerly computed the
+product can be seen in Figure~\ref{fig:original-product}. This would have
+introduced a significantly more complicated existentially quantified formula.
 
 \section{Preliminaries}
 
@@ -403,7 +434,11 @@ $\State'$ with label $\Label \in \Alphabet$ as $\Transition =
 \FromLabelTo{\State}{\Label}{\State'}$. When one or more of the states and
 labels of a transition are uninteresting we will omit it.
 
-We will let variables $\Transition, \Transition', \Transition_1, \ldots, \Transition_n$ etc describe transitions, $\State, \ldots, \State_n$ states, and $\Automaton, \ldots, \Automaton_n$ automata, and use subscript indexing ($\Transitions_\Automaton$) to refer to the transitions, states, etc of a given automaton.
+We will let variables $\Transition, \Transition', \Transition_1, \ldots,
+\Transition_n$ etc describe transitions, $\State, \ldots, \State_n$ states, and
+$\Automaton, \ldots, \Automaton_n$ automata, and use subscript indexing
+($\Transitions_\Automaton$) to refer to the transitions, states, etc of a given
+automaton.
 
 By a \emph{product} of two automata $\Automaton_1, \Automaton_2$, written
 $\Automaton_1 \times \Automaton_2$, we mean an automaton constructed to run
