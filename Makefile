@@ -1,5 +1,5 @@
 
-FIGURES=choice.pdf no-choice.pdf
+FIGURES=$(shell grep includegraphics main.tex | sed 's/.*{\(.*\)}/\1.pdf/' | tr -s '\n' ' ')
 
 %.tex: %.dot
 	dot2tex -tmath --encoding utf8 --autosize --crop -ftikz $< > $@
