@@ -1,0 +1,20 @@
+digraph Automaton {rankdir = LR;
+initial [shape=plaintext,label="1"];
+initial -> start;
+
+start [shape=circle,label="start \times start"];
+
+start -> sawAstart [label="a  / 1"]
+
+sawAstart [shape=circle,label="sawA \times start"];
+sawAstart -> sawAstart [label="c / r_1 "]
+sawAstart -> sawAfinal [label="c  / 1"]
+
+sawAstart [shape=circle,label="sawA \times start"];
+
+finalFinal [shape=doublecircle,label="final \times final"];
+
+sawAfinal [shape=circle,label="sawA \times final"];
+sawAfinal -> sawAfinal [label="c  / r_2"]
+sawAfinal -> finalFinal [label="a  / 1"]
+}

@@ -291,29 +291,22 @@ In summary, we contribute:
 
 \subsection{A demonstration of our approach}
 
-\contents{
-  \item introducera homomorfismen
-  \item start with length
-  \item räkna bara a och b, strunta i c
-  \item ändra till >= för att illustrera splitting
-  }
+To illustrate the key features of our approach, we start with two regular
+languages, a commutative homomorphism $f$ on them that we care about, and a side
+constraint for which we want to find values in $f$'s image over the intersection
+of the wto languages. We will use the same two regular languages, recognised by
+two automata; $\SomethingCSomething{}$ (Figure~\ref{fig:something-c-something})
+and $\AcaOrBc{}$ (Figure~\ref{fig:aca-or-bc}) for both examples but change the
+constraint and homomorphism $f$.
 
-Consider the two automata $\SomethingCSomething{}$
-(Figure~\ref{fig:something-c-something}) and $\AcaOrBc{}$
-(Figure~\ref{fig:aca-or-bc}). Assume we want to find a value in the Parikh image
-of their product where $\TransitionCount{a} > \TransitionCount{b}$, that is find
-a count of characters in a string accepted by both automata where there are more
-a:s than b:s.
+\subsubsection{Counting string lengths}
 
-The na\"ive approach would be to first compute the product of the automata and
-then compute the Parikh image of its product. However, we can take advantage of
-the constraint to prune the automata before computing the product and help
-reduce the blow-up. To give an intuition for the core idea of \Calculus{}, we
-will annotate the transitions of $\SomethingCSomething$ and $\AcaOrBc$ with
-variables illustrating how many times they are taken, and perform informal
-reasoning on them corresponding to the reasoning performed by our calculus.
+To keep things simple, in this first example we
+let $f$ be the function that gives the length of a given string, e.g.
+$f\left(\text{curious and curiouser still}\right) = 27$, and $f\left(\text{homo}\right) +
+f\left(\text{morphism}\right) = f\left(\text{homomorphism}\right) = 12$.
 
-\begin{figure}[ht]
+\begin{figure}[h]
   \begin{minipage}[b]{0.75\linewidth}
   \centering 
     \includegraphics[width=\textwidth]{aca_or_bc}
@@ -326,42 +319,163 @@ reasoning on them corresponding to the reasoning performed by our calculus.
   \end{minipage}
   \end{figure}
 
+The na\"ive approach would be to first compute the product of the automata and
+then compute the length of its product. However, we can take advantage of the
+both constraints and definitions of $f$ to prune the automata before computing
+the product and help reduce the blow-up. To give an intuition for the core idea
+of \Calculus{}, we will annotate the transitions of $\SomethingCSomething$ and
+$\AcaOrBc$ with variables illustrating how many times they are taken, and
+perform informal reasoning on them corresponding to the reasoning performed by
+our calculus.
+
+\begin{figure}[h]
+  \centering 
+    \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified}
+    \caption{$\AcaOrBc{}$ with its symbolic transition counters after
+    simplification of their equations.}\label{fig:example-simplify-1}
+  \end{figure}
 
 Note that we have already performed some reasoning in the starting figures -- we
 use the same symbol for the number of times each of the upper transitions of
 $\AcaOrBc$ are taken, since we know that they must be taken the same number of
 times, and we introduced the constant $1$ for the middle transition in
 $\SomethingCSomething$, since it must always be taken precisely once to reach
-the accepting state. We set the initial flow into the starting state to 1 and
-use linear equations to enforce balanced flow throughout the automaton to
-determine the relations between the counting variables on each transition (e.g.
-$1 + {l_b}' = l_a + l_b$, or $l_a + l_c' = 1$). Using standard linear equation
-reasoning loses additional variables and gives us the annotations in
-Figure~\ref{fig:example-simplify-1}. 
+the accepting state. We use standard graph-theoretical flow reasoning to set the
+initial flow into the starting state to 1 and use linear equations to enforce
+balanced flow throughout the automaton to determine the relations between the
+counting variables on each transition (e.g. $1 + {l_b}' = l_a + l_b$, or $l_a +
+l_c' = 1$). Strictly speaking, this is where the constant number $1$ in
+Figure~\ref{fig:something-c-something} comes: from $1 + r_\Sigma = x + r_\Sigma$
+solved for $x$. Using analogous linear equation reasoning loses additional
+variables and gives us the annotations in Figure~\ref{fig:example-simplify-1}. 
+
+We sum the individual transition variables up to get the length we are actually
+interested in, e.g. the image of $f$ on $\SomethingCSomething =
+\exists_{r_\Sigma, r_\Sigma'} \: r_\Sigma + 1 + r_\Sigma'$. For
+$\SomethingCSomething{}$, this is all we need to produce the image since all
+transitions are always accessible from any path from the initial state to the
+accepting state.
+
+The story gets more complicated with $\AcaOrBc{}$, where we have a choice of two
+paths, and where that choice affects the possibility of taking either of the two
+loops. In that case (letting the existential quantifiers from now on be
+implicit), we would have the image $2l_a + l_c + l_c' + l_b + l_b'$. If we apply
+standard linear reasoning on the equations (e.g. $1 + {l_b}' = l_a + l_b$, or
+$l_a + l_c' = 1$), we can reduce the number of bound ($\exists$-quantified)
+variables somewhat, obtaining the relations in
+Figure~\ref{fig:example-simplify-1}, and the corresponding over-approximation on
+the $f$-image $2 + l_c + 2l_b'$. It is an over-approximation because it only
+considers the number of times each transition is taken and the existence of a
+path from an initial to an accepting state, but omits the connectivity of that
+path in the presence of loops. For example, no valid path would have both $l_c >
+0$ and $l_b' > 0$, but no such restriction exists in the formula above.
+
+\begin{figure}[h]
+  \centering 
+    \includegraphics[width=0.75\linewidth]{something_c_something_length_simplified}
+    \caption{$\SomethingCSomething{}$ after using linear reasoning over lengths to replace a variable.}\label{fig:example-length-reduced}
+  \end{figure}
+
+Still, this approximate solution allows us to perform further reasoning. Since
+we know that the length of a string accepted by the intersection of the two
+automata's languages must be the same, we also know that their images (string
+lengths) must be the same under $f$, e.g. that $r_\Sigma + 1 + r_\Sigma' = 2 +
+l_c + 2l_b' \iff r_\Sigma + r_\Sigma' = 1 + l_c + 2l_b'$. This in turn allows us
+to replace one additional variable, e.g. $r_\Sigma = 1 + l_c + 2l_b' -
+r_\Sigma'$ (see Figure~\ref{fig:example-length-reduced}). Note that the two
+automata are now in direct contact. Any reasoning performed on one of them could
+be propagated to the other.
+
+Since we cannot take a transition a negative number of times, we have an
+implicit constraint on any transition variable that it must be at least $0$.
+This means that we have $1 + l_c + 2l_b' - r_\Sigma'$, implying an upper bound
+on $r_\Sigma'$: $r_\Sigma' \leq 1 + l_c + 2l_b'$.
+
+We talked initially about having a constraint on the image (or conversely, on
+the strings of the language), so let us add one. We are only interested in
+strings of odd length, e.g. $2 \nmid  f(\AcaOrBc \times \SomethingCSomething)$.
+This means that: $2 \nmid 2 + l_c + 2l_b' \iff 2 \nmid l_c$. To encode this condition, we simply replace $l_c$ with $2k + 1$ with an existentially quantified integer $k \geq 0$.
+
+This is as far as we can get with this reasoning. We must now choose: either we
+compute the product and continue our reasoning, or we perform a case split. Let
+us try a case split in order to put off computing a potentially large product.
+We pick an early transition in the largest automaton with loops, in our case
+$\FromLabelTo{start}{a}{sawA}$ of $\AcaOrBc$. This creates two cases: $1-l_c' =
+0$ and $1-l_c' > 0$. We start with the first case, and after propagating the now known values and removing any transition that becomes zero, we get the automaton of Figure~\ref{fig:aca-or-bc-length-split-1}.
 
 
 \begin{figure}[h]
-  \begin{minipage}[b]{0.75\linewidth}
   \centering 
-    \includegraphics[width=\textwidth]{aca_or_bc_simplified}
-    \caption{$\AcaOrBc{}$ with its symbolic transition counters after
-    simplification of their equations.}\label{fig:example-simplify-1}
-  \end{minipage}
+    \includegraphics[width=0.75\linewidth]{aca_or_bc_length_split_1}
+    \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{start}{a}{sawA}$ is not used.}\label{fig:aca-or-bc-length-split-1}
   \end{figure}
 
+  We immediately notice that the self-loop of state $sawA$ is now disconnected
+  and must be removed. This condition can be detected efficiently using standard
+  forwards/backwards reachability from the initial and accepting states
+  respectively. In other words, $2k+1 = 0$ for this case and is implied by the splitting constraint. However, no choice of integer $k$  will satisfy this equation. Therefore, we close this branch and proceed with the other one -- where $1-l_c' > 0$. Note that we do so without ever computing a potentially expensive product of automata.
+
+  \begin{figure}[h]
+    \centering 
+      \includegraphics[width=0.75\linewidth]{aca_or_bc_length_split_2}
+      \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{start}{a}{sawA}$ is used.}\label{fig:aca-or-bc-length-split-2}
+    \end{figure}
+  
+Plugging in the assumption $1-l_c' > 0$ (and its consequence that $l_c' = 0$),
+we also get a reduced variant of $\AcaOrBc$, as seen in
+Figure~\ref{fig:aca-or-bc-length-split-1}. Note that $sawB$ is no longer
+backwards-reachable from $final$ and therefore dead, along with both transitions
+into it. We add the conclusion $l_b' = 0$, which severs both transitions into
+the state and removes it from our automaton. Following this we are ready to
+compute the product, which can be seen in Figure~\ref{fig:length-split-product}.
+
+\begin{figure}[h]
+  \centering 
+    \includegraphics[width=0.75\linewidth]{length_split_product}
+    \caption{The product of $\AcaOrBc$ and $\SomethingCSomething$ after
+    case splitting and removal of dead states.}\label{fig:length-split-product}
+  \end{figure}
+
+Before continuing, we need to tie the inequalities for the transitions of the
+automata of the product to the new transition counting variables we introduced
+in the product automaton to ensure that they are consistent. In our case, we obtain the following equations from the principle that a transition variable in either automaton must be equal to the sum of variables in the resulting edges of the product, which gives the following two interesting inequality from $\AcaOrBc{}$'s transition $\FromLabelTo{sawA}{c}{sawA}$: $2k + 1 = r_1 + r_2 + 1$
+
+Note how this conserves the requirement that the number of loop iterations be
+odd even when the same original loop appears three times in the product, twice
+as a self-loop and once as a regular state transition. Using the same principle
+as before for computing the length by adding up the transition counters, we
+obtain the quantified formula $1 + r_1 + 1 = r_2 + 1 = r_1 + r_2 + 3 = 2k + r_1
++ 3$ for the length. Eliminating the final quantifier gives us the image of
+$f(\AcaOrBc \times \SomethingCSomething)$ modulo odd lengths: $3 + 2k$, for some
+integer $k$.
+
+\subsubsection{Producing the Parikh image}
+
+Now assume that rather than the length (e.g. the count of the characters) we
+want to find the whole Parikh image of the intersection of $\AcaOrBc{}$ and
+$\SomethingCSomething{}$. In other words, now $f$ is an object (usually a
+vector) counting how often each character occurs in a string. Since extracting
+values from a vector is tiresome, we will use the shorthand notation
+$\TransitionCount{a}$ to refer to the number of letters a that appear. E.g. $\TransitionCount{a}(\text{curious and curiouser still}) = 1$. Note that we still have the property that $\TransitionCount{o}(\text{homomorphism}) = \TransitionCount{o}(\text{homo}) + \TransitionCount{o}(\text{morphism}) = 2 + 1 = 3$. If you treat the addition as element-wise vector addition, this approach works for the vector version as well.
+
+For our constraint, we will use $\TransitionCount{a} > \TransitionCount{b}$,
+that is find a count of characters in a string accepted by both automata where
+there are more a:s than b:s. Since the underlying calculus is the same, we start immediately from Figure~\ref{fig:example-simplify-1}.
+
   We now need to relate the number of times a transition was taken to the
-  character counts we are really interested in. Note that this also puts the two
-  automata into contact with each other, before any product has been computed.
-  Some consideration leads us to the definition that the number of occurrence of
-  a each character corresponds to the sum of usages of transitions containing
-  it, e.g. relations of the kind $\TransitionCount{a} = 2 - 2l_c$, and
-  $\TransitionCount{b} = 2 l_b' + l_c'$.\footnote{For the attentive reader: in this
-  example, we leave the catch-all transitions of $\SomethingCSomething$
+  character counts we are really interested in, as opposed to just the length in
+  the previous example. Note that this, like the length calculus before, puts
+  the two automata into contact with each other, before any product has been
+  computed. Some consideration leads us to the definition that the number of
+  occurrence of each character corresponds to the sum of usages of transitions
+  containing it, e.g. relations of the kind $\TransitionCount{a} = 2 - 2l_c$,
+  and $\TransitionCount{b} = 2 l_b' + l_c'$.\footnote{For the attentive reader:
+  in this example, we leave the catch-all transitions of $\SomethingCSomething$
   unconstrained since they will be taken care of by the product and would
   complicate the reasoning since we cannot yet know which character they will
   correspond to in the final product. In other words, this is a safe
-  under-approximation that only limits our ability to reason before
-  computing the product.}
+  under-approximation that only limits our ability to reason before computing
+  the product.}
 
 This relation can be combined with the constraint that $\TransitionCount{a} >
 \TransitionCount{b}$, that is that there are more instances in the accepted
@@ -373,15 +487,13 @@ number of times $l_b' = 0$, which gives the automaton in
 Figure~\ref{fig:example-simplify-2}.
 
 \begin{figure}[h]
-  \begin{minipage}[b]{0.75\linewidth}
   \centering 
-    \includegraphics[width=\textwidth]{aca_or_bc_simplified_2}
+    \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified_2}
     \caption{$\AcaOrBc{}$ after removing the now unused b-transition.}\label{fig:example-simplify-2}
-  \end{minipage}
   \end{figure}
 
   Plugging in the same inequality again on the same principle, we get $2(1 -
-  l_c') > l_c' \equiv 1 > l_c'$ since we are working with integers, and
+  l_c') > l_c' \iff 1 > l_c'$ since we are working with integers, and
   therefore that $l_c' = 0$. This gives us the even smaller automaton of
   Figure~\ref{fig:example-simplify-3}.
 
@@ -553,25 +665,26 @@ connectedness constraint of this method (the final two clauses) while also
 interleaving the (similarly lazy) computation of products of automata.
 
 \subsubsection{An Example}
-We apply Equation~\ref{eq:generate-parikh} to the automaton of Figure~\ref{fig:len-branch}. We then get the quantified Presburger formula seen in Equation~\ref{eq:parikh-formula}. As before, we omit the implicit existential quantifiers for brevity, along with the constranints requiring all variables to be nonnegative. We also omit the $\land$-clauses between each line. In other words, in this example, only the variables $\LetterVar_a, \LetterVar_b, \LetterVar_c, \LetterVar_d, \LetterVar_e$, and $\LetterVar_f$ are free, and corresponds to the counts of the respective subscript letter. Note that since they here uniquely identify a transition due to the one-to-one mapping between character labels and transitions in the example, the first clause can be trivially eliminated by substituting $\LetterVar_a$ for $\TransitionVar_{\FromLabelTo{0}{a}{1}}$, etc. This is not generally the case.
+We apply Equation~\ref{eq:generate-parikh} to the automaton $\AcaOrBc{}$ of Figure~\ref{fig:aca-or-bc}. We then get the quantified Presburger formula seen in Equation~\ref{eq:parikh-formula}. As before, we omit the implicit existential quantifiers for brevity, along with the constranints requiring all variables to be nonnegative. We also omit the $\land$-clauses between each line. In other words, in this example, only the variables $\LetterVar_a, \LetterVar_b, \LetterVar_c, \LetterVar_d, \LetterVar_e$, and $\LetterVar_f$ are free, and corresponds to the counts of the respective subscript letter.
 
 \begin{equation}
   \begin{aligned}
-  &\LetterVar_{a} = \TransitionVar_{\FromLabelTo{0}{a}{1}} \land \LetterVar_{b} = \TransitionVar_{\FromLabelTo{0}{b}{2}} \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}} \land \LetterVar_{d} = \TransitionVar_{\FromLabelTo{2}{d}{3}} \land \LetterVar_{e} = \TransitionVar_{\FromLabelTo{2}{e}{2}} \land \LetterVar_{f} = \TransitionVar_{\FromLabelTo{1}{f}{3}}\\
+  \ParikhMap(\Automaton):=\:
+  &\LetterVar_{a} = \TransitionVar_{\FromLabelTo{0}{a}{1}} + \TransitionVar_{\FromLabelTo{1}{a}{3}} \land \LetterVar_{b} = \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{2}{b}{1}} \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}} + \TransitionVar_{\FromLabelTo{2}{c}{3}}\\
   &\FinalStateVar_{3} > 0 \implies \StateVar_{3} > 0\\
-  & \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{0}{a}{1}} = 1 \land  \TransitionVar_{\FromLabelTo{1}{f}{3}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
-  & \TransitionVar_{\FromLabelTo{2}{d}{3}} - \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0 \land \FinalStateVar_{3} + 0 - \TransitionVar_{\FromLabelTo{2}{d}{3}} - \TransitionVar_{\FromLabelTo{1}{f}{3}} = 0\\
+  & \TransitionVar_{\FromLabelTo{0}{a}{1}} + \TransitionVar_{\FromLabelTo{0}{b}{2}} - 0 = 1 \land  \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{2}{b}{1}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
+  & \TransitionVar_{\FromLabelTo{2}{b}{1}} + \TransitionVar_{\FromLabelTo{2}{c}{3}} - \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0 \land \FinalStateVar_{3} + 0 - \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{2}{c}{3}} = 0\\
   &\TransitionVar_{\FromLabelTo{0}{a}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} > 0 \implies \StateVar_{2} > 0\\
-  &\TransitionVar_{\FromLabelTo{1}{c}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{2}{e}{2}} > 0 \implies \StateVar_{2} > 0\\
-  &\TransitionVar_{\FromLabelTo{1}{f}{3}} > 0 \implies \StateVar_{3} > 0 \land \TransitionVar_{\FromLabelTo{2}{d}{3}} > 0 \implies \StateVar_{3} > 0\\
+  &\TransitionVar_{\FromLabelTo{1}{c}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{1}{a}{3}} > 0 \implies \StateVar_{3} > 0\\
+  &\TransitionVar_{\FromLabelTo{2}{b}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} > 0 \implies \StateVar_{3} > 0\\
   &\StateVar_{0} > 0 \implies \left(\StateVar_{0} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{0}{a}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{0} = \StateVar_{2} + 1 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} \geq 1 \land \StateVar_{2} \geq 1\right)\\
-  &\StateVar_{1} > 0 \implies \left(\StateVar_{1} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{1}{c}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{1} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{1}{f}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
-  &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{2} + 1 \land \TransitionVar_{\FromLabelTo{2}{e}{2}} \geq 1 \land \StateVar_{2} \geq 1\right) \lor \left(\StateVar_{2} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{2}{d}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
+  &\StateVar_{1} > 0 \implies \left(\StateVar_{1} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{1}{c}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{1} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{1}{a}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
+  &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{2}{b}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{2} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
   &\StateVar_{3} > 0 \implies \FinalStateVar_{3} = 1
   \end{aligned}
   \label{eq:parikh-formula}
   \end{equation}
-
+  
   We see here that the formula encodes the choice of path at the start of the
   automaton ($\TransitionVar_{\FromLabelTo{0}{b}{2}} +
   \TransitionVar_{\FromLabelTo{0}{a}{1}} = 1$), and the dependency between that
@@ -581,6 +694,8 @@ We apply Equation~\ref{eq:generate-parikh} to the automaton of Figure~\ref{fig:l
   incoming flow; from $\FinalStateVar_3$, corresponding to the only accepting
   state. Simplifying the equation using standard algebra gives us this smaller
   set of clauses:
+
+  \contents{\item FIXME: this needs rewriting for the new automaton}
 
   \begin{equation}
     \begin{aligned}
@@ -962,11 +1077,11 @@ Then we introduce the rule $\Materialise$, used to compute a partial product bet
   $$
   \BindingSum(\Automaton_1 \times \Automaton_2, \Filter) = \bigcup
   \begin{aligned}
+  & \Set{ 
+    \left<\Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State_R}}} \Filter(\Transition')\right>
+  \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_1} } , \\ 
   & \Set{
-    \Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State_R}}} \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_1}
-  }, \\ 
-  & \Set{
-    \Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State_L, \State'}}} \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_2}
+    \left<\Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State_L, \State'}}} \Filter(\Transition')\right> \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_2}
   }
   \end{aligned}
 $$
