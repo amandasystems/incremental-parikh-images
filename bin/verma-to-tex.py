@@ -3,15 +3,15 @@
 from re import A
 
 
-initial_state = 0
-accepting_states = {3}
+initial_state = "start"
+accepting_states = {"final"}
 transitions = [
-    (0, "a", 1),
-    (0, "b", 2),
-    (1, "c", 1),
-    (1, "a", 3),
-    (2, "b", 1),
-    (2, "c", 3),
+    ("start", "a", "sawA"),
+    ("start", "b", "sawB"),
+    ("sawA", "c", "sawA"),
+    ("sawA", "a", "final"),
+    ("sawB", "b", "start"),
+    ("sawB", "c", "final"),
 ]
 
 states = {

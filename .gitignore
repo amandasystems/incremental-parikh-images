@@ -30,5 +30,6 @@ abstract/main.pdf
 __pycache__
 main.synctex.gz
 main.pdf
+/*.pdf
 choice.pdf
 no-choice.pdf
