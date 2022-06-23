@@ -1,0 +1,14 @@
+digraph Automaton {rankdir = LR;
+initial [shape=plaintext,label=""];
+initial -> start;
+start [shape=circle,label=""];
+start -> sawA [label="a / \begin{bmatrix} 1 \\\ 0 \\\ 0 \end{bmatrix}"]
+start -> sawB [label="b / \begin{bmatrix} 0 \\\ 1 \\\ 0 \end{bmatrix}"]
+sawA [shape=circle,label=""];
+sawA -> sawA [label="c / \begin{bmatrix} 0 \\\ 0 \\\ 1 \end{bmatrix}"]
+sawA -> final [label="a / \begin{bmatrix} 1 \\\ 0 \\\ 0 \end{bmatrix}"]
+sawB [shape=circle,label=""];
+sawB -> start [label="b / \begin{bmatrix} 0 \\\ 1 \\\ 0 \end{bmatrix}"]
+sawB -> final [label="c / \begin{bmatrix} 0 \\\ 0 \\\ 1 \end{bmatrix}"]
+final [shape=doublecircle,label=""];
+}

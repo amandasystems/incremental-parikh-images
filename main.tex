@@ -67,6 +67,7 @@
 \usepackage{listings}
 \usepackage{csquotes}
 \usepackage{proof}
+\usepackage{cleveref}
 \usepackage{algorithm2e}      
 \usepackage{multirow}
 \usepackage{mathpartir}
@@ -235,7 +236,6 @@
 
 \section{Introduction}
 
-
 The Parikh map is a characterisation of a context-free language as a vector of
 its character counts, famously a semilinear set~\cite{parikh-theorem}. It
 appears naturally as part of many operations in model checking and the solving
@@ -255,9 +255,10 @@ string solvers. Conjunctions of string constraints lead to the computation of
 Parikh images of products of regular languages. Applying the approach
 in~\cite{generate-parikh-image} would require the computation of the product
 before its Parikh image. In several instances we have observed while solving
-real-world string constraints, the computation the product of automata exhausts
-the memory of any machine due to the exponential blow-up in size of the product,
-quickly becoming intractable as the number of terms in the product increases.
+real-world string constraints, the computation of the product of automata
+exhausts the memory of any machine due to the exponential blow-up in size of the
+product, quickly becoming intractable as the number of automata in the product
+increases.
 
 Addressing these concerns, we have developed a calculus for Parikh images of
 products of regular languages that we call \Calculus{}. It allows us to
@@ -271,9 +272,19 @@ calculus, along with the approximate method of~\cite{approximate-parikh}, its
 fall-back variant adapted from~\cite{generate-parikh-image}, and an adapter for
 the \Nuxmv{} model checker, in a tool that we call \Catra{}. \Catra{} allows
 solving constraints over groups of synchronised (products of) Parikh automata,
-that is symbolic automata with transitions that increment and decrement integer
-registers and that allows checking the constraints on these registers after
-executing automata.
+that is (finite-alphabet) symbolic automata with transitions that increment and
+decrement integer registers and that allows checking linear constraints on these
+registers after running the automata. Parikh automata without constraints on the
+final values on their registers are also sometimes called cost-enriched
+automata, weighted automata or counter automata, depending on your definitions
+and side-constraints.
+
+\contents{
+  \item Automata intersection emptiness is PSPACE-complete
+  \item Producing the formula is linear, but
+  \item deciding a product of automata on a word is also PSPACE-hard
+  \item try proving that finding a word accepted by a product AND satisfying additional constraints is IN PSPACE, e.g. that we are PSPACE-complete
+}
 
 Additionally, \Catra{} is able to efficiently generate a quantifier-free
 Presburger formula representing such an instance of constraints and automata,
@@ -289,7 +300,7 @@ In summary, we contribute:
 \item Finally, a published description of the well-known bug in~\cite{generate-parikh-image} previously only described in folklore.
 \end{itemize}
 
-\subsection{A demonstration of our approach}
+\subsection{A demonstration of our approach}\label{sec:introduction:motivation}
 
 To illustrate the key features of our approach, we start with two regular
 languages, a commutative homomorphism $f$ on them that we care about, and a side
@@ -822,18 +833,56 @@ considerably.
 }
 
 
-\subsubsection{Example~2: Parikh Automata}
+\subsubsection{Example~2: Parikh Automata}\label{sec:parikh-automata}
 
-Another application for this generalisation is to express Parikh
-automata~\cite{parikh-automata}, and this is indeed what the implementation
-described in Section~\ref{sec:implementation} does.
+Another application for this generalisation is to express Parikh automata, and
+this is indeed what the implementation described in
+Section~\ref{sec:implementation} does. Following~\cite{parikh-automata} as
+filtered through~\cite{expressiveness} (which offers a better formalisation for
+our use), we define a Parikh automaton as an automaton with integer counters
+that are incremented at the transitions, and where we have linear
+constraints on the final values of the counters after running the automaton, or
+formally as in \cref{def:parikh-automata,def:projections}.
 
+In the following definitions, we use (as in~\cite{expressiveness}) the following notation:
+\begin{itemize}
+  \item $\Alphabet$ is an alphabet
+  \item $D$ is a finite subset of $\Naturals^d$, for some $d \in \Naturals^+$ (e.g. vectors of length $d$)
+\end{itemize}
 
-\contents{
- \item what is parikh automata
- \item Give an actual example of a parikh automata
-}
+\begin{definition}\label{def:projections}
+  We define two projections on the composite alphabet $\left(\Alphabet \times D\right)^*$:
+  \begin{itemize}
+    \item $\pi_{\Alphabet} := (a, \Vector{v}) \mapsto a$ or the projection on $\Alphabet$ is the monoid morphism from $\left(\Alphabet \times D\right)^*$ to $\Alphabet^*$, and the opposite projection
+    \item $\pi_{v} := (a, \Vector{v}) \mapsto \Vector{v}$, called the
+    \emph{extended Parikh image}.
+  \end{itemize}
+\end{definition}
 
+\begin{definition}\label{def:parikh-automata} A Parikh automaton of dimension $d
+  \geq 0$ is a pair $\Tuple{\Automaton, C}$, where $C \subseteq \Naturals^d$ is a semi-linear set (or, equivalently, a Presburger formula), where $\Automaton$ is a finite automaton with the alphabet $\Alphabet \times D$, where $D \subseteq \Naturals^d$.
+
+  We say that $\Tuple{\Automaton, \varphi}$ \emph{recognises} the language, $\Language(\Automaton, C)$, that is it recognises the language crated by is the $\pi_\Alphabet$-projection on $\Alphabet$ whose $\pi_{v} \subseteq C$.
+\end{definition}
+
+\begin{figure}[ht]
+  \centering
+      \includegraphics[width=0.75\linewidth]{parikh_automaton}
+      \caption{A The automaton part of a Parikh automaton for $\AcaOrBc{}$ with
+      $\Alphabet = \Set{\text{a, b, c}}, d = 3$. The semilinear set/Presburger
+      formula containing the constraints on the final register values cannot be
+      visualised.}\label{fig:parikh-automaton}
+    \end{figure}
+  
+
+An example of a Parikh automata version of $\AcaOrBc{}$ can be seen in \cref{fig:parikh-automaton}. A corresponding Presburger version of the constraint seen in \cref{sec:introduction:motivation} is $\psi(\Vec{v}) = v_1 > v_2$.
+
+Generally, we can encode the problem as follows:
+\begin{enumerate}
+  \item The morphism ($\Map$) we would use is $\pi_{v}$
+  \item The monoid operation is element-wise vector addition, which is trivially commutative.
+  \item \Fudge{We would just add the constraints on the final values!?}
+\end{enumerate}
 
 \section{A Calculus for Generalised Parikh Images}\label{sec:calculus}
 
@@ -1113,11 +1162,30 @@ perform the calculus as before.
 \subsubsection{The calculus excludes no values in the Parikh image}
 
 
-\section{Extensions}
+\section{Extensions}\label{sec:extensions}
+
+This section describes a number of possible extensions to the calculus. Note
+that some are partially or fully implemented in \Catra{} already. In particular,
+we have support for finite symbolic transitions over Unicode alphabets to keep
+practical automata under a reasonable size.
+
 \subsection{Backjumping and Learning No-Goods}\label{sec:ext:backjumping}
+\contents{
+  \item What do we have
+  \item A case where no-goods would be good
+  \item What to add to the calculus?
+}
+
 \subsubsection{An Example}
 \subsection{Symbolic Automata}\label{sec:ext:symbolic}
 
+\contents{
+  \item Should we also write about how to adapt to infinite alphabets?
+}
+
+\subsection{Transducers}\label{sec:ext:transducers}
+
+\contents{\item What actually goes here!?}
 
 \section{Implementation and Experiments}\label{sec:implementation}
 
@@ -1144,49 +1212,46 @@ approximation described in~\cite{approximate-parikh} on top of the standard
 baseline back-end}. An example of an input file \Fudge{illustrating every feature
 of the file format} can be seen in Listing~\ref{lst:input-example}.
 
-\begin{lstlisting}[caption={An example input file for \Catra{}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), range labels, and their single-character shorthand syntax, register increments, and constraints on the final values of their counters.}, label=lst:input-example]
-  /* Declare counters. Initially only integers, but other data-types
- could be considered as well. All counters start at zero. */
-counter int x, y, z, length;
+\begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:introduction:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
+  // So far we only support integer counters. Note that we have individual
+  // counters for each automaton to avoid surprises for product construction.
+  counter int l_a, l_b, l_c, r_c;
 
-// List automata. Automata transitions are labelled with intervals,
-// and can specify counter increments/decrements. A counter can only
-// be used in at most one automaton.
-
-synchronised {
-    automaton A {
-    init s0;
-
-    s0 -> s1 [0, 10] { x += 1};
-
-    accepting s1, s2;
-    };
-
-
-    automaton B {
-    init t1;
-
-    t1 -> t2 [11, 22] { y += 1};
-
-
-    accepting t1, t2;
-    };
-};
-
-automaton C {
-    init s0;
-
-    s0 -> s1 [15] { z += 1 };
-    s1 -> s1 [15] { z += 1};
-
-    accepting s1;
-};
-
-
-// Specify a constraint on the final values of counters; check whether
-// there is a word accepted by all automata for which the final counter
-// values satisfy this constraints.
-constraint z = 2x + 2y && !(x = 0);
+  synchronised {
+  automaton aca_or_bc {
+    init start;
+  
+    // We use ASCII values here, this is for lowercase a
+    start -> sawA [97] { l_a += 1 };
+    start -> sawB [98] { l_b += 1 };
+  
+    sawB -> start  [98] { l_b += 1 };
+    sawB -> final [99] { l_c += 1 };
+  
+    sawA -> sawA [99] { l_c += 1 };
+    sawA -> final [97] { l_a += 1 };
+  
+    accepting final;
+  };
+  
+  automaton something_c_something {
+      init start;
+  
+      // Special short-hand value for the whole Unicode alphabet.
+      start -> start [any] ;
+      start -> final [99] { r_c += 1 };
+  
+      final -> final [any];
+  
+      accepting final;
+  };
+  };
+  
+  // Constrain the number of a:s to be larger than the number of c:s. Since the
+  // automata are synchronised on every transition and counters are guaranteed
+  // to be consistent these constraints are sufficient without also constraining
+  // r_c.
+  constraint l_a > l_c;
 \end{lstlisting}
 
 Please note that \Catra{} uses symbolic labels for automata. A symbolic label is
@@ -1328,7 +1393,7 @@ choice of product to materialise or transitions to split on.
 
 \subsection{\Catra{} is Faster Than The Competition: Benchmarks and Their Results}\label{sec:experiments}
 
-We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances generated by the \Ostrich{} string constraint solver when solving the \Fudge{pyex benchmarks}. \Fudge{The instances are all enormous and have some on average 900 products of 400000 automata with 97 counters each and 9999 constraints}. After generating an initial~\InitialNrBenchmarks{}, we remove~\NrBroken{} misgenerated instances that did not parse, as well as~\NrTrivial{} instances solved in under five seconds by the baseline backend. The benchmarks are run on commit \texttt{\commit}.
+We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances generated by the \Ostrich{} string constraint solver when solving the \Fudge{pyex benchmarks}. \Fudge{The instances are all enormous and have some on average 900 products of 400000 automata with 97 counters each and 9999 constraints}. After generating an initial~\InitialNrBenchmarks{}, we remove~\NrBroken{} misgenerated instances that did not parse, as well as~\NrTrivial{} instances solved in under five seconds by the baseline backend. The benchmarks are run on commit~\texttt{\commit}.
 
 The benchmarks are executed in parallel, since they are mostly single-threaded and initial results showed negligible interference on performance, on \BenchmarkRig{}. We compiled the code using Scala~\ScalaVersion{}, and executed the experiments on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{} version~\NuxmvVersion{} invoked as a subprocess for each instance. Experiments were executed on a fresh JVM per backend, but the JVM was kept active for all benchmarks, meaning that JIT compilation would make subsequent executions faster. We believe this represents a realistic use case where \Calculus{} is integrated into a string solver or other system and be called repeatedly. To mitigate systemic impacts of this decision on our results, experiments were executed in random order for all backends. We run all  with a timeout of~\RuntimeTimeout{}.
 
@@ -1404,14 +1469,46 @@ in Figure~\ref{fig:cactus:image} and Table~\ref{tab:image-results}. \Fudge{We se
 
 
 \subsection{Threats to Validity}
-\contents{
-  \item There might be better implementations
-  \item We might have over-biased
-  \item Our benchmarks might be biased
-  \item The underlying automata implementation might be bad and therefore skew
-  the results.
-  
-}
+
+The most obvious threats to validity would be poor benchmarking or poor
+implementation, e.g. if the method described in \cref{sec:calculus,sec:multiple}
+deviate from what is actually benchmarked in section \cref{sec:experiments}, or
+if the methods used for benchmarking would be unsound. The first problem cannot
+easily be addressed, except by stating that we have been careful in our
+implementation and descriptions alike. The second is more practical. To increase
+the probability that our results are indeed representative both in the sense of
+representing runs on expected, real world input and in the statistical sense for
+a given run of \Catra, despite the fact that we use randomness in our
+implementation, we execute many experiments. During the development of \Catra{},
+we have also executed experimeints on different hardware and software
+configurations on smaller samples of instances to ensure that the general trend
+holds. The logs from these executions are distributed along with notes as part
+of the artefact in the interest of transparency. Moreover, we have validated
+\Fudge{all reported satisfiable instances and their witnesses} with \Nuxmv to
+ensure that \Calculus{} is indeed sound and does not cheat.
+
+Another threat to validity would be if our implementations of the competition
+(baseline and \Nuxmv) would deviate significantly from the expected
+implementations. For \Nuxmv{} we use the default configuration which we believe
+should be performant (or it should not be the default). Additionally, tweaking our invocation of \Nuxmv is explicitly made easy for artefact reviewers.
+
+The most important and most probable threat to validity is our choice of
+implementation platform and our choice of automata library, that is our choice
+not to use one. Since our automata are more advanced than anything supported by
+e.g. the BRICS library, we opted to use our own implementation. There are some
+signs that in particular our product computation is inefficient, notably the
+good performance of low-threshold automata materialisation that prioritises
+computing smaller products. This means that our implementation of \Calculus{}
+makes much less heavy use of our product construction library than the baseline
+implementation does, instead putting its weight into \Princess{}' theorem
+proving abilities. This situation would unfairly advantage \Calculus{} if our
+automata library was indeed the bottleneck. We believe this is unlikely since
+similar performance issues as the ones in baseline in our string solver was the
+instigating reason for this research. Additionally, while we may have a
+constant-factor performance impact from bad implementation, it is less likely
+for our potentially poor implementation to be asymptotically worse than e.g.
+BRICS. However, the performance improvement of \Calculus{} over baseline seen in
+\cref{sec:experiments} is generally not constant.
 
 \section{Conclusions}
 

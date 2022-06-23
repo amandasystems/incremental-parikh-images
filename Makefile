@@ -19,6 +19,7 @@ clean:
 	./bin/latexrun --clean-all
 	${RM} ${FIGURES}
 
+# This looks insane, I know, but it was easier to do it this way rather than figuring out how the HELL one renames something something categorical multiindices in Pandas.
 .PHONY: copy-figures
 copy-figures:
 	cp -v ../catra/experiments/{*.pdf,*.tex} graphs/
