@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=true}
+\documentclass[acmsmall,review,anonymous,screen]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=true}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[acmsmall,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -55,8 +55,7 @@
 
 
 
-\usepackage{amsthm}
-\usepackage{amsmath,mathtools,empheq,fancybox}
+\usepackage{amsmath,empheq,fancybox}
 \usepackage{paralist}
 \usepackage{url}
 \usepackage{color}
@@ -71,8 +70,14 @@
 \usepackage{algorithm2e}      
 \usepackage{multirow}
 \usepackage{mathpartir}
+\usepackage{amsthm}
+
+\usepackage{mathtools} % Bonus
+
+
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+
 
 \lstset{
     columns=fullflexible,
@@ -791,7 +796,7 @@ each letter in the word rather than the number of their occurrences and allows
 for generalisations into infinite alphabets. All of these, in some sense, add
 something which is not already there in the Parikh map. By contrast, the main
 utility of the formulation introduced here is that it allows us to \emph{remove}
-something, thereby obtaining an easier problem.
+something, thereby potentialy obtaining an easier problem.
 
 \subsection{Applications}
 
@@ -940,7 +945,7 @@ transitions $\Transitions =
 We then introduce the two predicates into our calculus with the following
 definitions:
 
-\begin{definition}
+\begin{definition}\label{def:single-image}
   The Parikh predicate, $\SinglePredicateInstance$, for some automaton
   $\Automaton = \AutomatonTuple$, modulo some map $\Map$ to a commutative monoid
   $\Monoid$ as described in Section~\ref{sec:generalised} and with a transition
@@ -1075,16 +1080,126 @@ a program, making up a MST of the automaton~\cite{path-profiling}.
 
 \subsection{An Example}
 
-\subsection{The calculus is correct}
+\subsection{\Calculus{} for one automaton is correct}\label{sec:single:correct}
 
 To be as clear as possible about what it means for our calculus to be correct,
 we use more exact definitions than the traditional soundness and completeness.
+Since correctness is guaranteed by the formulation of the predicate, our
+correctness proof means proving inductively that no rule would invalidate that
+definition.
 
-\subsubsection{The calculus terminates}
-\subsubsection{The calculus allows no values outside the Parikh image}
-\subsubsection{The calculus excludes no values in the Parikh image}
+\subsubsection{\Calculus{} terminates}
+\begin{lemma}\label{lma:single-terminates}
+  A solver implementing the calculus described in \cref{sec:calculus} starting
+  with some decidable (modulo the solver) set of clauses $\SomeClause{}$ and an
+  instance of our predicate $\SinglePredicateInstance$ will eventually
+  terminate.
+\end{lemma}
 
-\subsection{Finding the Presburger representation of a Parikh Image}
+\begin{proof}
+The first remaining source of divergence is from leftover predicates. The
+$\Image$ predicate can always be trivially removed by applying \Expand{}. This
+means a leftover $\Image$ predicate can never cause divergence. The only
+remaining predicate then is $\Connected$, which can always be removed by
+applying $\Subsume$ when no other of the rules is applicable. Hence all
+predicates introduced in the calculus can always be removed.
+
+It remains to prove that each rule is only applied finitely many times. This is
+almost obvious since both \Propagate{} and \Split{} can only be applied to
+transition variables whose $\Filter$ value has no known bound. However, \Split{}
+can always be used to split the proof tree and add clauses in precisely the
+right shape, thereby guaranteeing the ability to make forward progress.
+Therefore, the number of transition variables whose bounds are unknown is
+decreasing monotonically for any given proof goal, and hence termination is
+guaranteed.
+\end{proof}
+
+\subsubsection{\Calculus{} computes the homomorphic image}
+\begin{lemma}\label{lma:single-correct}
+  Starting with $\SinglePredicateInstance$, we will close the goal with $\top$
+  if $\exists s \in \Language(\Automaton) \HoldsThat \Map(s) = \MonoidElement$
+  and $\bot$ otherwise.
+\end{lemma}
+\begin{proof}
+Since we are always guaranteed to terminate following
+\cref{lma:single-terminates}, we know that we will close the goal eventually.
+Additionally, the property of \cref{lma:single-terminates} is trivially obtained
+from the semantics of the $\Image$ predicate as defined in
+\cref{def:single-image}. This means that we only need to prove the preservation
+of those properties to prove \cref{lma:single-correct}.
+
+\begin{lemma}\label{lma:expand-preserves}
+  \Expand{} preserves the semantics of $\Image$.
+\end{lemma}
+\begin{proof}
+
+  After application of \Expand{}, $\FlowEq$ guarantees that any
+  $\Filter(\Transition)$  for every $\Transition \in \Automaton$ is consistent
+  with the flow through the automaton. After its application, the proof goal
+  either contains an unsatisfiable set of Presburger formulae if the flow is
+  infeasible, otherwise a satisfiable set. An infesaible flow can happen in
+  either of these conditions:
+  \begin{itemize}
+    \item if $\Filter$ demands that some transition $\Transition$ is visited more times than would be allowed by $\Automaton$, or
+    \item if the path described by $\Filter$ is not consistent with a path from
+    $\InitialState$ to some state $\State$ in $\AcceptingStates$.
+  \end{itemize}
+
+  Note that \Expand{} is taken directly from the existing formulation of
+  \cref{eq:generate-parikh}.
+\end{proof}
+
+\begin{lemma}\label{lma:split-preserves}
+  \Split{} preserves the semantics of $\Image$.
+\end{lemma}
+\begin{proof}
+  \Split{} allows us to case-split at most once on each transition $\Transition
+  \in \Transitions$. This means that our proof tree at its leaves will be
+  guaranteed to have all transitions of known bounds in the correct format. This
+  means that once \Split{} is at fixpoint, the status (present or absent) of any
+  transition is known. Therefore it preserves the semantics of the $\Image$
+  predicate.
+\end{proof}
+
+\begin{lemma}\label{lma:propagate-preserves}
+  \Propagate{} preserves the semantics of $\Image$.
+\end{lemma}
+\begin{proof}
+  \Propagate{} will lazily enforce connectedness to any state. If it can be
+  applied, there exists a cut $C$ in $\Automaton$ such that some state $\State$
+  for any incoming transition $\Transition \in \Transitions_\Automaton$ has
+  $\Filter(t) = 0$  as part of the equations of the proof goal, and such that
+  $\State$ has an outgoing transition $\Transition'$ whose lower bound is not
+  $0$. Adding this conclusion will make equations unsatisfiable precisely if
+  there exists a transition $\Transition \in \Transitions_\Automaton$ such that
+  $\Filter(\Transition)$ is inconsistent with the homomorphic image, since it
+  implies that the selection of transitions is disconnected.
+\end{proof}
+
+\begin{lemma}\label{lma:subsume-preserves}
+  \Subsume{} preserves the semantics of $\Image$.
+\end{lemma}
+\begin{proof}
+  Since this rule can \emph{only} be applied if no other rule can, it means that
+  the upper and lower bounds of any transition $\Transition \in \Transitions$ as
+  defined by $\Filter(\Transition)$ is known, meaning clauses of the shape
+  $\Filter(\Transition) > 0$ or $\Filter(\Transition) = 0$ are present in the
+  proof goal for every transition and that the $\Image$ predicate has been
+  consumed by \Expand{} to be replaced by $\Connected$. This in turns means that
+  the goal can be closed only if the assignment of $\Filter$ is consistent with
+  an accepting path through $\Automaton$.
+  
+  It also means that \Propagate{} must have been applied whenever possible, meaning that for any transition $\Transition$ starting in a state $\State$ that is disconnected the corresponding $\Filter$ values, we must have applied $\Propagate{}$ to derive $\Filter(\Transition) = 0$. Note that for an infeasible assignment (such as an unsatisfiable instance) this would contradict other decisions, but it would preserve the semantics of $\Image$.
+\end{proof}
+
+Since the final step we execute is \Subsume, which we know from
+\cref{lma:subsume-preserves} preserves the semantics of $\Image$ and each step
+along the way
+(\cref{lma:expand-preserves,lma:split-preserves,lma:propagate-preserves}), it
+holds that \Calculus{} for one automaton also preserves the semantics.
+\end{proof}
+
+\subsection{Finding the Presburger representation of a homomorphic image}
 \contents{
   \item lazy qe
 }
@@ -1092,7 +1207,7 @@ we use more exact definitions than the traditional soundness and completeness.
 \section{Parikh Images from Products of Automata}\label{sec:multiple}
 
 To generalise the calculus to calculations on products of automata, we change the main predicate to take arbitrarily many automata:
-\begin{definition}
+\begin{definition}\label{def:multiple}
   $\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}$
   is true exactly when the single-automaton version of the predicate would hold
   for the automaton.
@@ -1157,9 +1272,99 @@ perform the calculus as before.
 
 
 \subsection{The extended calculus is also correct}
+
+Since the expanded calculus is in practice the addition of two rules with the
+purpose of reducing an~$\Image$ predicate containing a product to the form
+solved by the previous single-automaton rules of \cref{tbl:rules:single}, we
+extend the reasoning from \cref{sec:single:correct} to the single-automaton
+rules of \cref{tbl:rules:multi}.
+
 \subsubsection{The calculus terminates}
-\subsubsection{The calculus allows no values outside the Parikh image}
-\subsubsection{The calculus excludes no values in the Parikh image}
+\begin{lemma}
+  The addition of the \ExpandM{} and \Materialise{} rules in \cref{tbl:rules:multi}
+  maintains termination as shown in \cref{lma:single-terminates}.
+\end{lemma}
+\begin{proof}
+  Similarly to how we previously showed that the number of possible executions
+  of the \Split{} rule is bounded above by the number of transitions of an
+  automaton, we can bound the number of applications of \Materialise{} by the
+  (monotonically) decreasing number of automata in the product until we have
+  approached the starting state for the single-automaton calculus. Trivially, we
+  can eagerly apply \Materialise{} repeatedly to do so. Similarly, \ExpandM{} is
+  just the generalisation of \Expand{} to multiple automata. In other words there are no possibilities of the calculus diverging.
+\end{proof}
+
+\subsubsection{The calculus implemements the homomorphic image of the product}
+\begin{lemma}
+  Using \Calculus{} to compute $\Image_{\Automaton_1\times\ldots\times\Automaton_k, \Map}(\Filter, \MonoidElement)$ is equivalent to using the single-automaton rules to compute $\Image_{\Automaton', \Map}(\Filter, \MonoidElement)$ where $\Automaton' = \Automaton_1\times\ldots\times\Automaton_k$.
+\end{lemma}
+\begin{proof}
+
+  We perform this proof equivalent to set inclusion: by proving that neither predicate is stronger than the other, in the sense of rejecting an element that the other accepts and vice versa.
+
+\begin{lemma}\label{lma:multi:rinclude}
+  There exists no element $\MonoidElement$ such that $\Image_{\Automaton_1\times\ldots\times\Automaton_k, \Map}(\Filter, \MonoidElement) = \top$ but $\Image_{\Automaton', \Map}(\Filter, \MonoidElement) = \bot$.
+\end{lemma}
+\begin{proof}
+  Assume that such an $\MonoidElement$ exists with the goal of deriving a
+  contradiction. Under this assumption, would we be able to use the two new
+  rules to close the proof goal with $\top$?
+
+  The \ExpandM{} rule would allow us to close no goal since it only adds
+  additional clauses. Our only hope is in using \Materialise{} to get rid of the
+  product step by step without introducing an unsatisfiable clause. However, all
+  \Materialise{} does is computing the product step by step, eventually arriving
+  at $\Automaton'$ modulo permutations. Therefore, it can be no more satisfiable
+  than the single-automata predicate.
+
+  \contents{\item Do I need to worry about the fact that I have no extra
+  clauses/$\SomeClause$ here? If present, I would need to apply the definition
+  of \BindingSum{} since that is what transfers constraints on individual
+  automata up and down the materialisation.}
+\end{proof}
+
+\begin{lemma}\label{lma:multi:linclude}
+  There exists no element $\MonoidElement$ such that $\Image_{\Automaton_1\times\ldots\times\Automaton_k, \Map}(\Filter, \MonoidElement) = \top$ but $\Image_{\Automaton', \Map}(\Filter, \MonoidElement) = \bot$.
+\end{lemma}
+\begin{proof}
+  Assume that such an element exists. Then $\MonoidElement =
+  \Map(\WordOf(\Path))$ for some $\Path$ ending up in an accepting state in
+  $\Automaton'$, and consistent with $\Filter$ along the transitions of $\Path$.
+  Then a corresponding path must exist in each automata of $\Automaton'$,
+  although possibly with different labels.
+
+  For \ExpandM{} to introduce unsatisfiability, either of its automata must be
+  disconnected (or its corresponding $\Connected{}$ predicate can be removed
+  with \Propagate{}), or its flow must be infeasible. However, this contradicts
+  the existence of some corresponding path $\Path$ in each automaton. Hence,
+  \ExpandM{} cannot be the source of the unsatisfiability.
+
+  The same applies for the second half of \Materialise{}, if the corresponding
+  path exists in each individual automaton and in $\Automaton'$, it must also
+  exist in every intermittent product on the way to $\Automaton'$, and if $\Map$
+  is consistent for intermittent transition labels as it must be, then neither the intermittent $\Image$ predicates nor the final one can be the source of the unsatisfiability.
+
+  This leaves one final potential source of unsatisfiability: the first half of
+  \Materialise{}: \BindingSum{}. For that to be unsatisfiable, it requires
+  intermittent automata $\Automaton_l, \Automaton_r$ such that adding
+  $\BindingSum(\Automaton_l \times \Automaton_r)$ is unsatisfiable. The
+  generated equations state that the transitions of $\Automaton_l$ and
+  $\Automaton_r$ must be used precisely as often as their corresponding results
+  in $\Automaton_l \times \Automaton_r$. For this set of equations to be
+  unsatisfiable there must exist no path through $\Automaton_l \times
+  \Automaton_r$ that preserves this. However, this is true from the definition
+  of the product of automata: since we know the product to be nonempty, it must
+  in some sense contain at least one path whose equivalent exists in both
+  $\Automaton_l$ and $\Automaton_2$ and cannot use a corresponding transition
+  more often, or it would recognise a different langauge. Hence no such case
+  exists.
+\end{proof}
+
+Since it follows from \cref{lma:multi:linclude,lma:multi:rinclude} that both
+variants of the predicate are precisely equally strong, it must mean that they
+are equivalent, and we have proven the correctness as defined in
+\cref{def:multiple}.
+\end{proof}
 
 
 \section{Extensions}\label{sec:extensions}
@@ -1210,49 +1415,7 @@ from~\cite{generate-parikh-image}, a direct translation that uses the~\Nuxmv{}
 symbolic model checker~\cite{nuxmv} to solve our constraints, and \Fudge{the
 approximation described in~\cite{approximate-parikh} on top of the standard
 baseline back-end}. An example of an input file \Fudge{illustrating every feature
-of the file format} can be seen in Listing~\ref{lst:input-example}.
-
-\begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:introduction:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
-  // So far we only support integer counters. Note that we have individual
-  // counters for each automaton to avoid surprises for product construction.
-  counter int l_a, l_b, l_c, r_c;
-
-  synchronised {
-  automaton aca_or_bc {
-    init start;
-  
-    // We use ASCII values here, this is for lowercase a
-    start -> sawA [97] { l_a += 1 };
-    start -> sawB [98] { l_b += 1 };
-  
-    sawB -> start  [98] { l_b += 1 };
-    sawB -> final [99] { l_c += 1 };
-  
-    sawA -> sawA [99] { l_c += 1 };
-    sawA -> final [97] { l_a += 1 };
-  
-    accepting final;
-  };
-  
-  automaton something_c_something {
-      init start;
-  
-      // Special short-hand value for the whole Unicode alphabet.
-      start -> start [any] ;
-      start -> final [99] { r_c += 1 };
-  
-      final -> final [any];
-  
-      accepting final;
-  };
-  };
-  
-  // Constrain the number of a:s to be larger than the number of c:s. Since the
-  // automata are synchronised on every transition and counters are guaranteed
-  // to be consistent these constraints are sufficient without also constraining
-  // r_c.
-  constraint l_a > l_c;
-\end{lstlisting}
+of the file format} can be seen in \cref{lst:input-example}.
 
 Please note that \Catra{} uses symbolic labels for automata. A symbolic label is
 defined as a range of matching single Unicode code points. This allows succinct
@@ -1554,7 +1717,49 @@ BRICS. However, the performance improvement of \Calculus{} over baseline seen in
 
 %% Appendix
 \appendix
-% \section{Appendix}
+\section{Appendix}
+
+\begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:introduction:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
+  // So far we only support integer counters. Note that we have individual
+  // counters for each automaton to avoid surprises for product construction.
+  counter int l_a, l_b, l_c, r_c;
+
+  synchronised {
+  automaton aca_or_bc {
+    init start;
+  
+    // We use ASCII values here, this is for lowercase a
+    start -> sawA [97] { l_a += 1 };
+    start -> sawB [98] { l_b += 1 };
+  
+    sawB -> start  [98] { l_b += 1 };
+    sawB -> final [99] { l_c += 1 };
+  
+    sawA -> sawA [99] { l_c += 1 };
+    sawA -> final [97] { l_a += 1 };
+  
+    accepting final;
+  };
+  
+  automaton something_c_something {
+      init start;
+  
+      // Special short-hand value for the whole Unicode alphabet.
+      start -> start [any] ;
+      start -> final [99] { r_c += 1 };
+  
+      final -> final [any];
+  
+      accepting final;
+  };
+  };
+  
+  // Constrain the number of a:s to be larger than the number of c:s. Since the
+  // automata are synchronised on every transition and counters are guaranteed
+  // to be consistent these constraints are sufficient without also constraining
+  // r_c.
+  constraint l_a > l_c;
+\end{lstlisting}
 
 % Text of appendix \ldots
 
