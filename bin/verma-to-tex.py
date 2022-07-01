@@ -3,23 +3,23 @@
 from re import A
 
 
-initial_state = "start"
-accepting_states = {"final"}
+initial_state = 0
+accepting_states = {3}
 transitions = [
-    ("start", "a", "sawA"),
-    ("start", "b", "sawB"),
-    ("sawA", "c", "sawA"),
-    ("sawA", "a", "final"),
-    ("sawB", "b", "start"),
-    ("sawB", "c", "final"),
+    (0, "a", 1),
+    (0, "b", 2),
+    (1, "c", 1),
+    (1, "a", 3),
+    (2, "b", 0),
+    (2, "c", 3),
 ]
 
-states = {
+states = sorted({
     initial_state,
     *accepting_states,
     *{s for s, _, _ in transitions},
     *{s for _, _, s in transitions},
-}
+})
 
 
 def chunks(l, n):

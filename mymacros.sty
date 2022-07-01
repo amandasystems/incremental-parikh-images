@@ -31,6 +31,9 @@
 \newcommand{\Alphabet}[0]{\Sigma}
 \newcommand{\Letter}[0]{\alpha}
 \newcommand{\Monoid}[0]{M}
+\newcommand{\IncrementA}[1]{\begin{bmatrix}#1\\0 \\0\end{bmatrix}}
+\newcommand{\IncrementB}[1]{\begin{bmatrix}0 \\#1 \\0\end{bmatrix}}
+\newcommand{\IncrementC}[1]{\begin{bmatrix}0 \\0 \\#1\end{bmatrix}}
 \newcommand{\NProduct}[0]{\Automaton_1 \times \ldots \times \Automaton_n}
 \newcommand{\MonoidElement}[0]{m}
 \newcommand{\Strings}[0]{\Alphabet^*}
@@ -38,7 +41,7 @@
 \newcommand{\Map}[0]{h}
 \newcommand{\WordOf}[0]{w}
 \newcommand{\State}[0]{q}
-\newcommand{\AndComp}[2]{\bigwedge_{#1} #2}
+\newcommand{\AndComp}[2]{\bigwedge\limits_{#1} #2}
 \newcommand{\OrComp}[2]{\bigvee_{#1} #2}
 \newcommand{\Set}[1]{\left\{#1\right\}}
 \newcommand{\MapFromTo}[2]{\Sigma^* \rightarrow \mathbb{N}^k}
@@ -51,7 +54,6 @@
 \newcommand{\RepeatSum}[1]{#1 \ldots #1}
 \newcommand{\SinglePredicateInstance}[0]{\ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement}}
 \DeclareMathOperator{\MonoidMap}{\Pi}
-\DeclareMathOperator{\TransitionMask}{TM}
 %\DeclareMathOperator{\ComesFrom}{ComesFrom}
 \newcommand{\AutomatonVector}[0]{\mathbf{A}}
 \newcommand{\TransitionVectors}[0]{\mathbf{Tr}}
@@ -65,12 +67,16 @@
 \DeclareMathOperator{\ParikhMap}{\psi}
 \DeclareMathOperator{\SeparatingCut}{Cut}
 \DeclareMathOperator{\In}{\textsc{In}}
+\DeclareMathOperator{\Sink}{\textsc{Sink}}
+\DeclareMathOperator{\StartFlow}{\textsc{StartFlow}}
 \DeclareMathOperator{\Out}{\textsc{Out}}
 \DeclareMathOperator{\Val}{Val}
 \DeclareMathOperator{\Selected}{\textsc{Selected}}
 \DeclareMathOperator{\Deselected}{\textsc{Deselected}}
 \DeclareMathOperator{\Unknown}{\textsc{Unknown}}
 \DeclareMathOperator{\AssignFn}{\beta}
+\DeclareMathOperator{\TransitionMask}{\textsc{TransitionMask}}
+\DeclareMathOperator{\Unused}{\textsc{Unused}}
 \DeclareMathOperator{\Connected}{\textsc{Conn}}
 \DeclareMathOperator{\TransitionTerm}{TT}
 \DeclareMathOperator{\SourceTransitions}{Source}
@@ -98,6 +104,8 @@
 \newcommand{\Materialise}[0]{\textsc{Materialise}}
 \newcommand{\Ostrich}[0]{\textsc{Ostrich}}
 \newcommand{\Calculus}[0]{\textsc{LazyParikh}}
+\newcommand{\Generalise}[0]{\textsc{Generalise}}
+\newcommand{\FindImage}[0]{\textsc{FindImage}}
 \newcommand{\Catra}[0]{\textsc{Catra}}
 \newcommand{\Princess}[0]{\textsc{Princess}}
 \newcommand{\Nuxmv}[0]{nuXmv}

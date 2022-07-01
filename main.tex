@@ -71,6 +71,8 @@
 \usepackage{multirow}
 \usepackage{mathpartir}
 \usepackage{amsthm}
+\usepackage{ebproof}
+\usepackage{stackengine}
 
 \usepackage{mathtools} % Bonus
 
@@ -251,45 +253,42 @@ It is possible to compute the Parikh image of any context-free language using
 the method described in~\cite{generate-parikh-image}. Later improvements have
 produced a construction taking at most linear time to
 produce~\cite{muscholl-linear}. However, the resulting existentially quantified
-clauses are costly to eliminate, in practice making many real-world problems
-intractable.
+clauses are costly to eliminate as the number of variables increases, in
+practice making many real-world problems intractable.
 
-In addition to the costly elimination of the existentially quantified variables,
-another problem arises for the common case of solving length constraints in
-string solvers. Conjunctions of string constraints lead to the computation of
-Parikh images of products of regular languages. Applying the approach
-in~\cite{generate-parikh-image} would require the computation of the product
-before its Parikh image. In several instances we have observed while solving
-real-world string constraints, the computation of the product of automata
-exhausts the memory of any machine due to the exponential blow-up in size of the
-product, quickly becoming intractable as the number of automata in the product
-increases.
+In addition to the elimination of existentially quantified variables, another
+problem arises for the common case of solving length constraints in string
+solvers. Conjunctions of string constraints lead to the computation of Parikh
+images of products (intersections) of regular languages represented as finite
+automata. Applying the approach in~\cite{generate-parikh-image} would require
+the eager computation of the product before its Parikh image. In several
+instances we have observed while solving real-world string constraints, the
+computation of the product of automata exhausts the memory of any machine
+available due to the exponential blow-up in size of the product, quickly
+becoming intractable as the number of automata in the product increases.
 
 Addressing these concerns, we have developed a calculus for Parikh images of
 products of regular languages that we call \Calculus{}. It allows us to
 interleave the computation of arbitrarily deep products of automata with the
-product's Parikh image. This enables us to let both calculations inform each
-other, eliminating unnecessary work, and pruning the size of the partial
-products considered in the computation for a smaller memory footprint. Moreover,
-the method can be used iteratively to tackle smaller chunks of the product
-incrementally, thereby avoiding running out of memory. We implement this
-calculus, along with the approximate method of~\cite{approximate-parikh}, its
-fall-back variant adapted from~\cite{generate-parikh-image}, and an adapter for
-the \Nuxmv{} model checker, in a tool that we call \Catra{}. \Catra{} allows
-solving constraints over groups of synchronised (products of) Parikh automata,
-that is (finite-alphabet) symbolic automata with transitions that increment and
+product's Parikh image, and is generalised to an arbitrary Parikh-like
+homomorphism over automata labels. This enables us to let both calculations
+inform each other, eliminating unnecessary work, and pruning the size of the
+partial products considered in the computation for a smaller memory footprint.
+Moreover, the method can be used iteratively to tackle smaller chunks of the
+product incrementally, thereby avoiding running out of memory at all. We
+implement this calculus, along with the approximate method
+of~\cite{approximate-parikh}, its fall-back variant adapted
+from~\cite{generate-parikh-image}, and an adapter for the \Nuxmv{} model
+checker, in a tool that we call \Catra{}. \Catra{} allows solving constraints
+over groups of synchronised (products of) Parikh automata, that is
+(finite-alphabet) symbolic automata with transitions that increment and
 decrement integer registers and that allows checking linear constraints on these
 registers after running the automata. Parikh automata without constraints on the
 final values on their registers are also sometimes called cost-enriched
 automata, weighted automata or counter automata, depending on your definitions
-and side-constraints.
-
-\contents{
-  \item Automata intersection emptiness is PSPACE-complete
-  \item Producing the formula is linear, but
-  \item deciding a product of automata on a word is also PSPACE-hard
-  \item try proving that finding a word accepted by a product AND satisfying additional constraints is IN PSPACE, e.g. that we are PSPACE-complete
-}
+and side-constraints. In the satisfaction mode, we are more formally solving the
+intersection problem of Parikh automata (under homomorphism), known to be
+PSPACE-complete~\cite{graph-queries}.
 
 Additionally, \Catra{} is able to efficiently generate a quantifier-free
 Presburger formula representing such an instance of constraints and automata,
@@ -297,12 +296,12 @@ something beyond the reach of general model checkers like~\Nuxmv.
 
 In summary, we contribute:
 \begin{itemize}
-\item The \Calculus{} calculus to efficiently compute the Parikh image of products of Parikh automata.
+\item The \Calculus{} calculus to efficiently compute (a homomorphism on) the
+Parikh image of products of Parikh automata.
 \item A specialised method for quantifier elimination that blends well with \Calculus{} to efficiently compute quantifier-free Presburger representations of a given Parikh image.
-\item Experiments illustrating the performance of \Calculus{} on real-world examples from string solving, including \NrBenchmarks{} instances in a standardised format made available for future studies.
+\item Experiments illustrating the performance of \Calculus{} on real-world examples from string solving, including \NrBenchmarks{} instances in a standardised format made available for future study.
 \item The \Catra{} tool for solving such instances, containing an implementation of \Calculus{}, the over-approximation described in~\cite{approximate-parikh}, and an adapter for the~\Nuxmv{} model checker~\cite{nuxmv}.
 \item Suggestions for how to efficiently implement \Calculus{} in a modern automated theorem prover, including strategies for case splitting, clause learning, and constraint propagation for connectedness.
-\item Finally, a published description of the well-known bug in~\cite{generate-parikh-image} previously only described in folklore.
 \end{itemize}
 
 \subsection{A demonstration of our approach}\label{sec:introduction:motivation}
@@ -310,7 +309,7 @@ In summary, we contribute:
 To illustrate the key features of our approach, we start with two regular
 languages, a commutative homomorphism $f$ on them that we care about, and a side
 constraint for which we want to find values in $f$'s image over the intersection
-of the wto languages. We will use the same two regular languages, recognised by
+of the two languages. We will use the same two regular languages, recognised by
 two automata; $\SomethingCSomething{}$ (Figure~\ref{fig:something-c-something})
 and $\AcaOrBc{}$ (Figure~\ref{fig:aca-or-bc}) for both examples but change the
 constraint and homomorphism $f$.
@@ -470,14 +469,15 @@ integer $k$.
 Now assume that rather than the length (e.g. the count of the characters) we
 want to find the whole Parikh image of the intersection of $\AcaOrBc{}$ and
 $\SomethingCSomething{}$. In other words, now $f$ is a mapping to an object
-(usually seen as a vector) counting how often each character occurs in a string. Since
-extracting values from a vector is tiresome, we will use the shorthand notation
-$\TransitionCount{a}$ to refer to the number of letters a that appear. E.g.
-$\TransitionCount{a}(\text{curious and curiouser still}) = 1$. Note that we
-still have the property that $\TransitionCount{o}(\text{homomorphism}) =
-\TransitionCount{o}(\text{homo}) + \TransitionCount{o}(\text{morphism}) = 2 + 1
-= 3$. If you treat the addition as element-wise vector addition, this approach
-works for the vector version as well.
+(usually represented as a column vector) counting how often each character
+occurs in a string. Since extracting values from a vector is tiresome, we will
+use the shorthand notation $\TransitionCount{a}$ to refer to the number of
+letters a that appear. E.g. $\TransitionCount{a}(\text{curious and curiouser
+still}) = 1$. Note that we still have the property that
+$\TransitionCount{o}(\text{homomorphism}) = \TransitionCount{o}(\text{homo}) +
+\TransitionCount{o}(\text{morphism}) = 2 + 1 = 3$. If you treat the addition as
+element-wise vector addition, this approach works for the vector version as
+well.
 
 For our constraint, we will use $\TransitionCount{a} > \TransitionCount{b}$,
 that is find a count of characters in a string accepted by both automata where
@@ -650,11 +650,11 @@ a regular language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
   \end{cases}
 }\\
 & \AndComp{\Transition = \FromLabelTo{}{}{\State} \in \Transitions}{
-  \TransitionVar_{\Transition} > 0 \implies \StateVar_{\State}
+  \TransitionVar_{\Transition} > 0 \implies \StateVar_{\State} > 0
 } \\
 & \AndComp{\State \in \States}{
   \StateVar_{\State} > 0 \implies
-  \left(\FinalStateVar_{\State} = 1 \text{ if } \State \in \AcceptingStates\right) \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
+  \left(\FinalStateVar_{\State} = 1 \text{ if } \State \in \AcceptingStates \land \right) \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
     \StateVar_{\State} = \StateVar_{\State'} + 1 \land 
     \TransitionVar_{\Transition} \geq 1 \land
   \StateVar_{\State'} \geq 1
@@ -676,10 +676,6 @@ forwards from an (in our case, \emph{the}) initial state, or conversely as in
 the case here, choose an accepting state and trace a path backwards to the
 initial state. 
 
-\contents{
-  \item mention the bug here!
-}
-
 In this paper we refer to this model as the baseline approach, though we also
 apply some optimisations that allow us to detect unsatisfiability early,
 described in Section~\ref{sec:implementing-baseline}. Notably, the calculus
@@ -693,92 +689,67 @@ We apply Equation~\ref{eq:generate-parikh} to the automaton $\AcaOrBc{}$ of Figu
 \begin{equation}
   \begin{aligned}
   \ParikhMap(\Automaton):=\:
-  &\LetterVar_{a} = \TransitionVar_{\FromLabelTo{0}{a}{1}} + \TransitionVar_{\FromLabelTo{1}{a}{3}} \land \LetterVar_{b} = \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{2}{b}{1}} \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}} + \TransitionVar_{\FromLabelTo{2}{c}{3}}\\
+  &\LetterVar_{a} = \TransitionVar_{\FromLabelTo{0}{a}{1}} + \TransitionVar_{\FromLabelTo{1}{a}{3}} \land \LetterVar_{b} = \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{2}{b}{0}} \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}} + \TransitionVar_{\FromLabelTo{2}{c}{3}}\\
   &\FinalStateVar_{3} > 0 \implies \StateVar_{3} > 0\\
-  & \TransitionVar_{\FromLabelTo{0}{a}{1}} + \TransitionVar_{\FromLabelTo{0}{b}{2}} - 0 = 1 \land  \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{2}{b}{1}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
-  & \TransitionVar_{\FromLabelTo{2}{b}{1}} + \TransitionVar_{\FromLabelTo{2}{c}{3}} - \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0 \land \FinalStateVar_{3} + 0 - \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{2}{c}{3}} = 0\\
+  &\TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{0}{a}{1}} - \TransitionVar_{\FromLabelTo{2}{b}{0}} = 1 \land  \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
+  & \TransitionVar_{\FromLabelTo{2}{b}{0}} + \TransitionVar_{\FromLabelTo{2}{c}{3}} - \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0 \land \FinalStateVar_{3}  - \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{2}{c}{3}} = 0\\
   &\TransitionVar_{\FromLabelTo{0}{a}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} > 0 \implies \StateVar_{2} > 0\\
   &\TransitionVar_{\FromLabelTo{1}{c}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{1}{a}{3}} > 0 \implies \StateVar_{3} > 0\\
-  &\TransitionVar_{\FromLabelTo{2}{b}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} > 0 \implies \StateVar_{3} > 0\\
+  &\TransitionVar_{\FromLabelTo{2}{b}{0}} > 0 \implies \StateVar_{0} > 0 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} > 0 \implies \StateVar_{3} > 0\\
   &\StateVar_{0} > 0 \implies \left(\StateVar_{0} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{0}{a}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{0} = \StateVar_{2} + 1 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} \geq 1 \land \StateVar_{2} \geq 1\right)\\
   &\StateVar_{1} > 0 \implies \left(\StateVar_{1} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{1}{c}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{1} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{1}{a}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
-  &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{2}{b}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{2} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
+  &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{0} + 1 \land \TransitionVar_{\FromLabelTo{2}{b}{0}} \geq 1 \land \StateVar_{0} \geq 1\right) \lor \left(\StateVar_{2} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
   &\StateVar_{3} > 0 \implies \FinalStateVar_{3} = 1
   \end{aligned}
   \label{eq:parikh-formula}
   \end{equation}
-  
+    
   We see here that the formula encodes the choice of path at the start of the
   automaton ($\TransitionVar_{\FromLabelTo{0}{b}{2}} +
-  \TransitionVar_{\FromLabelTo{0}{a}{1}} = 1$), and the dependency between that
+  \TransitionVar_{\FromLabelTo{0}{a}{1}} -
+  \TransitionVar_{\FromLabelTo{2}{b}{0}} = 1$), and the dependency between that
   choice and the following outgoing transition, e.g. in
-  $\TransitionVar_{\FromLabelTo{2}{d}{3}} -
-  \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0$. Here we only have one choice of
+  $\TransitionVar_{\FromLabelTo{1}{a}{3}} -
+  \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0$. Here we only have one choice of
   incoming flow; from $\FinalStateVar_3$, corresponding to the only accepting
-  state. Simplifying the equation using standard algebra gives us this smaller
-  set of clauses:
+  state.
 
-  \contents{\item FIXME: this needs rewriting for the new automaton}
 
-  \begin{equation}
-    \begin{aligned}
-    &\FinalStateVar_{3} > 0 \implies \StateVar_{3} > 0\\
-    & \LetterVar_{d} + \LetterVar_{a} = 1\\
-    & \FinalStateVar_{3}  > \LetterVar_{d} \implies \StateVar_{1} > 0 \land \LetterVar_{d} > 0 \implies \StateVar_{2} > 0\\
-    &\LetterVar_{c} > 0 \implies \StateVar_{1} > 0 \land \LetterVar_{e} > 0 \implies \StateVar_{2} > 0\\
-    &\FinalStateVar_{3}  > \LetterVar_{d} \implies \StateVar_{3} > 0 \land \LetterVar_{d} > 0 \implies \StateVar_{3} > 0\\
-    &\StateVar_{0} > 0 \implies \left(\StateVar_{0} = \StateVar_{1} + 1 \land (\FinalStateVar_{3}  - \LetterVar_{d}) \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{0} = \StateVar_{2} + 1 \land \LetterVar_{d} \geq 1 \land \StateVar_{2} \geq 1\right)\\
-    &\StateVar_{1} > 0 \implies \left(\StateVar_{1} = \StateVar_{3} + 1 \land (\FinalStateVar_{3}  - \LetterVar_{d}) \geq 1 \land \StateVar_{3} \geq 1\right)\\
-    &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{3} + 1 \land \LetterVar_{d} \geq 1 \land \StateVar_{3} \geq 1\right)\\
-    &\StateVar_{3} > 0 \implies \FinalStateVar_{3} = 1
-    \end{aligned}
-    \label{eq:parikh-formula:reduced}
-    \end{equation}
-  
-Note that some of the or-clauses disappear since they contain false
-inequalities of the type $x = x + 1$, arising from cycles. These clauses encode
-the distance in a spanning tree from an accepting state, and the
-unsatisfiability is by design, essentially ensuring that two states in a cycle
-cannot vouch for each other's connectedness.
+Note that one of the $\lor$-clauses can be immediately removed since it
+contains the contradiction $\StateVar_{1} = \StateVar_{1} + 1$, arising from
+cycles. These clauses encode the distance in a spanning tree from an accepting
+state, and the unsatisfiability is by design, essentially ensuring that two
+states in a cycle cannot vouch for each other's connectedness.
 
-Assume we are really interested in occurrences with the letter e, i.e. we solve
-for $\LetterVar_e > 0$. This implies that $\StateVar_{2} > 0$ (essentially, that
-the state our transition of interest started in is reachable), in turn implying
-that $\StateVar_{2} = \StateVar_{3} + 1 \land \LetterVar_{d} \geq 1 \land
-\StateVar_{3} \geq 1$. Armed with this knowledge, we now know that $\StateVar_3
-> 0$, which means that $\FinalStateVar_3 = 1$. Since we also know that
-$\LetterVar_d \geq 1$, we know that $\LetterVar_a = 0$. This corresponds to
-choosing the bottom path through the automaton. Applying this to the equation
-and performing standard boolean logic propagation gives the following:
+Assume we are really interested in occurrences with the letter a, i.e. we solve
+for $\LetterVar_a > 0$. This implies that $\StateVar_{1} > 0 \land \StateVar_{3}
+> 0$ (essentially, that the state our transition of interest started in is
+reachable), in turn implying that $\FinalStateVar_3 = 1$. Plugging in these
+facts, we get:
 
 \begin{equation}
   \begin{aligned}
-  &\LetterVar_{d} = 1 \land \LetterVar_{a} = 0 \\
-  & \StateVar_{3} > -1 \\
-  &\LetterVar_{c} = 0\\
+  &\LetterVar_{a} = 2 \land \LetterVar_{b} = 0 \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}}\\
+  & \StateVar_{3} > 0\\
   &\StateVar_{0} > 0 \implies \StateVar_{0} = \StateVar_{3} + 2\\
   \end{aligned}
-  \label{eq:parikh-formula:choose-a}
+  \label{eq:parikh-formula-calc}
   \end{equation}
 
-  Since the final implication holds (we know $\StateVar_3 \geq 0$, and therefore
-  $\StateVar_3 + 2 > 0$), we can disregard it. Thereby we have eliminated all
-  quantified variables and are left with a formula containing only the free
-  ones. Note that all constraints on $\LetterVar_e$ have disappeared after we
-  asserted that it was strictly positive. This is no coincidence: since it is a
-  loop, it can take any positive value.
+We can then proceed to eliminate the remaining existentially quantified
+variables to obtain the formula $\LetterVar_{a} = 2 \land \LetterVar_{b} = 0
+\land \LetterVar_{c} \geq 0$ without too much effort.
 
   This example, in addition to showing how the encoding works, has hopefully
   also illustrated one of the key insights behind the design of \Calculus: the
   fact that even few additional constraints on the Parikh image can dramatically
-  reduce the difficulty of computing it, as in this extreme case where only one
-  additional choice in practice fixes the values of all other symbols in the image.
+  reduce the difficulty of computing it.
 
 \section{Overview of our generalised Parikh images}
 
 \subsection{Generalised Parikh Images}\label{sec:generalised}
 
-To generalise the logic over Parikh images, we introdouce a morphism $\Map:\: \Sigma
+To generalise the logic over Parikh images, we introduce a morphism $\Map:\: \Sigma
 \to \Monoid$ where $\Monoid = \left(X;+_{\Monoid};0_{\Monoid}\right)$ is a commutative monoid where the following holds:
 \begin{itemize}
   \item $\Map(\epsilon) = 0_{\Monoid}$
@@ -1037,14 +1008,16 @@ We use the symbolic function $\FlowEq(\Automaton, \Filter)$ that generates a set
 of existentially quantified linear inequalities with the following definition:
 $$
 \begin{aligned}
-  & \FlowEq(\Automaton, \Filter) = \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)}
-\text{ $\geq 0$ if $\State \in \AcceptingStates$, $= 0$ otherwise}\\
-  & \In(\State, \Filter) = \left(\text{$1$ if $\State = \InitialState$, otherwise $0$}\right) + \sum_{\Transition = \FromLabelTo{\State_0}{}{\State} \in \Transitions} \Filter(\Transition)\\
+  & \FlowEq(\Automaton, \Filter) = \sum\limits_{\State \in \AcceptingStates} \FinalStateVar_\State = 1 \land \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)} = \Sink(\State) \\
+  & \Sink(\State) = 0 \text{ if } \State \not\in \AcceptingStates, \FinalStateVar_\State \text{ otherwise.} \\
+  & \In(\State, \Filter) = \StartFlow(\State) + \sum_{\Transition = \FromLabelTo{\State_0}{}{\State} \in \Transitions} \Filter(\Transition)\\
+  & \StartFlow(\State)  = 1 \text{ if } \State = \InitialState, \text{ otherwise $0$.} \\
   & \Out(\State, \Filter) = \sum_{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions} \Filter(\Transition)
 \end{aligned}
 $$
-Where we transparently assign fresh variables to each state $\State \in \States$
-and existentially quantify them in the whole clause. 
+Where we transparently assign fresh variables to each state $\State \in
+\States$ as well as every accepting state $\State' \in \AcceptingStates$ and
+existentially quantify them in the whole clause. 
 
 Additionally, we assume the existence of a rule \PresburgerClose{},
 corresponding to a sound and complete solver for Presburger formulae, modulo the
@@ -1079,6 +1052,164 @@ corresponds to the placement of counters for optimally edge-profiling the CFG of
 a program, making up a MST of the automaton~\cite{path-profiling}.
 
 \subsection{An Example}
+
+Starting with~$\AcaOrBc{}$, where $\Map$ is the length function, in effect
+$\Transition \mapsto 1$ for transitions, and the constraints that the length is
+odd using the same trick as in \cref{sec:introduction:motivation}, we have the
+definitions in \cref{fig:example:single:equivalences} (omitting existential
+quantifiers and $x \geq 0$ for every variable to avoid clutter).
+
+\begin{figure}[ht]
+  We define $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$ as follows:
+
+  \begin{minipage}[b]{0.45\linewidth}
+    \begin{equation*}
+      \begin{aligned}
+        & \Filter(\FromLabelTo{start}{a}{sawA}) & = \TransitionVar_1 \\
+        & \Filter(\FromLabelTo{start}{b}{sawB}) & = \TransitionVar_2 \\
+        & \Filter(\FromLabelTo{sawA}{c}{sawA})  & = \TransitionVar_3  \\
+        & \Filter(\FromLabelTo{sawB}{b}{start}) & = \TransitionVar_4 \\
+        & \Filter(\FromLabelTo{sawA}{a}{final}) & = \TransitionVar_5 \\
+        & \Filter(\FromLabelTo{sawB}{c}{final}) & = \TransitionVar_6 \\
+      \end{aligned}
+    \end{equation*}    
+  \end{minipage}
+  \hspace{0.5cm}
+  \begin{minipage}[b]{0.45\linewidth}
+    \begin{equation*}
+      \begin{aligned}
+        % start
+        &  \TransitionVar_4 = \TransitionVar_5 + \TransitionVar_2 - 1 \\
+        % sawA
+        & \TransitionVar_1 = \TransitionVar_5 \\
+        % sawB
+        & \TransitionVar_2 = \TransitionVar_4 + \TransitionVar_6 \\
+        % final
+        & \TransitionVar_5 + \TransitionVar_6 = \FinalStateVar_1 \\
+        & \FinalStateVar_1 = 1 \\
+      \end{aligned}  
+    \end{equation*}    
+  \end{minipage}
+  \caption{Equivalences defining $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$
+  respectively.}\label{fig:example:single:equivalences}
+  \end{figure}
+
+
+Propagating the equivalences from \FlowEq{} gives us (under the implicit
+assumption that every RHS is $\geq 0$):
+\begin{equation*}
+  \begin{aligned}
+    & \Filter(\FromLabelTo{start}{a}{sawA}) & = 1 - \TransitionVar_6 \\
+    & \Filter(\FromLabelTo{start}{b}{sawB}) & = \TransitionVar_4 + \TransitionVar_6 \\
+    & \Filter(\FromLabelTo{sawA}{c}{sawA})  & = \TransitionVar_3  \\
+    & \Filter(\FromLabelTo{sawB}{b}{start}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+    & \Filter(\FromLabelTo{sawA}{a}{final}) & = 1 - \TransitionVar_6 \\
+    & \Filter(\FromLabelTo{sawB}{c}{final}) & = \TransitionVar_6 \\
+  \end{aligned}
+\end{equation*}
+
+\begin{figure}
+  \centering
+\begin{prooftree}
+  \infer0[\PresburgerClose]{
+    \begin{matrix}
+      1 - \TransitionVar_6 = 0 \land \\
+      \TransitionVar_6 = 1 \land \\
+      \TransitionVar_4 + 1 > 0 \land \\
+      \TransitionVar_3 = 0 \land \\
+      2 + \TransitionVar_4 > 0 \land \\
+      k = 1 + \TransitionVar_4 
+    \end{matrix}
+  }
+  \infer1[\Subsume{}]{
+    \begin{matrix}
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      1 - \TransitionVar_6 = 0 \land \\
+      \TransitionVar_6 = 1 \land \\
+      \TransitionVar_4 + 1 > 0 \land \\
+      \TransitionVar_3 = 0 \land \\
+      2 + \TransitionVar_4 > 0 \land \\
+      k = 1 + \TransitionVar_4 
+    \end{matrix}
+  }
+  \infer1[\Propagate]{
+    \begin{matrix}
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      1 - \TransitionVar_6 = 0 \land \\
+      \TransitionVar_6 = 1 \land \\
+      \TransitionVar_4 + 1 > 0 \land \\
+      \TransitionVar_3 \geq 0 \land \\
+      2 + \TransitionVar_4 \geq 0 \land \\
+      2k = 2 + 2\TransitionVar_4 + \TransitionVar_3
+    \end{matrix}
+  }
+  \infer1[Eq. reason]{
+    \begin{matrix}
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      1 - \TransitionVar_6 = 0 \land \\
+      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6
+    \end{matrix}
+  }
+  % BRANCH:  = 0
+  \infer0[\PresburgerClose{}]{
+    \begin{matrix}
+      \TransitionVar_3 > 0 \\
+      \TransitionVar_6 = 0 \land \\
+      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+      1 - \TransitionVar_6 > 0 \land \\
+      2k = 1 + \TransitionVar_3
+    \end{matrix}
+  }
+  \infer1[\Subsume{}]{
+    \begin{matrix}
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      \TransitionVar_3 > = 0 \\
+      \TransitionVar_6 = 0 \land \\
+      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+      1 - \TransitionVar_6 > 0 \land \\
+      2k = 1 + \TransitionVar_3
+    \end{matrix}
+  }
+  \infer1[Eq. reason]{
+    \begin{matrix}
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      \TransitionVar_6 = 0 \land \\
+      1 - \TransitionVar_6 > 0 \land \\
+      2\TransitionVar_6 + \TransitionVar_4 = 0\\
+      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3
+    \end{matrix}
+  }
+  \infer1[\Propagate{}]{
+    \begin{matrix}
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      \TransitionVar_6 = 0 \land \\
+      1 - \TransitionVar_6 > 0 \land \\
+      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3
+    \end{matrix}
+  }
+  \infer1[Eq. reason]{
+    \begin{matrix}
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      1 - \TransitionVar_6 > 0 \land \\
+      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6
+    \end{matrix} % BRANCH: > 0
+  } % SPLIT
+  \infer2[\Split{} $1 - \TransitionVar_6$]{ \Connected(\AcaOrBc{}, \Filter) \land 2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6 }
+  \infer1[\Expand{}]{\Image{}_{\AcaOrBc{}, \Transition \mapsto 1}(\Filter, 2k + 1)}
+\end{prooftree}
+\caption{A derivation for \Calculus{} computing odd lengths in $\AcaOrBc{}$.}\label{fig:derivation:single}
+\end{figure}
+
+In \cref{fig:derivation:single}, we see how we start by expanding the predicate
+using the (simplified) flow equations. We can also see how interleaving
+reasoning on the corresponding linear equations helps the production. In both
+branches the reasoning is similar: we conclude that when choosing either path at
+the starting state we must avoid the other one, perform propagation based on
+that fact, use some equational reasoning to derive the expected forms of the
+upper and lower bounds to propagate the now disconnected transitions, and
+finally subsume, removing the $\Connected{}$ predicate when we are unable to use
+either of the rules, leaving only the satisfiable remnants of the flow
+equations.
 
 \subsection{\Calculus{} for one automaton is correct}\label{sec:single:correct}
 
@@ -1199,10 +1330,65 @@ along the way
 holds that \Calculus{} for one automaton also preserves the semantics.
 \end{proof}
 
-\subsection{Finding the Presburger representation of a homomorphic image}
-\contents{
-  \item lazy qe
-}
+\subsection{Finding the Presburger representation of a homomorphic image}\label{sec:finding-the-image}
+
+To find the Presburger form of the homomorphic image efficiently, we adapt the
+quantifier elimination approach of~\cite{qe} to our problem domain. The core
+method is the same: we incrementally use \Calculus{} to find models,
+\Generalise{} the models we find into a quantifier-free Presburger formula with
+the $\MonoidElement$ as the only free variable (algorithm~\ref{alg:generalise}), add the
+negated formula as a constraint, and continue enumerating models until none
+remain. The disjunction of the generalised models we enumerated is now our
+image.
+
+\begin{algorithm}
+  \caption{$\Generalise{}(\Automaton, \Filter, a)$ will generalise a final product $\Automaton$ and a model $a$ under the homomorphism $\Map$.}\label{alg:generalise}
+  \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
+  \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
+  \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
+
+  $\Automaton' \gets \Tuple{\Automaton_\States, \Automaton_{\InitialState}, \Automaton_\AcceptingStates, \Set{\Transition \in \Automaton_\Transitions \SuchThat a(\Filter(\Transition)) \neq 0}}$
+
+  \Fudge{// This notation might be too much but IT'S OBVIOUS DAMMIT}
+
+  \KwRet{\EliminateQuantifiers{$\Map(\ParikhMap(\Automaton'))$}}
+  \end{algorithm}
+
+
+  \begin{algorithm}
+    \DontPrintSemicolon
+    \caption{$\FindImage{}(\Automaton_1 \times \ldots \times \Automaton_k, \Map)$ will find the Presburger form for the product $\Automaton_1 \times \ldots \times \Automaton_k$ modulo a homomorphism $\Map$ where the only free variable is/are the one(s) representing the monoid element of $\Map$.}\label{alg:find-image}
+    \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
+    \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
+    \SetKwFunction{NewTheoremProver}{newTheoremProver}
+    \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
+    \SetKwFunction{FreshVariable}{freshVariable}
+    \SetKwFunction{Assert}{assert}
+    \SetKwFunction{GetModel}{getModel}
+    \SetKwData{ImageVar}{image}
+  
+$p \gets \NewTheoremProver{}$\;
+$\Filter(\Transition) := \FreshVariable{p}$ for every $\Transition \in \Transitions_{\Automaton}$\;
+$\MonoidElement \gets$ \FreshVariable{$p$}\;
+\Assert{$p, \exists \MonoidElement, \Filter(\Transition) \text{ for every } \Transition \in \Transitions_\Automaton \HoldsThat \ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement} \land \AndComp{\Transition \in \Transitions}{\Filter(\Transition) \geq 0}$}\;
+$\ImageVar \gets \bot$\;
+\While{$p$ has more models}{
+  $\Tuple{\Automaton, a} \gets \GetModel(p)$\;
+  $G \gets \Generalise{}(\Automaton, \Filter, a)$\;
+  $\ImageVar \gets G \lor \Image$\;
+  \Assert{$p, \lnot G$}\;
+  }
+    \KwRet{\ImageVar}
+    \end{algorithm}
+
+    The attentive reader will notice that the \GetModel{} function is
+    nonstandard in that it returns both the model and the automaton used to
+    generate it. Since we implement algorithm~\ref{alg:find-image} inside a theorem
+    prover under our control, we are able to glean such internal data structures. This should be considered fair game, since we are in practice implementing a specialised form of quantifier elimination, which is an internal affair.
+    
+    The performance of this approach is evaluated in
+    \cref{sec:evaluation:finding-image}, where we benchmark our implementation
+    of it.
 
 \section{Parikh Images from Products of Automata}\label{sec:multiple}
 
@@ -1215,7 +1401,6 @@ To generalise the calculus to calculations on products of automata, we change th
 
   For the calculus, we first extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton.
 
-
   \begin{table}[h]
     \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
       Name & Rule & Prerequisites\\
@@ -1224,7 +1409,16 @@ To generalise the calculus to calculations on products of automata, we change th
       % EXPAND
       \ExpandM & 
       \inferrule
-      {\Set{\FlowEq(\Automaton_i), \Connected(\Automaton_i) \SuchThat \Automaton_i \in \Automaton_1,\ldots,\Automaton_k}, \ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
+      {
+        {\begin{matrix}
+          \Set{ 
+            \MonoidElement = \sum_{\Transition \in \Transitions_{\Automaton_i}} \Filter(\Transition) \cdot \Map(\Transition)
+          \SuchThat \Automaton_i \in \Automaton_1,\ldots,\Automaton_k}, \\
+          \Set{\FlowEq(\Automaton_i), \Connected(\Automaton_i) \SuchThat \Automaton_i \in \Automaton_1,\ldots,\Automaton_k}, \\
+          \ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \\
+          \SomeInequalities, \SomeClause
+        \end{matrix}}
+        }
       {\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} & 
       None \\
       \Materialise &
@@ -1270,6 +1464,73 @@ perform the calculus as before.
 
 \subsection{An Example}
 
+We return again to our example in \cref{sec:introduction:parikh}, where we
+compute the whole Parikh image of the product of $\AcaOrBc{}$ and
+$\SomethingCSomething$ under the constraint that there are more instances of
+letters a than b. We omit the definition of the map $\Map$ that maps each
+transition to the corresponding increment vector (e.g.
+\Map($\FromLabelTo{start}{a}{sawA}) = \begin{bmatrix}1\\0\\0\end{bmatrix}$),
+since it should be apparent by now.
+
+In the interest of space, we use a similar technique as in
+\cref{fig:example:single:equivalences} to combine the application of $\FlowEq$
+with the definition of $\Filter$.
+
+  We define $\Filter$ after substitutions from both initial applications of
+  $\FlowEq$ as follows:
+
+% Propagated equations
+    \begin{equation*}
+      \begin{aligned}
+        & \Filter(\FromLabelTo{start}{a}{sawA}) & = 1 - \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{start}{b}{sawB}) & = \TransitionVar_4 + \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{sawA}{c}{sawA})  & = \TransitionVar_3  \\
+        & \Filter(\FromLabelTo{sawB}{b}{start}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+        & \Filter(\FromLabelTo{sawA}{a}{final}) & = 1 - \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{sawB}{c}{final}) & = \TransitionVar_6 \\
+        % Other automaton
+        & \Filter(\FromLabelTo{start}{\Sigma}{start}) & = \TransitionVar_7 \\
+        & \Filter(\FromLabelTo{start}{c}{final}) & = 1 \\
+        & \Filter(\FromLabelTo{final}{\Sigma}{final}) & = \TransitionVar_9 \\
+      \end{aligned}
+    \end{equation*}
+    
+
+\begin{prooftree}
+  \infer0[]{
+    \begin{matrix}
+      \begin{bmatrix}
+        a \\
+        b \\
+        c
+        \end{bmatrix} = \begin{bmatrix}
+          2 - 2\TransitionVar_6 \\
+          \TransitionVar_4 + \TransitionVar_6 + 2\TransitionVar_6 + \TransitionVar_4 \\
+          \TransitionVar_3 + \TransitionVar_6
+        \end{bmatrix}
+        \\
+        \begin{bmatrix} % What to do about sigma!?
+          a \\
+          b \\
+          c
+          \end{bmatrix} = \\
+      \Connected(\AcaOrBc{}, \Filter) \land \\
+      \Connected(\SomethingCSomething{}, \Filter) \land \\
+      \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
+      \begin{bmatrix}
+        a \\
+        b \\
+        c
+        \end{bmatrix}) \land \\
+        a > b
+    \end{matrix}
+  }
+  \infer1[\ExpandM]{\Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, \begin{bmatrix}
+    a \\
+    b \\
+    c
+    \end{bmatrix}) \land a > b}
+\end{prooftree}
 
 \subsection{The extended calculus is also correct}
 
@@ -1371,36 +1632,55 @@ are equivalent, and we have proven the correctness as defined in
 
 This section describes a number of possible extensions to the calculus. Note
 that some are partially or fully implemented in \Catra{} already. In particular,
-we have support for finite symbolic transitions over Unicode alphabets to keep
-practical automata under a reasonable size.
+we have some level of support for symbolic transitions over Unicode alphabets to
+keep practical automata under a reasonable size, though we do not allow a full Boolean algebra over symbols as described e.g. in~\cite{symbolic-automata}.
 
 \subsection{Backjumping and Learning No-Goods}\label{sec:ext:backjumping}
-\contents{
-  \item What do we have
-  \item A case where no-goods would be good
-  \item What to add to the calculus?
-}
 
-\subsubsection{An Example}
+\Calculus{} can be accelerated for some instances by adding rules for
+backjumping. In particular, central connectedness constraints for an automaton
+can be learnt. In that case, when discovering that a state $\State$ of an
+automaton $\Automaton$ under a certain transition variable $\Filter$ has become
+unreachable, we can learn the clause $\Connected(\Automaton, \Filter) \land
+\sum_{\Transition \in \SeparatingCut(\Automaton, \State)} \Filter(\Transition) =
+0 \implies \sum_{\Transition' = \FromLabelTo{\State}{}{} \in
+\Transitions_{\Automaton}} = 0$. A similar rule can be used when a state becomes
+backwards-unreachable (but with a corresponding backwards cut). At the moment,
+only forward-cut learning is implemented in \Catra, and has provided a slight
+improvement in performance on some instances.
+
+The other source of clauses to learn is the \Materialise{} rule. Whenever an
+attempt to materialise a product of two ($\Filter$-filtered) automata
+$\Automaton_1 \times \Automaton_2$ produces an empty product, we can determine
+the cause of the failure with respect to the automata and their respective
+transition variables. \Fudge{How? I have no idea}
+
+\contents{\item dela upp på flera predikat
+\item lär no-good kombinationer}
+
 \subsection{Symbolic Automata}\label{sec:ext:symbolic}
 
-\contents{
-  \item Should we also write about how to adapt to infinite alphabets?
-}
+
+Extending \Calculus{} to support fully symbolic \Fudge{automata is straigthforward}. The
+only difficulty consists in handling the mapping of the homomorphism $\Map$ over
+symbolic labels, assuming it maps to finitely many monoid elements.
+
+\Fudge{We should probably expand here? I don't know}
 
 \subsection{Transducers}\label{sec:ext:transducers}
 
-\contents{\item What actually goes here!?}
+\contents{\item I have no idea what to write here
+\item multiple tracks}
 
 \section{Implementation and Experiments}\label{sec:implementation}
 
 We implement a calculus for Parikh automata as described in
-Section~\ref{sec:parikh-automata}. The artefact submitted along with this paper
+\cref{sec:parikh-automata}. The artefact submitted along with this paper
 is a program that reads one or more products of one or more DFA, the register
 incrementations performed along the edges of their transitions, and the labels
 of the transitions as ranges of Unicode characters, along with a set of
 constraints on the final values of their registers expressed as Presburger
-arithmetic. We call this program \Catra{}.\footnote{If you really must read it
+arithmetic. We call this program \Catra.\footnote{If you really must read it
 as an acronym, please read it as CAtegory Theory on Register Automata, or if you
 object to the somewhat nonstandard use of register automata and category theory,
 as Check Assignments of The Registers Afterwards, or alternatively if you find it
@@ -1427,24 +1707,26 @@ interval is closed from both edges.
 In satisfaction mode, supported by all back-ends, \Catra{} tries to satisfy the
 constraints expressed by the input file, reporting satisfiable with register
 assignments or unsatisfiable much like traditional~SAT- or SMT solvers would.
-Additionally, the baseline and our own back-end also support generating
-the Presburger formula describing the constraints of the input file \Fudge{using
-the method described in Section~\ref{sec:presburger-representation}}.
+Additionally, the baseline and our own back-end also support efficient
+generation of the Presburger formula describing the constraints of the input
+file using the method described in \cref{sec:finding-the-image}.
 
-Note that \Catra{} can solve equations of Parikh images. An equation like
+\Catra{} can solve equations of Parikh images. An equation like
 $\ParikhMap(\Automaton_1 \times \Automaton_2) = \ParikhMap(\Automaton_3 \times
 \Automaton_4)$ would be expressed as one \lstinline{synchronised} block per side of
 the equation containing their respective terms followed by a
 \lstinline{constraint} requiring all their counters to agree (e.g
 \lstinline|Aa = Ba && Ab = Bb ...|). Note that the product construction will implicitly require the counters of each term to agree with each other (and the product), so equalities between all counters of all automata are not necessary.
 
-
-\contents{
-  \item the unused predicate
-  \item single-arity
-  \item a princess theory
-}
-
+We implement \Calculus{} as a theory plug-in for the \Princess{} theorem prover.
+Since \Princess{} does not support multiple-arity predicates like the ones we
+use in \Calculus{}, we have implemented variable-length arguments using
+additional helper predicates. These are $\Unused{}(\Automaton)$, which marks an
+automaton as unused in any product, and $\TransitionMask{}(\Automaton,
+\Transition, \Filter(\Transition))$ which associates a transition $\Transition$
+and automaton $\Automaton$ with its corresponding transition variable.
+Additionally, we associate each of our predicates with an instance variable in
+order to differentiate instances of the predicates.
 
 \subsection{Implementing the Baseline}\label{sec:implementing-baseline}
 
@@ -1455,11 +1737,11 @@ give us the ability to compare the efficiency of the calculus rules themselves.
 Using the formula of Equation~\ref{eq:generate-parikh}, we produce quantified
 Presburger formulae for each successive term and add them to Princess. In this
 fashion we compute the product incrementally term by term, checking
-satisfiability in each step. We use \Fudge{a priority queue} to select which
-term to use for the next step of the product, and order it by \Fudge{the number
-of transitions} as a heuristic for the size of the term. We use this heuristic
+satisfiability in each step. We use a priority queue to select which
+term to use for the next step of the product, and order it by the number
+of transitions as a heuristic for the size of the automaton. We use this heuristic
 to avoid computing large (and therefore slow) products until we have to, banking
-our hopes on finding a source of unsatisfiability earlier. The pseudocode for
+our hopes on finding a source of unsatisfiability early. The pseudocode for
 our implementation can be seen in Algorithm~\ref{alg:baseline}.
 
 \begin{algorithm}
@@ -1532,13 +1814,12 @@ Product materialisation, then, is the final piece of the puzzle. In the current 
 
 \subsubsection{Clause Learning}
 
-Since \Catra{} does not learn very sophisticated clauses yet (such as the ones
-described in Section~\ref{sec:ext:backjumping}), it is turned off by default.
-However, even in its underdeveloped state, clause learning has shown to
-significantly improve the performance on unsatisfiable instances, at the cost of
-a loss in performance for satisfiable instances. Since \Catra{} already
-struggles more with satisfiable instances than unsatisfiable ones, we opted to
-turn the option off by default.
+\Catra{} enables clause learning by default when using our backend, as it has
+been experimentally shown to increase the performance in aggregate (though not
+strictly). We do not currently implement all the proposed features of
+\cref{sec:ext:backjumping}, but we do implement forward-reachability cut
+learning (which had a very modest improvement in performance). No sophisticated
+clause learning for products has been implemented.
 
 \subsubsection{Random Restarts}
 
@@ -1615,7 +1896,7 @@ A cactus plot showing the number of instances solved within a given timeout for 
   \label{fig:cactus}
 \end{figure}
 
-\subsubsection{Finding a Presburger Formula}
+\subsubsection{Finding a Presburger Formula}\label{sec:evaluation:finding-image}
 
 For baseline and \Calculus{}, \Catra{} offers the ability to find the equivalent Presburger formula representing a given instance. For baseline, we use the built-in quantifier elimination facilities of the underlying \Princess{} theorem prover, while for \Catra{} \Fudge{we use the specially tailored approach described in some section}. For this experiment, we use only the~\NrKnownSat{} instances known to be satisfiable from the previous experiment detailed in Sections~\ref{sec:scaling} and~\ref{sec:runtime}. 
 
@@ -1647,13 +1928,13 @@ we have also executed experimeints on different hardware and software
 configurations on smaller samples of instances to ensure that the general trend
 holds. The logs from these executions are distributed along with notes as part
 of the artefact in the interest of transparency. Moreover, we have validated
-\Fudge{all reported satisfiable instances and their witnesses} with \Nuxmv to
+\Fudge{all reported satisfiable instances and their witnesses} with \Nuxmv{} to
 ensure that \Calculus{} is indeed sound and does not cheat.
 
 Another threat to validity would be if our implementations of the competition
 (baseline and \Nuxmv) would deviate significantly from the expected
 implementations. For \Nuxmv{} we use the default configuration which we believe
-should be performant (or it should not be the default). Additionally, tweaking our invocation of \Nuxmv is explicitly made easy for artefact reviewers.
+should be performant (or it should not be the default). Additionally, tweaking our invocation of \Nuxmv{} is explicitly made easy for artefact reviewers.
 
 The most important and most probable threat to validity is our choice of
 implementation platform and our choice of automata library, that is our choice
