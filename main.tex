@@ -72,7 +72,6 @@
 \usepackage{mathpartir}
 \usepackage{amsthm}
 \usepackage{ebproof}
-\usepackage{stackengine}
 
 \usepackage{mathtools} % Bonus
 
@@ -185,25 +184,27 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-  The image of the Parikh map is important in automata theory, offering a
-  compact characterisation of an automaton. We contribute a novel understanding
-  of how Parikh maps can be combined with arbitrary commutative monoid morphisms
-  to efficiently represent real-world constraints found in String solvers.
-  Furthermore, we show how this formulation can be efficiently implemented as a
-  calculus that we call \Calculus{} in a theorem prover supporting Presburger
-  logic. In particular, our calculus allows us to solve the common problem in
-  string solvers of computing the Parikh image of products of arbitrarily many
-  automata. We demonstrate this by implementing a tool called \Catra{}, which we
-  evaluate on constraints produced by \Fudge{the PyEx benchmarks} when solved by
-  the \Ostrich{} string constraint solver. We show that \Calculus{} strictly
-  outperforms the standard eager approach described
-  in~\citeauthor{generate-parikh-image} as well as the improved
-  over-approximating method recently described
-  by~\citeauthor{approximate-parikh}. \Calculus{} typically also outperforms
-  the~\Nuxmv{} model checker, in particularly on unsatisfiable instances.
-  Finally, \Fudge{\Calculus{} and therefore \Catra{} provides an efficient
-  method for deriving the Presburger formula of a given Parikh image that
-  outperforms any previously published method.}
+  A common problem in string constraint solvers is computing the Parikh image, a
+   set of linear equations that describe all possible combinations of character
+   counts in strings of a given language. Automata-based string solvers
+   frequently need to compute the Parikh image of large products (intersections)
+   of automata, which in many operations is both prohibitively slow and
+   memory-intensive. We contribute a novel understanding of how Parikh maps can
+   be combined with arbitrary commutative monoid morphisms to represent
+   real-world constraints on regular languages, most notably the length
+   constraint. Furthermore, we show how this formulation can be efficiently
+   implemented as a calculus, \Calculus{}, in an automated theorem prover
+   supporting Presburger logic. We also provide an efficient method for deriving
+   the Presburger formula of a given Parikh image, \Fudge{which is good for
+   something} based on techniques for quantifier elimination. We implement
+   \Calculus{} in a tool called \Catra{}, and evaluate it on constraints
+   produced by the \Ostrich{} string constraint solver when solving
+   \Fudge{standard string constraint benchmarks involving string lengths}. We
+   show that our solution strictly outperforms the standard eager approach
+   described in~\citeauthor{generate-parikh-image} as well as the
+   over-approximating method recently described
+   by~\citeauthor{approximate-parikh}, and in many cases also the~\Nuxmv{} model
+   checker.
 \end{abstract}
 
 
@@ -298,23 +299,37 @@ In summary, we contribute:
 \begin{itemize}
 \item The \Calculus{} calculus to efficiently compute (a homomorphism on) the
 Parikh image of products of Parikh automata.
-\item A specialised method for quantifier elimination that blends well with \Calculus{} to efficiently compute quantifier-free Presburger representations of a given Parikh image.
+\item A specialised method for quantifier elimination that blends well with \Calculus{} to efficiently compute quantifier-free Presburger representations of a given Parikh image. \Fudge{Why is this good?}
 \item Experiments illustrating the performance of \Calculus{} on real-world examples from string solving, including \NrBenchmarks{} instances in a standardised format made available for future study.
 \item The \Catra{} tool for solving such instances, containing an implementation of \Calculus{}, the over-approximation described in~\cite{approximate-parikh}, and an adapter for the~\Nuxmv{} model checker~\cite{nuxmv}.
 \item Suggestions for how to efficiently implement \Calculus{} in a modern automated theorem prover, including strategies for case splitting, clause learning, and constraint propagation for connectedness.
 \end{itemize}
 
-\subsection{A demonstration of our approach}\label{sec:introduction:motivation}
+\section{A demonstration of our approach}\label{sec:motivation}
 
 To illustrate the key features of our approach, we start with two regular
 languages, a commutative homomorphism $f$ on them that we care about, and a side
 constraint for which we want to find values in $f$'s image over the intersection
-of the two languages. We will use the same two regular languages, recognised by
-two automata; $\SomethingCSomething{}$ (Figure~\ref{fig:something-c-something})
-and $\AcaOrBc{}$ (Figure~\ref{fig:aca-or-bc}) for both examples but change the
-constraint and homomorphism $f$.
+of the two languages. We will use the same two regular languages,
+$\mathtt{ac^*a|b(bb)^*c}$ and $\mathtt{.^*c.^*}$ for both examples but change
+the constraint $\varphi$ and homomorphism $f$. In essence, we solve the
+following set of constraints for all possible values of $s$ and
+$\MonoidElement$:
 
-\subsubsection{Counting string lengths}
+\begin{equation*}
+  \AndComp{}{\begin{aligned}
+  & \mathtt{ac^*a|b(bb)^*c} \text{ accepts } s\\
+  & \mathtt{.^*c.^*} \text{ accepts } s \\
+  & \MonoidElement = f(s) \\
+  & \varphi(\MonoidElement)
+  \end{aligned}}
+ \end{equation*}
+
+We will represent the regular languages as the automata $\SomethingCSomething{}$
+ (\cref{fig:something-c-something}) and $\AcaOrBc{}$ (\cref{fig:aca-or-bc})
+ respectively.
+
+\subsection{Counting string lengths}
 
 To keep things simple, in this first example we
 let $f$ be the function that gives the length of a given string, e.g.
@@ -334,14 +349,14 @@ f\left(\text{morphism}\right) = f\left(\text{homomorphism}\right) = 12$.
   \end{minipage}
   \end{figure}
 
-The na\"ive approach would be to first compute the product of the automata and
-then compute the length of its product. However, we can take advantage of the
-both constraints and definitions of $f$ to prune the automata before computing
-the product and help reduce the blow-up. To give an intuition for the core idea
-of \Calculus{}, we will annotate the transitions of $\SomethingCSomething$ and
-$\AcaOrBc$ with variables illustrating how many times they are taken, and
-perform informal reasoning on them corresponding to the reasoning performed by
-our calculus.
+The na\"ive approach would be to first compute the product of the automata, then
+use the standard approach to find its image under $f$, and then verify the
+constraints. However, we can take advantage of the both constraints and
+definitions of $f$ to prune the automata before computing the product and help
+reduce the blow-up. To give an intuition for the core idea of \Calculus{}, we
+will annotate the transitions of $\SomethingCSomething$ and $\AcaOrBc$ with
+variables illustrating how many times they are taken, and perform informal
+reasoning on them corresponding to the reasoning performed by our calculus.
 
 \begin{figure}[h]
   \centering 
@@ -360,9 +375,9 @@ initial flow into the starting state to 1 and use linear equations to enforce
 balanced flow throughout the automaton to determine the relations between the
 counting variables on each transition (e.g. $1 + {l_b}' = l_a + l_b$, or $l_a +
 l_c' = 1$). Strictly speaking, this is where the constant number $1$ in
-Figure~\ref{fig:something-c-something} comes: from $1 + r_\Sigma = x + r_\Sigma$
+\cref{fig:something-c-something} comes: from $1 + r_\Sigma = x + r_\Sigma$
 solved for $x$. Using analogous linear equation reasoning loses additional
-variables and gives us the annotations in Figure~\ref{fig:example-simplify-1}. 
+variables and gives us the annotations in \cref{fig:example-simplify-1}. 
 
 We sum the individual transition variables up to get the length we are actually
 interested in, e.g. the image of $f$ on $\SomethingCSomething =
@@ -464,7 +479,7 @@ obtain the quantified formula $1 + r_1 + 1 = r_2 + 1 = r_1 + r_2 + 3 = 2k + r_1
 $f(\AcaOrBc \times \SomethingCSomething)$ modulo odd lengths: $3 + 2k$, for some
 integer $k$.
 
-\subsubsection{Producing the Parikh image}\label{sec:introduction:parikh}
+\subsection{Producing the Parikh image}\label{sec:introduction:parikh}
 
 Now assume that rather than the length (e.g. the count of the characters) we
 want to find the whole Parikh image of the intersection of $\AcaOrBc{}$ and
@@ -1842,11 +1857,8 @@ Implementing such a calculus is straightforward in \Calculus, since the
 definition of products was left out of the definition. All that would be needed
 is an appropriate update of the definitions of products. Simiarly, \Catra was
 written with modularity in mind, and it should be straightforward to extend both
-the input grammar and automata implementations to accomodate multi-track
+the input grammar and automata implementations to accommodate multi-track
 automata with arbitrary synchronisation.
-
-\contents{\item I have no idea what to write here
-\item multiple tracks}
 
 \section{Implementation and Experiments}\label{sec:implementation}
 
