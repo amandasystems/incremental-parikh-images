@@ -1,23 +1,24 @@
 \usepackage{amsmath}
 \DeclareMathOperator{\Image}{Im}
-\newcommand{\commit}[0]{9c34441}
+\newcommand{\commit}[0]{2396a59}
 \newcommand{\SomethingCSomething}[0]{\Automaton_{\mathtt{.*c.*}}}
 \newcommand{\AcaOrBc}[0]{\Automaton_{\mathtt{ac^*a|b(bb)^*c}}}
 \newcommand{\CountOf}[1]{\#\text{#1}}
 \newcommand{\ImagePredicate}[4]{\Image_{#1, #2}(#3, #4)}
 \newcommand{\Automaton}[0]{\mathcal{A}}
 \newcommand{\NrBenchmarks}[0]{\Fudge{72}}
+\newcommand{\BatchSize}[0]{ca.~100}
 \newcommand{\BenchmarkRig}[0]{\Fudge{a computer}}
 \newcommand{\ScalaVersion}[0]{\Fudge{2.13.900}}
 \newcommand{\JvmVersion}[0]{\Fudge{OpenJDK 13337}}
 \newcommand{\MaxHeapSize}[0]{15~GB}
-\newcommand{\NuxmvVersion}[0]{\Fudge{9000}}
+\newcommand{\NuxmvVersion}[0]{2.0.0}
 \newcommand{\NrBroken}[0]{\Fudge{9000}}
 \newcommand{\InitialNrBenchmarks}[0]{\Fudge{9000}}
 \newcommand{\NrTrivial}[0]{\Fudge{9000}}
 \newcommand{\OverheadSeconds}[0]{\Fudge{9000 s}}
 \newcommand{\NrKnownSat}[0]{\Fudge{5}}
-\newcommand{\RuntimeTimeout}[0]{120s}
+\newcommand{\RuntimeTimeout}[0]{60s}
 \newcommand{\ImageTimeout}[0]{\Fudge{5~minutes}}
 \newcommand{\Path}[0]{p}
 \newcommand{\PathEnumeration}[0]{\Tuple{\State_0 \Label_1 \State_1 \RepeatSum{,} \State_n}}

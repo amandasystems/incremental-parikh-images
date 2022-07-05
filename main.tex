@@ -901,9 +901,11 @@ transitions $\Transitions =
   A \textit{cut}, $C$ of an automaton~$\Automaton = \AutomatonTuple$,
   $\SeparatingCut(C, \Automaton, \State)$, is a minimal set of transitions whose
   removal from~$\Transitions$ would cause~$\State \in \States$ to be unreachable
-  from the initial state~$\InitialState$. $\SeparatingCut(\Automaton,
-  \InitialState)$ is crucially undefined since it cannot be made unreachable
-  from itself by definition.
+  from the initial state~$\InitialState$, or cut it off from reaching any
+  accepting state. $\SeparatingCut(\Automaton, \InitialState)$ is crucially
+  undefined if $\Automaton$ accepts any string since it cannot be made unreachable
+  from itself by definition and must have at least onepath to an accepting state
+  if it accepts any string.
 \end{definition}
 
 \begin{definition}
@@ -1462,7 +1464,7 @@ $\Filter$ to fresh terms for each transition in the product.
 Finally, for instances of precisely one automaton, neither rule applies and we
 perform the calculus as before.
 
-\subsection{An Example}
+\subsection{An Example}\label{sec:multiple:example}
 
 We return again to our example in \cref{sec:introduction:parikh}, where we
 compute the whole Parikh image of the product of $\AcaOrBc{}$ and
@@ -1477,7 +1479,7 @@ In the interest of space, we use a similar technique as in
 with the definition of $\Filter$.
 
   We define $\Filter$ after substitutions from both initial applications of
-  $\FlowEq$ as follows:
+  $\FlowEq$ as follows, note the element-wise expansion for the $\Sigma$ labels:
 
 % Propagated equations
     \begin{equation*}
@@ -1489,15 +1491,152 @@ with the definition of $\Filter$.
         & \Filter(\FromLabelTo{sawA}{a}{final}) & = 1 - \TransitionVar_6 \\
         & \Filter(\FromLabelTo{sawB}{c}{final}) & = \TransitionVar_6 \\
         % Other automaton
-        & \Filter(\FromLabelTo{start}{\Sigma}{start}) & = \TransitionVar_7 \\
+        & \Filter(\FromLabelTo{start}{\Sigma}{start}) & = \TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c} \\
         & \Filter(\FromLabelTo{start}{c}{final}) & = 1 \\
-        & \Filter(\FromLabelTo{final}{\Sigma}{final}) & = \TransitionVar_9 \\
+        & \Filter(\FromLabelTo{final}{\Sigma}{final}) & = \TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c} \\
       \end{aligned}
     \end{equation*}
     
+\begin{prooftree}
+  \infer0[\PresburgerClose{}]{
+    \begin{matrix}
+      1 = \TransitionVar_{10} \\
+      \TransitionVar_3 = \TransitionVar_{11} \\
+      1 = \TransitionVar_{12} \\
+      1 = \TransitionVar_{11} \\
+      2 > 0
+    \end{matrix}  
+  }
+  \infer1[\Subsume{}, \Expand{}, \Subsume{}]{
+    \begin{matrix}
+      1 = \TransitionVar_{10} \\
+      \TransitionVar_3 = \TransitionVar_{11} \\
+      1 = \TransitionVar_{12} \\
+      1 = \TransitionVar_{11} \\
+      \Image{}_{\Automaton', \Map}(\Filter, 
+      \begin{bmatrix}
+        2 \\
+        0 \\
+        1
+        \end{bmatrix}) \land \\
+      \Connected(\SomethingCSomething{}, \Filter) \land \\
+        2 > 0
+    \end{matrix}  
+  }
+  \infer1[Eq. reasoning]{
+    \begin{matrix}
+      1 = \TransitionVar_{10} \\
+      \TransitionVar_3 = \TransitionVar_{11} \\
+      1 = \TransitionVar_{12} \\
+      1 = \TransitionVar_{11} \\
+      \Image{}_{\Automaton', \Map}(\Filter, 
+      \begin{bmatrix}
+        a \\
+        0 \\
+        c
+        \end{bmatrix}) \land \\
+      \TransitionVar_6 = 0 \land \\
+      \TransitionVar_4 = 0 \land \\
+      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+      \begin{bmatrix}
+        a \\
+        b \\
+        c
+        \end{bmatrix} = \begin{bmatrix}
+          2  \\
+          0 \\
+          1
+        \end{bmatrix} \land
+        \\
+        \begin{bmatrix}
+          a \\
+          b \\
+          c
+          \end{bmatrix} = \begin{bmatrix}
+            \TransitionVar_{7a} + \TransitionVar_{9a} \\
+            0 \\
+            \TransitionVar_{7c} + \TransitionVar_{9c} + 1
+          \end{bmatrix} \land \\
+      \Connected(\SomethingCSomething{}, \Filter) \land \\
+        a > 0
+    \end{matrix}  
+  }
+\end{prooftree}
 
 \begin{prooftree}
-  \infer0[]{
+  \infer0[\Materialise]{
+    \begin{matrix}
+      \TransitionVar_6 = 0 \\
+      \TransitionVar_4 = 0 \\
+      2\TransitionVar_6 + \TransitionVar_4 = 0 \\
+      \begin{bmatrix}
+        a \\
+        b \\
+        c
+        \end{bmatrix} = \begin{bmatrix}
+          2  \\
+          0 \\
+          \TransitionVar_3 
+        \end{bmatrix}
+        \\
+        \begin{bmatrix}
+          a \\
+          b \\
+          c
+          \end{bmatrix} = \begin{bmatrix}
+            \TransitionVar_{7a} + \TransitionVar_{9a} \\
+            0 \\
+            \TransitionVar_{7c} + \TransitionVar_{9c} + 1
+          \end{bmatrix} \\
+      \Connected(\SomethingCSomething{}, \Filter) \land \\
+      \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
+      \begin{bmatrix}
+        a \\
+        0 \\
+        c
+        \end{bmatrix}) \land \\
+        a > 0
+    \end{matrix}  
+  }
+  \infer1[\Subsume{}]{
+  \begin{matrix}
+    \TransitionVar_6 + \TransitionVar_4 = 0 \\
+    1 - \TransitionVar_6 > 0 \\
+    \TransitionVar_6 = 0 \\
+    \TransitionVar_4 = 0 \\
+    \TransitionVar_3 > 0 \\
+    2\TransitionVar_6 + \TransitionVar_4 = 0 \\
+    \begin{bmatrix}
+      a \\
+      b \\
+      c
+      \end{bmatrix} = \begin{bmatrix}
+        2  \\
+        0 \\
+        \TransitionVar_3 
+      \end{bmatrix}
+      \\
+      \begin{bmatrix} % What to do about sigma!?
+        a \\
+        b \\
+        c
+        \end{bmatrix} = \begin{bmatrix}
+          \TransitionVar_{7a} + \TransitionVar_{9a} \\
+          0 \\
+          \TransitionVar_{7c} + \TransitionVar_{9c} + 1
+        \end{bmatrix} \\
+    \Connected(\AcaOrBc{}, \Filter) \land \\
+    \Connected(\SomethingCSomething{}, \Filter) \land \\
+    \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
+    \begin{bmatrix}
+      a \\
+      0 \\
+      c
+      \end{bmatrix}) \land \\
+      a > 0
+  \end{matrix}
+  }
+  \infer1[Eq. reasoning]{
     \begin{matrix}
       \begin{bmatrix}
         a \\
@@ -1505,7 +1644,7 @@ with the definition of $\Filter$.
         c
         \end{bmatrix} = \begin{bmatrix}
           2 - 2\TransitionVar_6 \\
-          \TransitionVar_4 + \TransitionVar_6 + 2\TransitionVar_6 + \TransitionVar_4 \\
+          2\TransitionVar_4 + 3\TransitionVar_6 \\
           \TransitionVar_3 + \TransitionVar_6
         \end{bmatrix}
         \\
@@ -1513,7 +1652,11 @@ with the definition of $\Filter$.
           a \\
           b \\
           c
-          \end{bmatrix} = \\
+          \end{bmatrix} = \begin{bmatrix}
+            \TransitionVar_{7a} + \TransitionVar_{9a} \\
+            \TransitionVar_{7b} + \TransitionVar_{9b} \\
+            \TransitionVar_{7c} + \TransitionVar_{9c} + 1
+          \end{bmatrix} \\
       \Connected(\AcaOrBc{}, \Filter) \land \\
       \Connected(\SomethingCSomething{}, \Filter) \land \\
       \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
@@ -1653,21 +1796,54 @@ The other source of clauses to learn is the \Materialise{} rule. Whenever an
 attempt to materialise a product of two ($\Filter$-filtered) automata
 $\Automaton_1 \times \Automaton_2$ produces an empty product, we can determine
 the cause of the failure with respect to the automata and their respective
-transition variables. \Fudge{How? I have no idea}
-
-\contents{\item dela upp på flera predikat
-\item lär no-good kombinationer}
+transition variables, and learn no-good combinations that can never be part of a
+model. In order to be able to do this, we need a few semantic predicates to
+record the state of the calculation, as well as a system of disambiguating
+automata, since it is possible to arrive at the same automaton by multiple
+combinations of decisions and products. In \Catra{}, we use a number of
+additional predicates to record the status of the materialisation of products,
+to separate instances of our main predicate, and to register the mapping between
+automata and their respective transition $\Filter$ terms, described in
+\cref{sec:implementation}. However, at this point only rudimentary no-good
+learning is implemented.
 
 \subsection{Symbolic Automata}\label{sec:ext:symbolic}
 
-
-Extending \Calculus{} to support fully symbolic \Fudge{automata is straigthforward}. The
-only difficulty consists in handling the mapping of the homomorphism $\Map$ over
-symbolic labels, assuming it maps to finitely many monoid elements.
-
-\Fudge{We should probably expand here? I don't know}
+Extending \Calculus{} to support fully symbolic automata is possible within the
+framework, depending on your choice of $\Map$. The difficulty consists in
+handling the mapping of the homomorphism $\Map$ over symbolic labels, assuming
+it maps to finitely many monoid elements. This is not always straightforward, as
+seen in the example of \cref{sec:multiple:example}. This complexity is inherent
+in computing the full Parikh image, and stems from the fact that we need to
+differentiate between the possible interpretations of the $\Sigma$ transitions
+without knowing ahead of times which ones will actually be materialied in the
+product. If, on the other hand, if our $\Map$ had been length-counting, which
+does not differentiate between values, it would have required no adaptation at
+all. With a somewhat liberal interpretation of what we are allowed to map to
+(e.g. fresh terms), it is possible to use $\Map$ to represent choice operations
+like the ones in a range label. In \Catra{}, we frontload this problem by
+requiring the user to encode their input as a Parikh automaton. \Fudge{How is
+the encoding of Ostrich Plus automata done?}
 
 \subsection{Transducers}\label{sec:ext:transducers}
+
+Another interesting application is applying \Calculus{} to automata with
+multiple tracks, e.g. transducers. One application of such a calculus would be
+to represent replace operations and other functions on regular languages, and to
+be able to answer questions like "does this operation change the length of the
+string". The difficulty in implementing it for transducers is first to perform
+the mapping on the labels, which for both the length and Parikh cases is
+straightforward; just do the same thing in two dimensions. The more complicated
+operation is defining the product of transducers. In some cases it would
+probably be desirable to perform synchronisation (e.g. requiring overlapping
+transitions) on only some transitions, for example the first track.
+
+Implementing such a calculus is straightforward in \Calculus, since the
+definition of products was left out of the definition. All that would be needed
+is an appropriate update of the definitions of products. Simiarly, \Catra was
+written with modularity in mind, and it should be straightforward to extend both
+the input grammar and automata implementations to accomodate multi-track
+automata with arbitrary synchronisation.
 
 \contents{\item I have no idea what to write here
 \item multiple tracks}
@@ -1839,17 +2015,62 @@ choice of product to materialise or transitions to split on.
 
 We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances generated by the \Ostrich{} string constraint solver when solving the \Fudge{pyex benchmarks}. \Fudge{The instances are all enormous and have some on average 900 products of 400000 automata with 97 counters each and 9999 constraints}. After generating an initial~\InitialNrBenchmarks{}, we remove~\NrBroken{} misgenerated instances that did not parse, as well as~\NrTrivial{} instances solved in under five seconds by the baseline backend. The benchmarks are run on commit~\texttt{\commit}.
 
-The benchmarks are executed in parallel, since they are mostly single-threaded and initial results showed negligible interference on performance, on \BenchmarkRig{}. We compiled the code using Scala~\ScalaVersion{}, and executed the experiments on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{} version~\NuxmvVersion{} invoked as a subprocess for each instance. Experiments were executed on a fresh JVM per backend, but the JVM was kept active for all benchmarks, meaning that JIT compilation would make subsequent executions faster. We believe this represents a realistic use case where \Calculus{} is integrated into a string solver or other system and be called repeatedly. To mitigate systemic impacts of this decision on our results, experiments were executed in random order for all backends. We run all  with a timeout of~\RuntimeTimeout{}.
+The benchmarks are executed in parallel using GNU Parallel~\cite{parallel},
+since they are mostly single-threaded and initial results showed negligible
+interference on performance, on \BenchmarkRig{}. We compiled the code using
+Scala~\ScalaVersion{}, and executed the experiments on~\JvmVersion{} with a
+maximum heap of~\MaxHeapSize{}. We used \Nuxmv{} version~\NuxmvVersion{} invoked
+as a subprocess for each instance. Experiments were executed on a fresh JVM per
+backend, but the JVM was kept active for each batch of \BatchSize{} instances,
+meaning that JIT compilation would make subsequent executions faster, while
+still periodically restarting the JVM. We believe this represents a realistic
+use case where \Calculus{} is integrated into a string solver or other system
+and is called repeatedly. To mitigate systemic impacts of this decision on our
+results, experiments were executed in random order for all backends. We run all
+benchmarks with a timeout of~\RuntimeTimeout{}.
 
-As a way of gauging the differences in overhead between the native backends and \Nuxmv, we executed a small experiment where we ran the same trivial instance 30 times and observed the runtimes for all solvers. All backends saw an improvement from JIT compilation within the first three runs, but subsequent runs only improved the native backends. The final measured overhead for the fully warm JVMs was less than~\OverheadSeconds. From this we draw the conclusion that major differences in runtime between the native backends and \Nuxmv{} is more likely to stem from innate differences rather than unfair overhead resulting from our particular configuration.
+As a way of gauging the differences in overhead between the native backends and
+\Nuxmv, we executed a small experiment where we ran the same trivial instance 30
+times and observed the runtimes for all solvers. All backends saw an improvement
+from JIT compilation within the first three runs, but subsequent runs only
+improved the native backends. The final measured overhead for the fully warm
+JVMs was less than~\OverheadSeconds. From this we draw the conclusion that major
+differences in runtime between the native backends and \Nuxmv{} is more likely
+to stem from innate differences rather than unfair overhead resulting from our
+particular configuration. Additionally, one of the advantages of \Calculus{} to
+\Nuxmv{} is that the former can me integrated into an automated theorem prover
+while the latter has to be called as a separate process. In this sense, our
+benchmarking setup can be said to be realistic.
 
 All runtimes are measured in wall-clock time as observed by the JVM when executing the instance, and exclude time spent parsing, which in all observed cases was minimal in comparison to the runtime, usually far below 0.1 second.
 
-It should be noted that despite running in the standard, deterministic configuration, we observed some degree of nondeterminism in \Nuxmv. Instances that were solved or unsolved would sometimes be solved or timed out in subsequent runs. This observation was made even without randomised execution order, suggesting that the nondeterminism likely stemmed either from our encoding of the instances into \Nuxmv's format, or the execution environment. Similarly, \Calculus{} showed similar signs of nondeterminism, but only for satisfiable instances. To address this, we increased the runtime from our initial experiments to give us a wider marigin. By contrast, the baseline implementation showed no signs of nondeterminism. It should be noted that for both backends exhibiting nondeterminism, the nondeterminism did not change the general trend of the experiments, even for experiments with few instances. Therefore, we believe that our large set of benchmarks will protect us from bias since any backend is unlikely to be neither consistently lucky nor consistently unlucky.
+It should be noted that despite running in the standard, deterministic
+configuration, we observed some degree of nondeterminism in \Nuxmv. Instances
+that were solved or unsolved would sometimes be solved or timed out in
+subsequent runs. This observation was made even without randomised execution
+order, suggesting that the nondeterminism likely stemmed either from our
+encoding of the instances into \Nuxmv's format, or the execution environment.
+Similarly, \Calculus{} showed similar signs of nondeterminism, but only for
+satisfiable instances. To address this, we increased the runtime from our
+initial experiments to give us a wider marigin. By contrast, the baseline
+implementation showed no signs of nondeterminism. It should be noted that for
+both backends exhibiting nondeterminism, the nondeterminism did not change the
+general trend of the experiments, even for experiments with few instances.
+Therefore, we believe that our large set of benchmarks will protect us from bias
+since any backend is unlikely to be neither consistently lucky nor consistently
+unlucky.
 
 \subsubsection{Execution Time and Ability to Solve Instances}\label{sec:runtime}
 
-In Figures~\ref{fig:solve-division} we show how many of the~\NrBenchmarks{} the respective back-ends could solve and with which status. A full summary of their outcomes is also available in Table~\ref{tab:solve-status}. We see here \Fudge{that some solver is better than the others}.
+In Figures~\ref{fig:solve-division} we show how many of the~\NrBenchmarks{} the
+respective back-ends could solve and with which status. A full summary of their
+outcomes is also available in Table~\ref{tab:solve-status}. We see here that
+\Calculus{} generally outperforms \Nuxmv{} on unsatisfiable instances, while
+being slightly worse at satisfiable instances. Both \Nuxmv{} and \Calculus{}
+massively and strictly outperform the baseline approach on every kind of
+instance, but most of all on satisfiable instances. In fact, the baseline
+approach was significantly harder to benchmark due to its much higher demand for
+RAM. 
 
 \begin{table}[ht]
   \centering
