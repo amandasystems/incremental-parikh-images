@@ -120,10 +120,6 @@
 \title{An Efficient Calculus for Generalised Parikh Images of Regular Languages}
                                         %% when present, will be used in
                                         %% header instead of Full Title.
-\titlenote{with title note}             %% \titlenote is optional;
-                                        %% can be repeated if necessary;
-                                        %% contents suppressed with 'anonymous'
-
 %% Author information
 %% Contents and number of authors suppressed with 'anonymous'.
 %% Each author should be introduced by \author, followed by
@@ -246,9 +242,13 @@
 
 The Parikh map is a characterisation of a context-free language as a vector of
 its character counts, famously a semilinear set~\cite{parikh-theorem}. It
-appears naturally as part of many operations in model checking and the solving
-of string constraints in automata-based string solvers such as \Ostrich{},
-notably in representing constraints on string lengths.
+appears naturally as part of \Fudge{many operations} in model checking and
+solving string constraints in automata-based solvers such as \Ostrich{}
+\cite{ostrich}, notably in representing constraints on string lengths.
+Specialised string solvers like e.g. Trau \cite{trau} also perform extensive
+reasoning using Parikh images, but do so on restricted automata that do not
+suffer from the blow-up we seek to address, though it might be possible to
+adapts aspects of our approach to theirs.
 
 It is possible to compute the Parikh image of any context-free language using
 the method described in~\cite{generate-parikh-image}. Later improvements have
@@ -258,42 +258,58 @@ clauses are costly to eliminate as the number of variables increases, in
 practice making many real-world problems intractable.
 
 In addition to the elimination of existentially quantified variables, another
-problem arises for the common case of solving length constraints in string
-solvers. Conjunctions of string constraints lead to the computation of Parikh
-images of products (intersections) of regular languages represented as finite
-automata. Applying the approach in~\cite{generate-parikh-image} would require
-the eager computation of the product before its Parikh image. In several
-instances we have observed while solving real-world string constraints, the
-computation of the product of automata exhausts the memory of any machine
-available due to the exponential blow-up in size of the product, quickly
-becoming intractable as the number of automata in the product increases.
+problem arises from length constraints in string solvers. Conjunctions of string
+constraints lead to the computation of length images of products (intersections)
+of regular languages represented as finite automata. Applying the approach
+in~\cite{generate-parikh-image} would require the eager computation of the
+product before its length image. In several instances we have observed while
+solving real-world string constraints, the computation of the product of
+automata exhausts the memory of any machine available due to the exponential
+blow-up in size of the product, quickly becoming intractable as the number of
+automata in the product increases. The current best published mitigation for
+this problem is an over-approximation that works by approximating the Parikh
+image of a product of automata to be the conjunction of the image of the
+individual automata of the product \cite{approximate-parikh}. This approach only
+works for unsatisfiable instances, and comes with a harsh penalty on satisfiable
+instances.
 
 Addressing these concerns, we have developed a calculus for Parikh images of
 products of regular languages that we call \Calculus{}. It allows us to
 interleave the computation of arbitrarily deep products of automata with the
 product's Parikh image, and is generalised to an arbitrary Parikh-like
-homomorphism over automata labels. This enables us to let both calculations
-inform each other, eliminating unnecessary work, and pruning the size of the
-partial products considered in the computation for a smaller memory footprint.
-Moreover, the method can be used iteratively to tackle smaller chunks of the
-product incrementally, thereby avoiding running out of memory at all. We
-implement this calculus, along with the approximate method
-of~\cite{approximate-parikh}, its fall-back variant adapted
-from~\cite{generate-parikh-image}, and an adapter for the \Nuxmv{} model
-checker, in a tool that we call \Catra{}. \Catra{} allows solving constraints
-over groups of synchronised (products of) Parikh automata, that is
-(finite-alphabet) symbolic automata with transitions that increment and
-decrement integer registers and that allows checking linear constraints on these
-registers after running the automata. Parikh automata without constraints on the
-final values on their registers are also sometimes called cost-enriched
-automata, weighted automata or counter automata, depending on your definitions
-and side-constraints. In the satisfaction mode, we are more formally solving the
-intersection problem of Parikh automata (under homomorphism), known to be
-PSPACE-complete~\cite{graph-queries}.
+homomorphism over automata labels, including string lengths. This enables us to
+let both calculations inform each other, eliminating unnecessary work, and
+pruning the size of the partial products considered in the computation for a
+smaller memory footprint. Moreover, the method can be used iteratively to tackle
+smaller chunks of the product incrementally, thereby avoiding running out of
+memory at all.
 
-Additionally, \Catra{} is able to efficiently generate a quantifier-free
-Presburger formula representing such an instance of constraints and automata,
-something beyond the reach of general model checkers like~\Nuxmv.
+The problem of computing constraints on Parikh images over products of regular
+languages under a given commutative homomorphism amounts to solving products of
+Parikh automata. Parikh automata are regular automata extended with integer
+counters with given increments and decrements for each transition, where we
+allow checking a set of linear constraints on the final values of the counters
+(but not their intermittent values) \cite{parikh-automata}. Parikh automata
+without constraints on the final values on their registers are also sometimes
+called cost-enriched automata, weighted automata or counter automata, depending
+on exact definitions and side-constraints. The decision problem tackled in this
+paper, determining the emptiness of an intersection of Parikh automata, was
+recently shown to be PSPACE-complete~\cite{graph-queries}.
+
+In addition to the decision problem of determining whether an intersection of
+Parikh automata is empty and the satisfaction problem of finding a value from
+the intersection if it is not, \Catra{} is able to efficiently generate a
+quantifier-free Presburger formula representing an intersection of Parikh
+automata, something beyond the reach of general model checkers like~\Nuxmv.
+\Fudge{This is useful because the moon is made of cheese.}
+
+We implement \Calculus{} as a theory for the \Princess{} automated theorem
+prover in a tool that we call \Catra{}. \Catra also supports using the
+approximate method of \cite{approximate-parikh}, its fall-back variant adapted
+from~\cite{generate-parikh-image}, and an adapter for the \Nuxmv{} model
+checker~\cite{nuxmv}. Using \Catra{}, we compare \Calculus{} to the other two
+back-ends on \NrBenchmarks{} Parikh automata satisfaction problems generated
+\Fudge{by Ostrich+}.
 
 In summary, we contribute:
 \begin{itemize}
@@ -307,14 +323,14 @@ Parikh image of products of Parikh automata.
 
 \section{A demonstration of our approach}\label{sec:motivation}
 
-To illustrate the key features of our approach, we start with two regular
+To illustrate the key features of \Calculus, we start with two regular
 languages, a commutative homomorphism $f$ on them that we care about, and a side
 constraint for which we want to find values in $f$'s image over the intersection
-of the two languages. We will use the same two regular languages,
-$\mathtt{ac^*a|b(bb)^*c}$ and $\mathtt{.^*c.^*}$ for both examples but change
-the constraint $\varphi$ and homomorphism $f$. In essence, we solve the
-following set of constraints for all possible values of $s$ and
-$\MonoidElement$:
+of the two languages using a heavily elided version of \Calculus. We will use
+the same two regular languages, $\mathtt{ac^*a|b(bb)^*c}$ and $\mathtt{.^*c.^*}$
+for both examples but change the constraint $\varphi$ and homomorphism $f$. In
+essence, we solve the following set of constraints for all possible values of
+$s$ and $\MonoidElement$:
 
 \begin{equation*}
   \AndComp{}{\begin{aligned}
@@ -336,7 +352,7 @@ let $f$ be the function that gives the length of a given string, e.g.
 $f\left(\text{curious and curiouser still}\right) = 27$, and $f\left(\text{homo}\right) +
 f\left(\text{morphism}\right) = f\left(\text{homomorphism}\right) = 12$.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \begin{minipage}[b]{0.75\linewidth}
   \centering 
     \includegraphics[width=\textwidth]{aca_or_bc}
@@ -350,22 +366,25 @@ f\left(\text{morphism}\right) = f\left(\text{homomorphism}\right) = 12$.
   \end{figure}
 
 The na\"ive approach would be to first compute the product of the automata, then
-use the standard approach to find its image under $f$, and then verify the
-constraints. However, we can take advantage of the both constraints and
-definitions of $f$ to prune the automata before computing the product and help
-reduce the blow-up. To give an intuition for the core idea of \Calculus{}, we
-will annotate the transitions of $\SomethingCSomething$ and $\AcaOrBc$ with
-variables illustrating how many times they are taken, and perform informal
-reasoning on them corresponding to the reasoning performed by our calculus.
+use the approach from \cite{generate-parikh-image} to find its image under $f$,
+and then verify the constraints. However, we can take advantage of both the
+constraints and definitions of $f$ to prune the automata before computing the
+product and help reduce the blow-up.
 
-\begin{figure}[h]
+
+To give an intuition for the core idea of \Calculus{}, we will annotate the
+transitions of $\SomethingCSomething$ and $\AcaOrBc$ with variables illustrating
+how many times they are taken, and perform informal reasoning on them
+corresponding to the reasoning performed by our calculus.
+
+\begin{figure}[ht]
   \centering 
     \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified}
     \caption{$\AcaOrBc{}$ with its symbolic transition counters after
     simplification of their equations.}\label{fig:example-simplify-1}
   \end{figure}
 
-Note that we have already performed some reasoning in the starting figures -- we
+Note that we have already performed some reasoning in the starting figures; we
 use the same symbol for the number of times each of the upper transitions of
 $\AcaOrBc$ are taken, since we know that they must be taken the same number of
 times, and we introduced the constant $1$ for the middle transition in
@@ -400,7 +419,7 @@ path from an initial to an accepting state, but omits the connectivity of that
 path in the presence of loops. For example, no valid path would have both $l_c >
 0$ and $l_b' > 0$, but no such restriction exists in the formula above.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering 
     \includegraphics[width=0.75\linewidth]{something_c_something_length_simplified}
     \caption{$\SomethingCSomething{}$ after using linear reasoning over lengths to replace a variable.}\label{fig:example-length-reduced}
@@ -434,7 +453,7 @@ $\FromLabelTo{start}{a}{sawA}$ of $\AcaOrBc$. This creates two cases: $1-l_c' =
 0$ and $1-l_c' > 0$. We start with the first case, and after propagating the now known values and removing any transition that becomes zero, we get the automaton of Figure~\ref{fig:aca-or-bc-length-split-1}.
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering 
     \includegraphics[width=0.75\linewidth]{aca_or_bc_length_split_1}
     \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{start}{a}{sawA}$ is not used.}\label{fig:aca-or-bc-length-split-1}
@@ -445,7 +464,7 @@ $\FromLabelTo{start}{a}{sawA}$ of $\AcaOrBc$. This creates two cases: $1-l_c' =
   forwards/backwards reachability from the initial and accepting states
   respectively. In other words, $2k+1 = 0$ for this case and is implied by the splitting constraint. However, no choice of integer $k$  will satisfy this equation. Therefore, we close this branch and proceed with the other one -- where $1-l_c' > 0$. Note that we do so without ever computing a potentially expensive product of automata.
 
-  \begin{figure}[h]
+  \begin{figure}[ht]
     \centering 
       \includegraphics[width=0.75\linewidth]{aca_or_bc_length_split_2}
       \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{start}{a}{sawA}$ is used.}\label{fig:aca-or-bc-length-split-2}
@@ -459,7 +478,7 @@ into it. We add the conclusion $l_b' = 0$, which severs both transitions into
 the state and removes it from our automaton. Following this we are ready to
 compute the product, which can be seen in Figure~\ref{fig:length-split-product}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering 
     \includegraphics[width=0.75\linewidth]{length_split_product}
     \caption{The product of $\AcaOrBc$ and $\SomethingCSomething$ after
@@ -522,7 +541,7 @@ $\AcaOrBc$ gives $0 \geq l_b'$, and since we cannot use a transition a negative
 number of times $l_b' = 0$, which gives the automaton in
 Figure~\ref{fig:example-simplify-2}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering 
     \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified_2}
     \caption{$\AcaOrBc{}$ after removing the now unused b-transition.}\label{fig:example-simplify-2}
@@ -533,7 +552,7 @@ Figure~\ref{fig:example-simplify-2}.
   therefore that $l_c' = 0$. This gives us the even smaller automaton of
   Figure~\ref{fig:example-simplify-3}.
 
-  \begin{figure}[h]
+  \begin{figure}[ht]
     \centering 
       \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified_3}
       \caption{$\AcaOrBc{}$ after further constraint propagation.}\label{fig:example-simplify-3}
@@ -546,7 +565,7 @@ in Figure~\ref{fig:final-example}. Note that we got this result by only
 performing linear inequality reasoning on the automata of the product versus the
 number of times each transition would be used.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
     \includegraphics[width=0.75\linewidth]{aca_or_bc_times_something_c_something}
     \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ under the constraint
@@ -556,7 +575,7 @@ number of times each transition would be used.
   \end{figure}
 
 
-  \begin{figure}[h]
+  \begin{figure}[ht]
 \centering
     \includegraphics[width=0.75\linewidth]{original_product}
     \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ as it would have
@@ -817,11 +836,6 @@ considerably.
   when treating any letter the same as would be the case with a length
   constraint.}\label{fig:len-branch-free}
 \end{figure}
-
-
-\contents{
-  \item Formally analyse the complexity of how much easier the length problem is
-}
 
 
 \subsubsection{Example~2: Parikh Automata}\label{sec:parikh-automata}
@@ -1860,7 +1874,7 @@ written with modularity in mind, and it should be straightforward to extend both
 the input grammar and automata implementations to accommodate multi-track
 automata with arbitrary synchronisation.
 
-\section{Implementation and Experiments}\label{sec:implementation}
+\section{Implementation}\label{sec:implementation}
 
 We implement a calculus for Parikh automata as described in
 \cref{sec:parikh-automata}. The artefact submitted along with this paper
@@ -1880,10 +1894,11 @@ implemented as a theory plug-in for the \Princess{} automated theorem
 prover~\cite{princess}, which also performs the Presburger reasoning. For
 comparison, we also provide an implementation of the baseline method
 from~\cite{generate-parikh-image}, a direct translation that uses the~\Nuxmv{}
-symbolic model checker~\cite{nuxmv} to solve our constraints, and \Fudge{the
+symbolic model checker~\cite{nuxmv} to solve our constraints, and the
 approximation described in~\cite{approximate-parikh} on top of the standard
-baseline back-end}. An example of an input file \Fudge{illustrating every feature
-of the file format} can be seen in \cref{lst:input-example}.
+baseline back-end. An example of an input file corresponding to our running
+example introduced in \cref{sec:motivation} can be seen in
+\cref{lst:input-example}.
 
 Please note that \Catra{} uses symbolic labels for automata. A symbolic label is
 defined as a range of matching single Unicode code points. This allows succinct
@@ -1933,7 +1948,7 @@ our hopes on finding a source of unsatisfiability early. The pseudocode for
 our implementation can be seen in Algorithm~\ref{alg:baseline}.
 
 \begin{algorithm}
-  \caption{An algorithm with caption}\label{alg:baseline}
+  \caption{How we implement the baseline approach}\label{alg:baseline}
   \KwData{$\Automaton_1, \ldots, \Automaton_n$ automata, other constraints $\SomeClause$}
   \KwResult{\textsc{Sat} or \textsc{Unsat}}
   \SetKwFunction{NewTheoremProver}{newTheoremProver}
@@ -2017,15 +2032,16 @@ unsurprising given how many random choices we make during solving and how
 tail-heavy our problem is. It seems to be very easy to get stuck with a poor
 choice of product to materialise or transitions to split on.
 
-\subsection{\Catra{} is Versatile: Encoding Epistemic Logic Problems As Parikh Automata}
+\section{Evaluation}\label{sec:experiments}
 
-\contents{
-\item Model-checking examples e.g. \cite{epistemic-logic}
-}
-
-\subsection{\Catra{} is Faster Than The Competition: Benchmarks and Their Results}\label{sec:experiments}
-
-We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances generated by the \Ostrich{} string constraint solver when solving the \Fudge{pyex benchmarks}. \Fudge{The instances are all enormous and have some on average 900 products of 400000 automata with 97 counters each and 9999 constraints}. After generating an initial~\InitialNrBenchmarks{}, we remove~\NrBroken{} misgenerated instances that did not parse, as well as~\NrTrivial{} instances solved in under five seconds by the baseline backend. The benchmarks are run on commit~\texttt{\commit}.
+We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances generated
+by the \Ostrich{} string constraint solver when solving the \Fudge{pyex
+benchmarks}. \Fudge{The instances are all enormous and have some on average 900
+products of 400000 automata with 97 counters each and 9999 constraints}. After
+generating an initial~\InitialNrBenchmarks{}, we remove~\NrBroken{} misgenerated
+instances that did not parse, as well as~\NrTrivial{} instances solved in under
+five seconds by the baseline backend. The benchmarks are run on
+commit~\texttt{\commit}.
 
 The benchmarks are executed in parallel using GNU Parallel~\cite{parallel},
 since they are mostly single-threaded and initial results showed negligible
@@ -2072,7 +2088,7 @@ Therefore, we believe that our large set of benchmarks will protect us from bias
 since any backend is unlikely to be neither consistently lucky nor consistently
 unlucky.
 
-\subsubsection{Execution Time and Ability to Solve Instances}\label{sec:runtime}
+\subsection{Execution Time and Ability to Solve Instances}\label{sec:runtime}
 
 In Figures~\ref{fig:solve-division} we show how many of the~\NrBenchmarks{} the
 respective back-ends could solve and with which status. A full summary of their
@@ -2093,21 +2109,21 @@ RAM.
   from the table. }\label{tab:solve-status}
 \end{table}
 
-\begin{figure}
+\begin{figure}[ht]
   \includegraphics[width=0.75\linewidth]{graphs/\commit-by-solver.pdf}
   \caption{The division of statuses per backend.}
   \label{fig:solve-division}
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[ht]
   \includegraphics[width=0.75\linewidth]{graphs/\commit-time-boxplot.pdf}
   \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
   \label{fig:runtime-boxplot}
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[ht]
   \begin{minipage}[b]{0.75\linewidth}
     \centering 
       \includegraphics[width=\textwidth]{graphs/\commit-duels-lazy-baseline-scatter}
@@ -2123,27 +2139,28 @@ RAM.
 
 A cactus plot showing the number of instances solved within a given timeout for each backend can be seen in Figure~\ref{fig:cactus}. \Fudge{We see here that some solver is fast and some other is not}.
 
-\begin{figure}
+\begin{figure}[ht]
   \includegraphics[width=0.75\linewidth]{graphs/\commit-cactus.pdf}
   \caption{The number of instances solved as the time budget increases, simulated from one \RuntimeTimeout-timeout run.}
   \label{fig:cactus}
 \end{figure}
 
-\subsubsection{Finding a Presburger Formula}\label{sec:evaluation:finding-image}
+\subsection{Finding a Presburger Formula}\label{sec:evaluation:finding-image}
 
-For baseline and \Calculus{}, \Catra{} offers the ability to find the equivalent Presburger formula representing a given instance. For baseline, we use the built-in quantifier elimination facilities of the underlying \Princess{} theorem prover, while for \Catra{} \Fudge{we use the specially tailored approach described in some section}. For this experiment, we use only the~\NrKnownSat{} instances known to be satisfiable from the previous experiment detailed in Sections~\ref{sec:scaling} and~\ref{sec:runtime}. 
+For baseline and \Calculus{}, \Catra{} offers the ability to find the equivalent Presburger formula representing a given instance. For baseline, we use the built-in quantifier elimination facilities of the underlying \Princess{} theorem prover, while for \Catra{} we use the specially tailored approach described in \cref{sec:finding-the-image}. For this experiment, we use only the~\NrKnownSat{} instances known to be satisfiable from the previous experiment detailed in \cref{sec:scaling,sec:runtime}. 
 
 To make sure baseline puts up as much competition as possible, we disable
 checking intermittent satisfiability and configure \Catra{} to run in the
 maximally eager mode where the product is first computed before any
-satisifiability check is performed. We run the experiments with a timeout of~\ImageTimeout{}. The results of the experiment is summarised
-in Figure~\ref{fig:cactus:image} and Table~\ref{tab:image-results}. \Fudge{We see here that something happens}.
+satisifiability check is performed. We run the experiments with a timeout
+of~\ImageTimeout{}. The results of the experiment is summarised in
+\cref{fig:cactus:image} and \cref{tab:image-results}. \Fudge{We see here that
+something happens}.
 
-\begin{figure}
+\begin{figure}[ht]
   \caption{The number of instances \Catra{} was able to find the Presburger form of the image for within a given number of seconds per backend.}
   \label{fig:cactus:image}
 \end{figure}
-
 
 \subsection{Threats to Validity}
 
@@ -2187,7 +2204,7 @@ for our potentially poor implementation to be asymptotically worse than e.g.
 BRICS. However, the performance improvement of \Calculus{} over baseline seen in
 \cref{sec:experiments} is generally not constant.
 
-\section{Conclusions}
+\section{Conclusion}
 
 \contents{
   \item Future extensions: more logics
@@ -2198,31 +2215,22 @@ BRICS. However, the performance improvement of \Calculus{} over baseline seen in
   \item We have shown concretely useful
 }
 
-\section{Discussions}
-
-\contents{
-\item cf Parikh Images of Grammars: Complexity and Applications -- what is the best complexity we can do? https://ieeexplore.ieee.org/abstract/document/5571050
-
-}
-
 %% Acknowledgments
-\begin{acks}                            %% acks environment is optional
-                                        %% contents suppressed with 'anonymous'
-  %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
-  %% \grantnum[<url>]{<sponsorID>}{<number>} should be used to
-  %% acknowledge financial support and will be used by metadata
-  %% extraction tools.
-  This material is based upon work supported by the
-  \grantsponsor{GS100000001}{National Science
-    Foundation}{http://dx.doi.org/10.13039/100000001} under Grant
-  No.~\grantnum{GS100000001}{nnnnnnn} and Grant
-  No.~\grantnum{GS100000001}{mmmmmmm}.  Any opinions, findings, and
-  conclusions or recommendations expressed in this material are those
-  of the author and do not necessarily reflect the views of the
-  National Science Foundation.
-\end{acks}
-
-
+% \begin{acks}                            %% acks environment is optional
+%                                         %% contents suppressed with 'anonymous'
+%   %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
+%   %% \grantnum[<url>]{<sponsorID>}{<number>} should be used to
+%   %% acknowledge financial support and will be used by metadata
+%   %% extraction tools.
+%   This material is based upon work supported by the
+%   \grantsponsor{GS100000001}{National Science
+%     Foundation}{http://dx.doi.org/10.13039/100000001} under Grant
+%   No.~\grantnum{GS100000001}{nnnnnnn} and Grant
+%   No.~\grantnum{GS100000001}{mmmmmmm}.  Any opinions, findings, and
+%   conclusions or recommendations expressed in this material are those
+%   of the author and do not necessarily reflect the views of the
+%   National Science Foundation.
+% \end{acks}
 
 
 %% Bibliography
