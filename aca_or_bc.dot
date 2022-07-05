@@ -1,14 +1,14 @@
 digraph Automaton {rankdir = LR;
 initial [shape=plaintext,label="1"];
 initial -> start;
-start [shape=circle,label="start"];
+start [shape=circle,label="S"];
 start -> sawA [label="a / l_a"]
 start -> sawB [label="b / l_b"]
-sawA [shape=circle,label="sawA"];
+sawA [shape=circle,label="A"];
 sawA -> sawA [label="c / l_c"]
 sawA -> final [label="a / l_a"]
-sawB [shape=circle,label="sawB"];
+sawB [shape=circle,label="B"];
 sawB -> start [label="b / l_b'"]
 sawB -> final [label="c / l_c'"]
-final [shape=doublecircle,label="final"];
+final [shape=doublecircle,label="F"];
 }

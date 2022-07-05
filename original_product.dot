@@ -1,17 +1,17 @@
 digraph Automaton {rankdir = LR;
 initial [shape=plaintext,label=""];
 initial -> start_AND_start;
-final_AND_sawA [shape=circle,label="final \times sawA"];
+final_AND_sawA [shape=circle,label="F \times A"];
 final_AND_sawA -> final_AND_sawA [label="\Sigma   \times c"]
 final_AND_sawA -> final_AND_final [label="\Sigma  \times a"]
-final_AND_final [shape=doublecircle,label="final \times final"];
-start_AND_sawA [shape=circle,label="start \times sawA"];
+final_AND_final [shape=doublecircle,label="F \times F"];
+start_AND_sawA [shape=circle,label="S \times A"];
 start_AND_sawA -> start_AND_sawA [label="\Sigma   \times c"]
 start_AND_sawA -> final_AND_sawA [label="c \times c"]
-start_AND_start [shape=circle,label="start \times start"];
+start_AND_start [shape=circle,label="S \times S"];
 start_AND_start -> start_AND_sawA [label="\Sigma   \times a"]
 start_AND_start -> start_AND_sawB [label="\Sigma   \times b"]
-start_AND_sawB [shape=circle,label="start \times sawB"];
+start_AND_sawB [shape=circle,label="S \times B"];
 start_AND_sawB -> start_AND_start [label="\Sigma \times b"]
 start_AND_sawB -> final_AND_final [label="c \times c"]
 }

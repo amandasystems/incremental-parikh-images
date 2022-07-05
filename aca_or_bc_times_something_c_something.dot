@@ -1,16 +1,16 @@
 digraph Automaton {rankdir = LR;
 initial [shape=plaintext,label="1"];
 initial -> start;
-start [shape=circle,label="start \times start"];
+start [shape=circle,label="S \times S"];
 start -> sawAstart [label="a / r_1"]
 
-sawAstart [shape=circle,label="sawA \times start"];
+sawAstart [shape=circle,label="A \times S"];
 sawAstart -> sawAfinal [label="c / r_1"]
 
 sawAstart -> sawAstart [label="c / r_2"]
 
-sawAfinal [shape=circle,label="sawA \times final"];
+sawAfinal [shape=circle,label="A \times F"];
 
 sawAfinal -> final [label="a / r_1"]
-final [shape=doublecircle,label="final \times final"];
+final [shape=doublecircle,label="F \times F"];
 }

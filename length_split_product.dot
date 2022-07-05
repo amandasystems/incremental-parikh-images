@@ -2,19 +2,27 @@ digraph Automaton {rankdir = LR;
 initial [shape=plaintext,label="1"];
 initial -> start;
 
-start [shape=circle,label="start \times start"];
+start [shape=circle,label="S \times S"];
 
-start -> sawAstart [label="a  / 1"]
+start -> sawAstart [label="a  / 1"];
 
-sawAstart [shape=circle,label="sawA \times start"];
+start -> sawBstart [label="b  / r_b"];
+
+sawAstart [shape=circle,label="A \times S"];
 sawAstart -> sawAstart [label="c / r_1 "]
 sawAstart -> sawAfinal [label="c  / 1"]
 
-sawAstart [shape=circle,label="sawA \times start"];
+sawAstart [shape=circle,label="A \times S"];
 
-finalFinal [shape=doublecircle,label="final \times final"];
 
-sawAfinal [shape=circle,label="sawA \times final"];
+sawBstart [shape=circle,label="B \times S"];
+
+sawBstart -> start [label="b  / r_b "];
+
+
+finalFinal [shape=doublecircle,label="F \times F"];
+
+sawAfinal [shape=circle,label="A \times F"];
 sawAfinal -> sawAfinal [label="c  / r_2"]
 sawAfinal -> finalFinal [label="a  / 1"]
 }

@@ -6,16 +6,16 @@
 \newcommand{\CountOf}[1]{\#\text{#1}}
 \newcommand{\ImagePredicate}[4]{\Image_{#1, #2}(#3, #4)}
 \newcommand{\Automaton}[0]{\mathcal{A}}
-\newcommand{\NrBenchmarks}[0]{\Fudge{72}}
+\newcommand{\NrBenchmarks}[0]{33645}
 \newcommand{\BatchSize}[0]{ca.~100}
 \newcommand{\BenchmarkRig}[0]{\Fudge{a computer}}
-\newcommand{\ScalaVersion}[0]{\Fudge{2.13.900}}
-\newcommand{\JvmVersion}[0]{\Fudge{OpenJDK 13337}}
+\newcommand{\ScalaVersion}[0]{2.13.8}
+\newcommand{\JvmVersion}[0]{AdoptOpenJDK Java 11.0.11}
 \newcommand{\MaxHeapSize}[0]{15~GB}
 \newcommand{\NuxmvVersion}[0]{2.0.0}
 \newcommand{\NrBroken}[0]{\Fudge{9000}}
-\newcommand{\InitialNrBenchmarks}[0]{\Fudge{9000}}
-\newcommand{\NrTrivial}[0]{\Fudge{9000}}
+\newcommand{\InitialNrBenchmarks}[0]{37913}
+\newcommand{\NrTrivial}[0]{4268}
 \newcommand{\OverheadSeconds}[0]{\Fudge{9000 s}}
 \newcommand{\NrKnownSat}[0]{\Fudge{5}}
 \newcommand{\RuntimeTimeout}[0]{60s}
@@ -50,7 +50,7 @@
 \newcommand{\FromLabelTo}[3]{#1 \xrightarrow{#2} #3}
 \newcommand{\EllipsisSequence}[2]{#1_{1} \RepeatSum{,} #1_{#2}}
 \newcommand{\Vector}[1]{\overrightarrow{#1}}
-\newcommand{\VectorLiteral}[1]{\left[1, 2\right]}
+\newcommand{\VectorLiteral}[1]{\Tuple{#1}}
 \newcommand{\TransitionVec}[0]{x}
 \newcommand{\RepeatSum}[1]{#1 \ldots #1}
 \newcommand{\SinglePredicateInstance}[0]{\ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement}}
@@ -104,6 +104,7 @@
 \newcommand{\ExpandM}[0]{\textsc{ExpandM}}
 \newcommand{\Materialise}[0]{\textsc{Materialise}}
 \newcommand{\Ostrich}[0]{\textsc{Ostrich}}
+\newcommand{\OstrichPlus}[0]{\textsc{Ostrich+}}
 \newcommand{\Calculus}[0]{\textsc{LazyParikh}}
 \newcommand{\Generalise}[0]{\textsc{Generalise}}
 \newcommand{\FindImage}[0]{\textsc{FindImage}}

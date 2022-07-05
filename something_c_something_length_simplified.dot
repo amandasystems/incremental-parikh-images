@@ -1,9 +1,9 @@
 digraph Automaton {rankdir = LR;
 initial [shape=plaintext,label="1"];
 initial -> start;
-start [shape=circle,label="start"];
+start [shape=circle,label="S"];
 start -> start [label="\Sigma / 1 + l_c + 2l_b' - r_\Sigma'"]
 start -> final [label="c / 1"]
-final [shape=doublecircle,label="final"];
+final [shape=doublecircle,label="F"];
 final -> final [label="\Sigma / {r_{\Sigma}}'"]
 }
