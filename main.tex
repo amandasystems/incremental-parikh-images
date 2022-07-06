@@ -254,11 +254,11 @@ Parikh images play a central role in many automata-based algorithms,
 for instance and notably in today's string solvers, which often have
 to process constraints that combine regular language membership with
 word length. To decide whether a simple formula like
-$x \in \mathcal{L}_1 \wedge y \in \mathcal{L}_2 \wedge |x| > |y|$,
+$x \in \Language_1 \wedge y \in \Language_2 \wedge |x| > |y|$,
 with string variables~$x, y$ and regular
-languages~$\mathcal{L}_1, \mathcal{L}_2$, is satisfiable, it is
+languages~$\Language_1, \Language_2$, is satisfiable, it is
 necessary to reason about the sets of word lengths induced by
-$\mathcal{L}_1, \mathcal{L}_2$, which is a special case of the Parikh
+$\Language_1, \Language_2$, which is a special case of the Parikh
 image.  This required combined reasoning about strings and string
 length has long been identified as a major bottleneck in string
 solvers
@@ -912,19 +912,29 @@ some property of interest.
 
 %\subsection{Applications of generalised Parikh images}\label{sec:applications}
 
-\subsection{Example~1: Reasoning about string length}
+\subsection{Example~1: Reasoning about String Length}
 
 A useful example of such a simplifying morphism can express string
 length, the problem that originally motivated our study of the Parikh
-map. We let $\Monoid = \left(\mathbb{Z};+;0\right)$, and define the
-homomorphism~$\Map$ by $\Map(a) = 1$ for all
-characters~$a \in \Alphabet$. Then the length of a string
+map. This mapping is relevant when solving constraints that combine
+language membership as well as word length, for instance the formula
+\begin{equation}\label{eq:stringLength}
+x \in \Language_1 \wedge y \in \Language_2 \wedge |x| > |y|
+\end{equation}
+mentioned in the introduction. To solve this formula, let
+$\Monoid = \Naturals$, and define the homomorphism~$L$ by $L(a) = 1$
+for all characters~$a \in \Alphabet$. The length of a string
 $s = s_1 \RepeatSum{\Concat} s_n$ is given by
-$\Map(s) = \sum \Map(s_i) = 1 \RepeatSum{+} 1 = n$.
+$L(s) = \sum L(s_i) = 1 \RepeatSum{+} 1 = n$, and to solve
+\eqref{eq:stringLength} we can instead solve the equi-satisfiable
+formula~$\alpha \in L(\Language_1) \wedge \beta \in L(\Language_2)
+\wedge \alpha > \beta$. This paper proposes efficient native
+procedures to reason about membership constraints
+like~$\alpha \in L(\Language_1)$, avoiding the computation of
+the complete image~$L(\Language_1)$.
 
 Intuitively, this produces a simpler problem than computing the Parikh image, as
 we now ignore not just the order of characters but also their differences.
-\iffalse
 This
 means that the branching automaton of \cref{fig:len-branch} becomes
 equivalent to the non-branching automaton of \cref{fig:len-branch-free}.
@@ -933,9 +943,9 @@ possibility of disconnecting one of the self-loops. This, in turn, means that we
 can eliminate all of the connectedness implications of the quantified formula,
 which would in turn simplify it (and the quantifier elimination of it)
 considerably.
-\fi
 
-\subsection{Example~2: Parikh Automata}\label{sec:parikh-automata}
+\subsection{Example~2: Generalised String Constraints with Integer
+  Datatype}\label{sec:parikh-automata}
 \contents{\item Ostrich+!}
 
 Another application for this generalisation is to express Parikh automata, and
