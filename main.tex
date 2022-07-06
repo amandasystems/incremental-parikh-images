@@ -1415,6 +1415,15 @@ from the semantics of the $\Image$ predicate as defined in
 \cref{def:single-image}. This means that we only need to prove the preservation
 of those properties to prove \cref{lma:single-correct}.
 
+\Fudge{I don't understand.}
+  % \[
+  % \begin{aligned}
+  %   & \inferrule
+  %   {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions_\Automaton} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
+  %   {\SinglePredicateInstance, \SomeInequalities, \SomeClause} &\beta \models R_0 \iff \exists i : \beta \models R_i
+  % \end{aligned}
+  % \]
+
 \begin{lemma}\label{lma:expand-preserves}
   \Expand{} preserves the semantics of $\Image$.
 \end{lemma}
@@ -1433,7 +1442,7 @@ of those properties to prove \cref{lma:single-correct}.
   \end{itemize}
 
   Note that \Expand{} is taken directly from the existing formulation of
-  \cref{eq:generate-parikh}.
+  \eqref{eq:generate-parikh}.
 \end{proof}
 
 \begin{lemma}\label{lma:split-preserves}
@@ -1623,210 +1632,144 @@ perform the calculus as before.
 We return again to our example in \cref{sec:introduction:parikh}, where we
 compute the whole Parikh image of the product of $\AcaOrBc{}$ and
 $\SomethingCSomething$ under the constraint that there are more instances of
-letters a than b. We omit the definition of the map $\Map$ that maps each
-transition to the corresponding increment vector (e.g.
-\Map($\FromLabelTo{S}{a}{A}) = \begin{bmatrix}1\\0\\0\end{bmatrix}$),
-since it should be apparent by now.
+letters a than b. This time our monoid $\Monoid$ is 3-dimensional vectors with
+element-wise addition, and $\Map$ that maps each transition to the corresponding
+increment vector, e.g $\Map(\FromLabelTo{S}{a}{A}) = \VectorLiteral{1,0,0}$.
 
-In the interest of space, we use a similar technique as in
-\cref{fig:example:single:equivalences} to combine the application of $\FlowEq$
-with the definition of $\Filter$.
 
-  We define $\Filter$ after substitutions from both initial applications of
-  $\FlowEq$ as follows, note the element-wise expansion for the $\Sigma$ labels:
-
-% Propagated equations
+In the interest of space, we refer back to
+\cref{fig:example:single:equivalences} for the definitions of $\Filter$ for
+$\AcaOrBc$ and only define $\Filter$ for $\SomethingCSomething{}$ after
+substitutions as follows. Note the expansion of the $\Sigma$ labels:
     \begin{equation*}
       \begin{aligned}
-        & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
-        & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
-        & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
+        % & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
+        % & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
+        % & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
+        % & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+        % & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
+        % & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
         % Other automaton
-        & \Filter(\FromLabelTo{S}{\Sigma}{S}) & = \TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c} \\
+        & \Filter(\FromLabelTo{S}{\Sigma}{S}) & = \VectorLiteral{\TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c}} \\
         & \Filter(\FromLabelTo{S}{c}{F}) & = 1 \\
-        & \Filter(\FromLabelTo{F}{\Sigma}{F}) & = \TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c} \\
+        & \Filter(\FromLabelTo{F}{\Sigma}{F}) & = \VectorLiteral{\TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c}} \\
       \end{aligned}
     \end{equation*}
     
 \begin{prooftree}
   \infer0[\PresburgerClose{}]{
     \begin{matrix}
-      1 = \TransitionVar_{10} \\
-      \TransitionVar_3 = \TransitionVar_{11} \\
-      1 = \TransitionVar_{12} \\
-      1 = \TransitionVar_{11} \\
+      1 = \TransitionVar_{10} \land 
+      \TransitionVar_3 = \TransitionVar_{11} \land \\
+      1 = \TransitionVar_{12} \land 
+      1 = \TransitionVar_{11} \land 
       2 > 0
     \end{matrix}  
   }
   \infer1[\Subsume{}, \Expand{}, \Subsume{}]{
     \begin{matrix}
-      1 = \TransitionVar_{10} \\
-      \TransitionVar_3 = \TransitionVar_{11} \\
-      1 = \TransitionVar_{12} \\
-      1 = \TransitionVar_{11} \\
+      1 = \TransitionVar_{10} \land 
+      \TransitionVar_3 = \TransitionVar_{11} \land  \\
+      1 = \TransitionVar_{12} \land 
+      1 = \TransitionVar_{11} \land \\
       \Image{}_{\Automaton', \Map}(\Filter, 
-      \begin{bmatrix}
-        2 \\
-        0 \\
-        1
-        \end{bmatrix}) \land \\
-      \Connected(\SomethingCSomething{}, \Filter) \land \\
+      \VectorLiteral{2, 0, 1}) \land 
+      \Connected(\SomethingCSomething{}, \Filter) \land
         2 > 0
     \end{matrix}  
   }
-  \infer1[Eq. reasoning]{
+  \infer1[\EquationReasoning{}]{
     \begin{matrix}
-      1 = \TransitionVar_{10} \\
-      \TransitionVar_3 = \TransitionVar_{11} \\
-      1 = \TransitionVar_{12} \\
+      1 = \TransitionVar_{10} \land
+      \TransitionVar_3 = \TransitionVar_{11} 
+      1 = \TransitionVar_{12} \land
       1 = \TransitionVar_{11} \\
       \Image{}_{\Automaton', \Map}(\Filter, 
-      \begin{bmatrix}
-        a \\
-        0 \\
-        c
-        \end{bmatrix}) \land \\
-      \TransitionVar_6 = 0 \land \\
-      \TransitionVar_4 = 0 \land \\
-      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
-      \begin{bmatrix}
-        a \\
-        b \\
-        c
-        \end{bmatrix} = \begin{bmatrix}
-          2  \\
-          0 \\
-          1
-        \end{bmatrix} \land
-        \\
-        \begin{bmatrix}
-          a \\
-          b \\
-          c
-          \end{bmatrix} = \begin{bmatrix}
-            \TransitionVar_{7a} + \TransitionVar_{9a} \\
-            0 \\
-            \TransitionVar_{7c} + \TransitionVar_{9c} + 1
-          \end{bmatrix} \land \\
-      \Connected(\SomethingCSomething{}, \Filter) \land \\
-        a > 0
+      \VectorLiteral{
+        \TransitionVar_{7a} + \TransitionVar_{9a},
+        0,
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \\
+        \TransitionVar_6 + \TransitionVar_4 = 0 \land 
+        1 - \TransitionVar_6 > 0 \land
+        \TransitionVar_6 = 0 \land 
+        \TransitionVar_4 = 0 \land
+        \TransitionVar_3 > 0 \land
+        2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+          \VectorLiteral{
+        \TransitionVar_{7a} + \TransitionVar_{9a},
+        0,
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
+        = \VectorLiteral{
+          2,
+          0,
+          \TransitionVar_3} \land \\
+      \Connected(\SomethingCSomething{}, \Filter) \land
+      \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
     \end{matrix}  
   }
-\end{prooftree}
-
-\begin{prooftree}
-  \infer0[\Materialise]{
+  \infer1[\Materialise]{
     \begin{matrix}
-      \TransitionVar_6 = 0 \\
-      \TransitionVar_4 = 0 \\
-      2\TransitionVar_6 + \TransitionVar_4 = 0 \\
-      \begin{bmatrix}
-        a \\
-        b \\
-        c
-        \end{bmatrix} = \begin{bmatrix}
-          2  \\
-          0 \\
-          \TransitionVar_3 
-        \end{bmatrix}
-        \\
-        \begin{bmatrix}
-          a \\
-          b \\
-          c
-          \end{bmatrix} = \begin{bmatrix}
-            \TransitionVar_{7a} + \TransitionVar_{9a} \\
-            0 \\
-            \TransitionVar_{7c} + \TransitionVar_{9c} + 1
-          \end{bmatrix} \\
+      \TransitionVar_6 + \TransitionVar_4 = 0 \land 
+      1 - \TransitionVar_6 > 0 \land
+      \TransitionVar_6 = 0 \land 
+      \TransitionVar_4 = 0 \land
+      \TransitionVar_3 > 0 \land
+      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+      \VectorLiteral{
+        \TransitionVar_{7a} + \TransitionVar_{9a},
+        0,
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
+        = \VectorLiteral{
+          2,
+          0,
+          \TransitionVar_3} \land \\
       \Connected(\SomethingCSomething{}, \Filter) \land \\
       \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
-      \begin{bmatrix}
-        a \\
-        0 \\
-        c
-        \end{bmatrix}) \land \\
-        a > 0
-    \end{matrix}  
+      \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
+    \end{matrix}
   }
   \infer1[\Subsume{}]{
   \begin{matrix}
-    \TransitionVar_6 + \TransitionVar_4 = 0 \\
-    1 - \TransitionVar_6 > 0 \\
-    \TransitionVar_6 = 0 \\
-    \TransitionVar_4 = 0 \\
-    \TransitionVar_3 > 0 \\
-    2\TransitionVar_6 + \TransitionVar_4 = 0 \\
-    \begin{bmatrix}
-      a \\
-      b \\
-      c
-      \end{bmatrix} = \begin{bmatrix}
-        2  \\
-        0 \\
-        \TransitionVar_3 
-      \end{bmatrix}
-      \\
-      \begin{bmatrix} % What to do about sigma!?
-        a \\
-        b \\
-        c
-        \end{bmatrix} = \begin{bmatrix}
-          \TransitionVar_{7a} + \TransitionVar_{9a} \\
-          0 \\
-          \TransitionVar_{7c} + \TransitionVar_{9c} + 1
-        \end{bmatrix} \\
-    \Connected(\AcaOrBc{}, \Filter) \land \\
+    \TransitionVar_6 + \TransitionVar_4 = 0 \land 
+    1 - \TransitionVar_6 > 0 \land
+    \TransitionVar_6 = 0 \land 
+    \TransitionVar_4 = 0 \land
+    \TransitionVar_3 > 0 \land
+    2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+    \VectorLiteral{
+      \TransitionVar_{7a} + \TransitionVar_{9a},
+      0,
+      \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
+      = \VectorLiteral{
+        2,
+        0,
+        \TransitionVar_3} \land \\
+    \Connected(\AcaOrBc{}, \Filter) \land 
     \Connected(\SomethingCSomething{}, \Filter) \land \\
     \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
-    \begin{bmatrix}
-      a \\
-      0 \\
-      c
-      \end{bmatrix}) \land \\
-      a > 0
+    \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
   \end{matrix}
   }
-  \infer1[Eq. reasoning]{
+  \infer1[\EquationReasoning]{
     \begin{matrix}
-      \begin{bmatrix}
-        a \\
-        b \\
-        c
-        \end{bmatrix} = \begin{bmatrix}
-          2 - 2\TransitionVar_6 \\
-          2\TransitionVar_4 + 3\TransitionVar_6 \\
+      \VectorLiteral{a, b, c} = \VectorLiteral{
+          2 - 2\TransitionVar_6,
+          2\TransitionVar_4 + 3\TransitionVar_6,
           \TransitionVar_3 + \TransitionVar_6
-        \end{bmatrix}
+        } \land
         \\
-        \begin{bmatrix} % What to do about sigma!?
-          a \\
-          b \\
-          c
-          \end{bmatrix} = \begin{bmatrix}
-            \TransitionVar_{7a} + \TransitionVar_{9a} \\
-            \TransitionVar_{7b} + \TransitionVar_{9b} \\
+        \VectorLiteral{a, b, c} = \VectorLiteral{
+            \TransitionVar_{7a} + \TransitionVar_{9a},
+            \TransitionVar_{7b} + \TransitionVar_{9b},
             \TransitionVar_{7c} + \TransitionVar_{9c} + 1
-          \end{bmatrix} \\
-      \Connected(\AcaOrBc{}, \Filter) \land \\
+          } \land \\
+      \Connected(\AcaOrBc{}, \Filter) \land 
       \Connected(\SomethingCSomething{}, \Filter) \land \\
       \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
-      \begin{bmatrix}
-        a \\
-        b \\
-        c
-        \end{bmatrix}) \land \\
-        a > b
+      \VectorLiteral{a, b, c}) \land a > b
     \end{matrix}
   }
-  \infer1[\ExpandM]{\Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, \begin{bmatrix}
-    a \\
-    b \\
-    c
-    \end{bmatrix}) \land a > b}
+  \infer1[\ExpandM]{\Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, \VectorLiteral{a, b, c}) \land a > b}
 \end{prooftree}
 
 \subsection{The extended calculus is also correct}
