@@ -488,7 +488,7 @@ the $f$-image $2 + l_c + 2l_b'$. It is an over-approximation because it only
 considers the number of times each transition is taken and the existence of a
 path from an initial to an accepting state, but omits the connectivity of that
 path in the presence of loops. For example, no valid path would have both $l_c >
-0$ and $l_b' > 0$, but no such restriction exists in the formula above.
+0$ and $1 - l_c' = 0$, but no such restriction exists in the formula above.
 
 \begin{figure}[t]
   \centering 
@@ -498,14 +498,14 @@ path in the presence of loops. For example, no valid path would have both $l_c >
     r_\Sigma'$.}
   \end{figure}
 
-Still, this approximate solution allows us to perform further reasoning. Since
-we know that the length of a string accepted by the intersection of the two
-automata's languages must be the same, we also know that their images (string
-lengths) must be the same under $f$, e.g. that $r_\Sigma + 1 + r_\Sigma' = 2 +
-l_c + 2l_b' \iff r_\Sigma + r_\Sigma' = 1 + l_c + 2l_b'$. This in turn allows us
-to replace one additional variable, e.g. $r_\Sigma = 1 + l_c + 2l_b' -
-r_\Sigma'$ (see \cref{fig:example-length-reduced}). Note that the two automata
-are now in contact, allowing us to propagate reasoning on one to the other.
+Still, this approximate view allows us to perform further reasoning. Since we
+know that the length of a string accepted by the intersection of the two
+automata's languages must be the same, we also know that their images must be
+the same under $f$, e.g. that $r_\Sigma + 1 + r_\Sigma' = 2 + l_c + 2l_b' \iff
+r_\Sigma + r_\Sigma' = 1 + l_c + 2l_b'$. This in turn allows us to replace one
+additional variable, e.g. $r_\Sigma = 1 + l_c + 2l_b' - r_\Sigma'$ (see
+\cref{fig:example-length-reduced}). Note that the two automata are now in
+contact, allowing us to propagate reasoning on one to the other.
 
 Since we cannot take a transition a negative number of times, we have an
 implicit constraint on any transition variable that it must be at least $0$.
@@ -515,11 +515,13 @@ on $r_\Sigma'$: $r_\Sigma' \leq 1 + l_c + 2l_b'$.
 This is as far as we can get with this reasoning. We must now choose: either we
 compute (materialise) the product and continue our reasoning, or we perform a
 case split. Let us try a case split in order to put off computing a potentially
-large product. 1 an early transition in the largest automaton with loops,
-in our case $\FromLabelTo{S}{a}{A}$ of $\AcaOrBc$. This creates two
-cases: $1-l_c' = 0$ and $1-l_c' > 0$. We start with the first case, and after
-propagating the now known values and removing any transition that becomes zero,
-we get the automaton of \cref{fig:aca-or-bc-length-split-1}.
+large product.
+
+We apply the principle of splitting and select an early transition in the
+largest automaton with loops, in our case $\FromLabelTo{S}{a}{A}$ of $\AcaOrBc$.
+This creates two cases: $1-l_c' = 0$ and $1-l_c' > 0$. We start with the first
+case, and after propagating the now known values and removing any transition
+that becomes zero, we get the automaton of \cref{fig:aca-or-bc-length-split-1}.
 
 
 \begin{figure}[t]
@@ -532,14 +534,14 @@ we get the automaton of \cref{fig:aca-or-bc-length-split-1}.
     and only the lower part of the automaton remains.}
   \end{figure}
 
-  We immediately notice that the self-loop of state $A$ is now disconnected and
-  must be removed. This condition can be detected efficiently using standard
-  forwards/backwards reachability from the initial and accepting states
-  respectively. In other words, $2k+1 = 0$ for this case and is implied by the
-  splitting constraint. However, no choice of integer $k$  will satisfy this
-  equation. Therefore, we close this branch and proceed with the other one --
-  where $1-l_c' > 0$. Note that we do so without ever computing a potentially
-  expensive product of automata.
+  We immediately notice that the self-loop of state $A$ is now disconnected from
+  the initial state and must be removed. This condition can be detected
+  efficiently using standard forwards/backwards reachability from the initial
+  and accepting states respectively. In other words, $2k+1 = 0$ for this case
+  and is implied by the splitting constraint. However, no choice of integer $k$
+  will satisfy this equation. Therefore, we close this branch and proceed with
+  the other one -- where $1-l_c' > 0$. Note that we do so without ever computing
+  a potentially expensive product of automata.
 
   \begin{figure}[t]
     \centering 
@@ -551,29 +553,33 @@ we get the automaton of \cref{fig:aca-or-bc-length-split-1}.
 Plugging in the assumption $1-l_c' > 0$ (and its consequence that $l_c' = 0$),
 we also get a reduced variant of $\AcaOrBc$, as seen in
 \cref{fig:aca-or-bc-length-split-2}. Note that there is now no way to select any
-transition variable so as to disconnect a loop from a path between $S$ and $F$,
-and we can therefore stop worrying about enforcing connectivity.
-
+transition variable to disconnect a loop from a path between $S$ and $F$,
+and we can therefore stop worrying about enforcing connectivity at all.
 
 \begin{figure}[t]
   \centering 
     \includegraphics[width=0.5\linewidth]{length_split_product}
     \caption{The product of $\AcaOrBc$ and $\SomethingCSomething$ after
     case splitting and removal of dead states.}\label{fig:length-split-product}
+    \Description[$\AcaOrBc{}$ with the transition from $B$ to $F$ removed.]{$\AcaOrBc{}$ with the transition from $B$ to $F$ removed. There now remains only one path to an accepting state.}
   \end{figure}
 
 Before continuing, we need to tie the inequalities for the transitions of the
 automata of the product to the new transition counting variables we introduced
-in the product automaton to ensure that they are consistent. In our case, we obtain the following equations from the principle that a transition variable in either automaton must be equal to the sum of variables in the resulting edges of the product, which gives the following two interesting inequality from $\AcaOrBc{}$'s transition $\FromLabelTo{sawA}{c}{sawA}$: $2k + 1 = r_1 + r_2 + 1$
+in the product automaton to ensure that they are consistent. In our case, we
+obtain the following equations from the principle that a transition variable in
+either automaton must be equal to the sum of variables in the resulting edges of
+the product, which gives the following two interesting inequalities from
+$\AcaOrBc{}$'s transition $\FromLabelTo{A}{c}{A}$: $2k + 1 = r_1 + r_2 + 1$
 
 Note how this conserves the requirement that the number of loop iterations be
 odd even when the same original loop appears three times in the product, twice
 as a self-loop and once as a regular state transition. Using the same principle
 as before for computing the length by adding up the transition counters, we
-obtain the quantified formula $1 + r_1 + 1 = r_2 + 1 = r_1 + r_2 + 3 = 2k + r_1
-+ 3$ for the length. Eliminating the final quantifier gives us the image of
-$f(\AcaOrBc \times \SomethingCSomething)$ modulo odd lengths: $3 + 2k$, for some
-integer $k$.
+obtain the quantified formula $1 + 2k + 1 + 1 + r_b + r_b= 3 + 2k + 2r_b$ for
+the length. Eliminating the final quantifier gives us the image of $f(\AcaOrBc
+\times \SomethingCSomething)$ modulo odd lengths: $3 + 2k$, for some integer
+$k$.
 
 \subsection{Producing the Parikh image}\label{sec:introduction:parikh}
 
@@ -1174,12 +1180,12 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
   \begin{minipage}[b]{0.45\linewidth}
     \begin{equation*}
       \begin{aligned}
-        & \Filter(\FromLabelTo{start}{a}{sawA}) & = \TransitionVar_1 \\
-        & \Filter(\FromLabelTo{start}{b}{sawB}) & = \TransitionVar_2 \\
-        & \Filter(\FromLabelTo{sawA}{c}{sawA})  & = \TransitionVar_3  \\
-        & \Filter(\FromLabelTo{sawB}{b}{start}) & = \TransitionVar_4 \\
-        & \Filter(\FromLabelTo{sawA}{a}{final}) & = \TransitionVar_5 \\
-        & \Filter(\FromLabelTo{sawB}{c}{final}) & = \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{S}{a}{A}) & = \TransitionVar_1 \\
+        & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_2 \\
+        & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
+        & \Filter(\FromLabelTo{B}{b}{S}) & = \TransitionVar_4 \\
+        & \Filter(\FromLabelTo{A}{a}{F}) & = \TransitionVar_5 \\
+        & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
       \end{aligned}
     \end{equation*}    
   \end{minipage}
@@ -1187,13 +1193,13 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
   \begin{minipage}[b]{0.45\linewidth}
     \begin{equation*}
       \begin{aligned}
-        % start
+        % S
         &  \TransitionVar_4 = \TransitionVar_5 + \TransitionVar_2 - 1 \\
-        % sawA
+        % A
         & \TransitionVar_1 = \TransitionVar_5 \\
-        % sawB
+        % B
         & \TransitionVar_2 = \TransitionVar_4 + \TransitionVar_6 \\
-        % final
+        % F
         & \TransitionVar_5 + \TransitionVar_6 = \FinalStateVar_1 \\
         & \FinalStateVar_1 = 1 \\
       \end{aligned}  
@@ -1208,12 +1214,12 @@ Propagating the equivalences from \FlowEq{} gives us (under the implicit
 assumption that every RHS is $\geq 0$):
 \begin{equation*}
   \begin{aligned}
-    & \Filter(\FromLabelTo{start}{a}{sawA}) & = 1 - \TransitionVar_6 \\
-    & \Filter(\FromLabelTo{start}{b}{sawB}) & = \TransitionVar_4 + \TransitionVar_6 \\
-    & \Filter(\FromLabelTo{sawA}{c}{sawA})  & = \TransitionVar_3  \\
-    & \Filter(\FromLabelTo{sawB}{b}{start}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
-    & \Filter(\FromLabelTo{sawA}{a}{final}) & = 1 - \TransitionVar_6 \\
-    & \Filter(\FromLabelTo{sawB}{c}{final}) & = \TransitionVar_6 \\
+    & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
+    & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
+    & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
+    & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+    & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
+    & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
   \end{aligned}
 \end{equation*}
 
@@ -1578,7 +1584,7 @@ compute the whole Parikh image of the product of $\AcaOrBc{}$ and
 $\SomethingCSomething$ under the constraint that there are more instances of
 letters a than b. We omit the definition of the map $\Map$ that maps each
 transition to the corresponding increment vector (e.g.
-\Map($\FromLabelTo{start}{a}{sawA}) = \begin{bmatrix}1\\0\\0\end{bmatrix}$),
+\Map($\FromLabelTo{S}{a}{A}) = \begin{bmatrix}1\\0\\0\end{bmatrix}$),
 since it should be apparent by now.
 
 In the interest of space, we use a similar technique as in
@@ -1591,16 +1597,16 @@ with the definition of $\Filter$.
 % Propagated equations
     \begin{equation*}
       \begin{aligned}
-        & \Filter(\FromLabelTo{start}{a}{sawA}) & = 1 - \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{start}{b}{sawB}) & = \TransitionVar_4 + \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{sawA}{c}{sawA})  & = \TransitionVar_3  \\
-        & \Filter(\FromLabelTo{sawB}{b}{start}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
-        & \Filter(\FromLabelTo{sawA}{a}{final}) & = 1 - \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{sawB}{c}{final}) & = \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
+        & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+        & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
         % Other automaton
-        & \Filter(\FromLabelTo{start}{\Sigma}{start}) & = \TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c} \\
-        & \Filter(\FromLabelTo{start}{c}{final}) & = 1 \\
-        & \Filter(\FromLabelTo{final}{\Sigma}{final}) & = \TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c} \\
+        & \Filter(\FromLabelTo{S}{\Sigma}{S}) & = \TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c} \\
+        & \Filter(\FromLabelTo{S}{c}{F}) & = 1 \\
+        & \Filter(\FromLabelTo{F}{\Sigma}{F}) & = \TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c} \\
       \end{aligned}
     \end{equation*}
     
@@ -2347,31 +2353,31 @@ to the expected Presburger formulae.
 
   synchronised {
   automaton aca_or_bc {
-    init start;
+    init S;
   
     // We use ASCII values here, this is for lowercase a
-    start -> sawA [97] { l_a += 1 };
-    start -> sawB [98] { l_b += 1 };
+    S -> A [97] { l_a += 1 };
+    S -> B [98] { l_b += 1 };
   
-    sawB -> start  [98] { l_b += 1 };
-    sawB -> final [99] { l_c += 1 };
+    B -> S  [98] { l_b += 1 };
+    B -> final [99] { l_c += 1 };
   
-    sawA -> sawA [99] { l_c += 1 };
-    sawA -> final [97] { l_a += 1 };
+    A -> A [99] { l_c += 1 };
+    A -> final [97] { l_a += 1 };
   
     accepting final;
   };
   
   automaton something_c_something {
-      init start;
+      init S;
   
       // Special short-hand value for the whole Unicode alphabet.
-      start -> start [any] ;
-      start -> final [99] { r_c += 1 };
+      S -> S [any] ;
+      S -> F [99] { r_c += 1 };
   
-      final -> final [any];
+      F -> F [any];
   
-      accepting final;
+      accepting F;
   };
   };
   
