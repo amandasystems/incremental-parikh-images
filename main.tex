@@ -775,21 +775,12 @@ under~$\ParikhMap$ (e.g. $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) =
 formula.
 
 Note that while Parikh's theorem applies to context-free languages, in this
-paper we are only interested in regular languages.
-
-\subsection{Generalised Parikh maps}\label{sec:generalised}
-
-To generalise the logic of the Parikh map, we introduce a morphism $\Map:\: \Sigma^*
-\to \Monoid$ where $\Monoid = \left(X;+_{\Monoid};0_{\Monoid}\right)$ is a commutative monoid where the following holds:
-\begin{itemize}
-  \item $\Map(\epsilon) = 0_{\Monoid}$
-  \item $\Map(a \Concat b) = \Map(a) +_{\Monoid} \Map(b)$
-\end{itemize}
+paper we focus only on regular languages.
 
 \subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
 
 Since Parikh images are semilinear, any Parikh image can be written as a set of linear
-equations. The following construction, here adapted to work on an NFA $\Automaton = \AutomatonTuple$, was presented in\cite{generate-parikh-image}:
+equations. The following construction, here adapted to work on an NFA $\Automaton = \AutomatonTuple$, was presented in \cite{generate-parikh-image}:
 \begin{equation}
 \begin{aligned}
 \ParikhMap(\Automaton) := 
@@ -896,16 +887,40 @@ variables to obtain the formula $\LetterVar_{a} = 2 \land \LetterVar_{b} = 0
   fact that even few additional constraints on the Parikh image can dramatically
   reduce the difficulty of computing it.
 
-\section{Applications of generalised Parikh images}\label{sec:applications}
+  
+\section{Generalised Parikh Maps}\label{sec:generalised}
 
-\subsubsection{Example~1: String length}
-\Fudge{We have already illustrated refer intro}
-A useful example of such a simplifying morphism can express string length, the
-problem that originally motivated our study of the Parikh map. We let $\Monoid =
-\left(\mathbb{Z};+;0\right)$ and let $\Map(x) = 1$. Then the length of a string
-$s = s_1 \RepeatSum{\Concat}  s_n$ is given by $\Map(s) = \sum \Map(s_i) = 1
-\RepeatSum{+} 1$. Note that if we substitute vectors and vector addition for
-this monoid, we obtain the regular Parikh map.
+It is easy to see that the Parikh map~$\ParikhMap$ represents a
+homomorphism from the (free) non-commutative monoid~$\Strings$ to the
+(free) commutative monoid~$\Naturals^k$. As we are often not
+interested in the full Parikh image, but only in some projections of
+it, for the purposes of this paper we use a generalised version of the
+Parikh map. We consider \emph{arbitrary} homomorphisms
+$\Map:\: \Sigma^* \to \Monoid$, where
+$\Monoid = \left(X;+_{\Monoid};0_{\Monoid}\right)$ is a commutative
+monoid; this means that $\Map(\epsilon) = 0_{\Monoid}$ and
+$\Map(u \Concat w) = \Map(u) +_{\Monoid} \Map(w)$. We give several
+examples of such generalised Parikh image later in this section.
+
+Observe that every homomorphism~$\Map:\: \Sigma^* \to \Monoid$ can be
+represented as the composition~$h' \circ \ParikhMap$, for some
+homomorphism~$h' : \Naturals^k \to M$. One of the insights underlying our
+approach is that it is more efficient to directly compute a
+generalised Parikh image~$\Map(\Language)$, than to first compute the
+standard image~$\ParikhMap(\Language)$ followed by projection to
+some property of interest.
+
+%\subsection{Applications of generalised Parikh images}\label{sec:applications}
+
+\subsection{Example~1: Reasoning about string length}
+
+A useful example of such a simplifying morphism can express string
+length, the problem that originally motivated our study of the Parikh
+map. We let $\Monoid = \left(\mathbb{Z};+;0\right)$, and define the
+homomorphism~$\Map$ by $\Map(a) = 1$ for all
+characters~$a \in \Alphabet$. Then the length of a string
+$s = s_1 \RepeatSum{\Concat} s_n$ is given by
+$\Map(s) = \sum \Map(s_i) = 1 \RepeatSum{+} 1 = n$.
 
 Intuitively, this produces a simpler problem than computing the Parikh image, as
 we now ignore not just the order of characters but also their differences. This
@@ -917,7 +932,7 @@ can eliminate all of the connectedness implications of the quantified formula,
 which would in turn simplify it (and the quantifier elimination of it)
 considerably.
 
-\subsubsection{Example~2: Parikh Automata}\label{sec:parikh-automata}
+\subsection{Example~2: Parikh Automata}\label{sec:parikh-automata}
 \contents{\item Ostrich+!}
 
 Another application for this generalisation is to express Parikh automata, and
