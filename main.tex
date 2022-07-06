@@ -389,12 +389,23 @@ Outside of string solvers, Parikh automata have been proposed as the basis of
 queries~\cite{graph-queries}, and for solving cardinalities in model checking
 problems involving epistemic logic~\cite{epistemic-logic}.
 
+Many other generalisations of the Parikh than the ones we use here have been
+studied. Prominent examples include generalising the Parikh map to segments of a
+fixed length \cite{KARHUMAKI1980155} and the more general Parikh matrix, which
+gives more information about a word than the standard Parikh image
+\cite{parikh-matrix}. Another notable generalisation is the p-vector, introduced
+in~\cite{infinite-words}, which denotes the position of each letter in the word
+rather than the number of their occurrences and allows for generalisations into
+infinite alphabets. All of these in some sense extend the Parikh map. By
+contrast, the main utility of the formulation introduced here is that it allows
+us to \emph{remove} something, thereby potentialy obtaining an easier problem.
+
 \section{A demonstration of our approach}\label{sec:motivation}
 
 To illustrate the key features of \Calculus, we will informally present our
 reasoning. We begin by considering the following set of string and other
 constraints, which we want to solve for all possible values of $\MonoidElement$,
-a value in some commutative monoid \Fudge{MONOID} and the string $s$, where
+a value in some commutative monoid and the string $s$, where
 $\varphi(\MonoidElement)$ is some set of constraints on $\MonoidElement$:
 \begin{equation*}
   \AndComp{}{\begin{aligned}
@@ -686,21 +697,28 @@ arrive at $\TransitionCount{c} \geq 1$.
 
 \section{Preliminaries}
 
-\contents{\item Monoid
-\item Alfabet
-\item ord oever alfabet
-\item konkatenering
-}
+\subsection{Monoids}
 
-\subsection{Finite-state Automata and their Products}
-We define a non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$
-as $\Automaton = \AutomatonTuple$ where $\Transitions = \States \times \Alphabet
-\times \States$, $\States$ is its states, $\InitialState$ is w.l.o.g. assumed to
-be the single initial state, and $\AcceptingStates$ is its set of accepting
-states.  We describe a transition $\Transition$ from state $\State$ to state
-$\State'$ with label $\Label \in \Alphabet$ as $\Transition =
-\FromLabelTo{\State}{\Label}{\State'}$. \Fudge{When one or more of the states and
-labels of a transition are uninteresting we will omit them}.
+We write commutative monoids as $\Monoid =
+\left(X;+_{\Monoid};0_{\Monoid}\right)$, where we mean $X$ to be the underlying
+set of elements, $+_{\Monoid}$ to be the (commutative) monoid map, with
+$0_{\Monoid}$ as its neutral element.
+
+\subsection{Languages, Finite-state Automata and their Products}
+
+We define an alphabet as a set of symbols $\Alphabet$ with words $\Strings$, and
+the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
+
+A non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$ is
+$\AutomatonTuple$ where $\Transitions = \States \times \Alphabet \times
+\States$, $\States$ is its states, $\InitialState$ is w.l.o.g. assumed to be the
+single initial state, and $\AcceptingStates$ is its set of accepting states.  We
+write a transition $\Transition = \Tuple{\State, \Label, \State'} \in
+\Transitions$ as $\Transition = \FromLabelTo{\State}{\Label}{\State'}$.
+Similarly, we use the notation $\FromLabelTo{\State}{}{}$ to refer to the set of
+transitions starting in $\State$, and $\FromLabelTo{}{}{\State}$ to refer to the
+set of transitions coming into $\State$, whenever the automaton is clear from
+the context.
 
 We will let variables $\Transition, \Transition', \Transition_1, \ldots,
 \Transition_n$ etc describe transitions, $\State, \ldots, \State_n$ states, and
@@ -745,17 +763,19 @@ Thus, we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1,
 1\right], \left[1, 2\right]\right\}$. We also sometimes use the standard
 notation $\#l(w)$ to talk about an individual letter $l$ in a word $w$. For
 example, for the Parikh vector above, we would have $\CountOf{a} = 1$. You have
-already seen this in Section~\ref{sec:introduction:parikh}.
+already seen this in \cref{sec:introduction:parikh}.
 
-Parikh's theorem states that any context-free language has a
-letter-equivalent regular language (c.f.~\cite{construction} for a construction of
-such automata from context-free grammars and~\cite{bounds} for bounds on its size). However, there are languages that are
-not context-free that also have semilinear images under~$\ParikhMap$ (e.g.
-$\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) = \ParikhMap((abc)^*) = \CountOf{a} =
-\CountOf{b} = \CountOf{c} \land \CountOf{a} \geq 0$).
+Parikh's theorem states that any context-free language has a letter-equivalent
+regular language (c.f.~\cite{construction} for a construction of such automata
+from context-free grammars and~\cite{bounds} for bounds on its size). However,
+there are languages that are not context-free that also have semilinear images
+under~$\ParikhMap$ (e.g. $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) =
+\ParikhMap((abc)^*) = \CountOf{a} = \CountOf{b} = \CountOf{c} \land \CountOf{a}
+\geq 0$). This means they can be represented as a quantifier-free Presburger
+formula.
 
-\contents{\item this means we can represent this as Presburger
-\item only interested in regular languages}
+Note that while Parikh's theorem applies to context-free languages, in this
+paper we are only interested in regular languages.
 
 \subsection{Generalised Parikh maps}\label{sec:generalised}
 
@@ -763,38 +783,19 @@ To generalise the logic of the Parikh map, we introduce a morphism $\Map:\: \Sig
 \to \Monoid$ where $\Monoid = \left(X;+_{\Monoid};0_{\Monoid}\right)$ is a commutative monoid where the following holds:
 \begin{itemize}
   \item $\Map(\epsilon) = 0_{\Monoid}$
-  \item $\Map(a \Concat b) = \Map(a) +_{\Monoid} \Map(b)$, where $\Concat$ is
-  the string concatenation operation
+  \item $\Map(a \Concat b) = \Map(a) +_{\Monoid} \Map(b)$
 \end{itemize}
-
-Many other generalisations of the Parikh map have been studied. Prominent
-examples include generalising the Parikh map to segments of a fixed length
-\cite{KARHUMAKI1980155} and the more general Parikh matrix, which gives more
-information about a word than the standard Parikh image \cite{parikh-matrix}.
-Another notable generalisation is the p-vector, introduced
-in~\cite{infinite-words}, which denotes the position of each letter in the word
-rather than the number of their occurrences and allows for generalisations into
-infinite alphabets. All of these in some sense extend the Parikh map. By
-contrast, the main utility of the formulation introduced here is that it allows
-us to \emph{remove} something, thereby potentialy obtaining an easier problem.
 
 \subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
 
-Since Parikh images are semilinear, they can be fully expressed by Presburger
-arithmetic. This means that any Parikh image can be written as a set of linear
-equation. Following~\cite{generate-parikh-image}, we define the Parikh Image of
-a regular language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
-
-\contents{\item replace implies with singlearrow
-\item splitta sista implikationerna i tvaa!
-\item intuition for what the variables mean}
-
+Since Parikh images are semilinear, any Parikh image can be written as a set of linear
+equations. The following construction, here adapted to work on an NFA $\Automaton = \AutomatonTuple$, was presented in\cite{generate-parikh-image}:
 \begin{equation}
 \begin{aligned}
 \ParikhMap(\Automaton) := 
 & \AndComp{\Letter \in \Alphabet}{\LetterVar_{\Letter} = \sum_{\Transition = \FromLabelTo{}{\Letter}{} \in \Transitions} \TransitionVar_{\Transition}
 }\\
-& \AndComp{\State \in \AcceptingStates}{\FinalStateVar_{\State} > 0 \implies \StateVar_{\State} > 0}\\
+& \AndComp{\State \in \AcceptingStates}{\FinalStateVar_{\State} > 0 \longrightarrow  \StateVar_{\State} > 0}\\
 & \AndComp{\State \in \States}{
   \left(\FinalStateVar_{\State} \text{ if } \State \in \AcceptingStates \text{ otherwise } 0 \right) +
   \sum_{\Transition = \FromLabelTo{\State}{}{}} \Filter(\Transition) - \sum_{\Transition = \FromLabelTo{}{}{\State}} \Filter(\Transition)
@@ -803,11 +804,14 @@ a regular language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
     0 \text{ otherwise}
   \end{cases}
 }\\
-& \AndComp{\Transition = \FromLabelTo{}{}{\State} \in \Transitions}{
-  \TransitionVar_{\Transition} > 0 \implies \StateVar_{\State} > 0
+& \AndComp{\Transition = \FromLabelTo{\State'}{}{\State} \in \Transitions}{
+  \TransitionVar_{\Transition} > 0 \longrightarrow \StateVar_{\State} > 0
 } \\
-& \AndComp{\State \in \States}{
-  \StateVar_{\State} > 0 \implies
+& \AndComp{\State \in F}{
+  \StateVar_{\State} > 0 \longrightarrow \FinalStateVar_{\State} = 1
+} \\
+&\AndComp{\State \in \States}{
+  \StateVar_{\State} > 0 \longrightarrow
   \left(\FinalStateVar_{\State} = 1 \text{ if } \State \in \AcceptingStates \land \right) \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
     \StateVar_{\State} = \StateVar_{\State'} + 1 \land 
     \TransitionVar_{\Transition} \geq 1 \land
@@ -818,24 +822,19 @@ a regular language recognised by a DFA $\Automaton = \AutomatonTuple$ as:
 \label{eq:generate-parikh}
 \end{equation}
 
-where all variables $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ are
+All variables $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ are
 existentially quantified and the free variables $\LetterVar_\Letter$ make up the
-actual image. Performing standard quantifier elimination on $\TransitionVar_i,
-\StateVar_i, \FinalStateVar_i$ with $\LetterVar_\Letter$ would produce the
-Parikh image in its Presburger form. Note that compared to the method described
-in~\cite{generate-parikh-image}, ours is backwards. Intuitively the approaches
-are equivalent since the Parikh image, by definition, disregards order. The
-approach can be described as either following paths through the automaton
-forwards from an (in our case, \emph{the}) initial state, or conversely as in
-the case here, choose an accepting state and trace a path backwards to the
-initial state. 
+image. $\StateVar_\State$ represents the distance of state $\State$ from
+$\InitialState$ in a spanning tree, $\TransitionVar_\Transition$ how many times
+a transition $\Transition$ is used, and $\FinalStateVar_\State$ whether a given
+accepting state $\State \in \AcceptingStates$ is the actually used final state.
 
 In this paper we refer to this model as the baseline approach, though we also
-apply some optimisations that allow us to detect unsatisfiability early,
-described in Section~\ref{sec:implementing-baseline}. Notably, the calculus
-introduced in this paper can at its core be described as lazily enforcing the
-connectedness constraint of this method (the final two clauses) while also
-interleaving the (similarly lazy) computation of products of automata.
+apply optimisations as described in \cref{sec:implementing-baseline}. The
+calculus introduced in this paper, by contrast, lazily enforces the
+connectedness constraint of this encoding (the final three clauses) while also
+interleaving the computation of products of automata and propagating information
+between the steps to reduce the amount of work that needs to be done.
 
 \subsubsection{An Example}
 We apply \eqref{eq:generate-parikh} to the automaton $\AcaOrBc{}$ of \cref{fig:aca-or-bc}. We then get the quantified Presburger formula seen in \eqref{eq:parikh-formula}. As before, we omit the implicit existential quantifiers for brevity, along with the constranints requiring all variables to be nonnegative. We also omit the $\land$-clauses between each line. In other words, in this example, only the variables $\LetterVar_a, \LetterVar_b, \LetterVar_c, \LetterVar_d, \LetterVar_e$, and $\LetterVar_f$ are free, and corresponds to the counts of the respective subscript letter.
@@ -869,18 +868,16 @@ We apply \eqref{eq:generate-parikh} to the automaton $\AcaOrBc{}$ of \cref{fig:a
   state.
 
 
-Note that one of the $\lor$-clauses can be immediately removed since it
-contains the contradiction $\StateVar_{1} = \StateVar_{1} + 1$, arising from
-cycles. These clauses encode the distance in a spanning tree from an accepting
-state, and the unsatisfiability is by design, essentially ensuring that two
-states in a cycle cannot vouch for each other's connectedness.
+Note that one of the $\lor$-clauses can be immediately removed since it contains
+the contradiction $\StateVar_{1} = \StateVar_{1} + 1$, arising from cycles.The
+unsatisfiability is by design, and ensures that two states in a cycle cannot
+vouch for each other's connectedness.
 
 Assume we are really interested in occurrences with the letter a, i.e. we solve
 for $\LetterVar_a > 0$. This implies that $\StateVar_{1} > 0 \land \StateVar_{3}
 > 0$ (essentially, that the state our transition of interest started in is
 reachable), in turn implying that $\FinalStateVar_3 = 1$. Plugging in these
 facts, we get:
-
 \begin{equation}
   \begin{aligned}
   &\LetterVar_{a} = 2 \land \LetterVar_{b} = 0 \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}}\\
