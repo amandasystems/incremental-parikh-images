@@ -923,7 +923,9 @@ $s = s_1 \RepeatSum{\Concat} s_n$ is given by
 $\Map(s) = \sum \Map(s_i) = 1 \RepeatSum{+} 1 = n$.
 
 Intuitively, this produces a simpler problem than computing the Parikh image, as
-we now ignore not just the order of characters but also their differences. This
+we now ignore not just the order of characters but also their differences.
+\iffalse
+This
 means that the branching automaton of \cref{fig:len-branch} becomes
 equivalent to the non-branching automaton of \cref{fig:len-branch-free}.
 Note that the elimination of the choice of paths also effectively eliminates the
@@ -931,6 +933,7 @@ possibility of disconnecting one of the self-loops. This, in turn, means that we
 can eliminate all of the connectedness implications of the quantified formula,
 which would in turn simplify it (and the quantifier elimination of it)
 considerably.
+\fi
 
 \subsection{Example~2: Parikh Automata}\label{sec:parikh-automata}
 \contents{\item Ostrich+!}
@@ -960,15 +963,19 @@ In the following definitions, we use (as in~\cite{expressiveness}) the following
 \end{definition}
 
 \begin{definition}\label{def:parikh-automata} A Parikh automaton of dimension $d
-  \geq 0$ is a pair $\Tuple{\Automaton, C}$, where $C \subseteq \Naturals^d$ is a semi-linear set (or, equivalently, a Presburger formula), where $\Automaton$ is a finite automaton with the alphabet $\Alphabet \times D$, where $D \subseteq \Naturals^d$.
-
-  We say that $\Tuple{\Automaton, \varphi}$ \emph{recognises} the language, $\Language(\Automaton, C)$, that is it recognises the language crated by is the $\pi_\Alphabet$-projection on $\Alphabet$ whose $\pi_{v} \subseteq C$.
+  \geq 0$ is a pair $\Tuple{\Automaton, C}$, where $C \subseteq \Naturals^d$ is
+  a semi-linear set (or, equivalently, a Presburger formula), and $\Automaton$
+  is a finite automaton with the alphabet $\Alphabet \times D$, where $D
+  \subseteq \Naturals^d$. We say that $\Tuple{\Automaton, \varphi}$
+  \emph{recognises} the language, $\Language(\Automaton, C)$, that is it
+  recognises the language created by is the $\pi_\Alphabet$-projection on
+  $\Alphabet$ whose $\pi_{v} \subseteq C$.
 \end{definition}
 
-\begin{figure}[ht]
+\begin{figure}[t]
   \centering
-      \includegraphics[width=0.75\linewidth]{parikh_automaton}
-      \caption{A The automaton part of a Parikh automaton for $\AcaOrBc{}$ with
+      \includegraphics[width=0.5\linewidth]{parikh_automaton}
+      \caption{The automaton part of a Parikh automaton for $\AcaOrBc{}$ with
       $\Alphabet = \Set{\text{a, b, c}}, d = 3$. The semilinear set/Presburger
       formula containing the constraints on the final register values cannot be
       visualised.}\label{fig:parikh-automaton}
@@ -988,22 +995,24 @@ Generally, we can encode the problem as follows:
 
 \section{A Calculus for Generalised Parikh Images}\label{sec:calculus}
 
-We assume an NFA $\Automaton = \AutomatonTuple$ with $\NrTransitions$
-transitions $\Transitions =
-\Set{\EllipsisSequence{\Transitions}{\NrTransitions}}$. For convenience, we then introduce the following supporting notations:
+We start by defining our calculus, \Calculus{}, for one automaton, and only
+extend it to products of automata in \cref{sec:multiple}. Assume an NFA
+$\Automaton = \AutomatonTuple$ with $\NrTransitions$ transitions $\Transitions =
+\Set{\EllipsisSequence{\Transition}{\NrTransitions}}$. For convenience, we then
+introduce the following supporting notations:
 
 \begin{definition}
   A \textit{path} $\Path = \PathEnumeration$ of an automaton~$\Automaton$ with
   transitions $\Transitions$ represents a path through $\Automaton$ using
   transitions in $\Transitions$ (i.e. $\Transitions(\State_k, \Label_{k+1},
-  \State_{k+1})$ holds for every $k$), passing zero or more labels $\Label_1,
-  \ldots, \Label_n$. The path must begin in the initial state, i.e.~$\State_0 =
-  \InitialState$. However, the ending state, $\State_n$, is not necessarily an
-  accepting state.
+  \State_{k+1})$ holds), passing zero or more labels $\Label_1, \ldots,
+  \Label_n$. The path must begin in the initial state, i.e.~$\State_0 =
+  \InitialState$. The end state, $\State_n$, is not necessarily accepting. If it
+  is, we say the path is also \textit{accepting}.
   \end{definition}
 
 \begin{definition}
-  Moreover, we also talk about the \textit{set of paths} of an automaton,
+  Moreover, we talk about the \textit{set of paths} of an automaton,
   $\Paths(\Automaton)$, a possibly infinite (if $\Automaton$ has loops) set of
   valid paths through $\Automaton$. Additionally, we use the
   notation~$\Paths(\Automaton, \State)$ to mean all paths ending in
@@ -1011,29 +1020,24 @@ transitions $\Transitions =
 \end{definition}
 
 \begin{definition}
-  The \textit{word} of a path $\WordOf(\Path) = \Label_1 \RepeatSum{\Concat} \Label_n$ is
-  the word read out on its labels.
+  For a path $\Path = \Tuple{\State_0 \Label_1 \State_1 \RepeatSum{,}
+  \State_n}$, its \textit{word} $\WordOf(\Path) = \Label_1 \RepeatSum{\Concat}
+  \Label_n$ is the word read out on its labels.
 \end{definition}
 
 \begin{definition}
-  \Fudge{fixme: use pattern matching on path definition}
-  The \textit{states} of a path $\StatesOf(\Path) = \Set{\State \SuchThat
-  \FromLabelTo{\State}{}{\State'} \in \Path \text{ or }
-  \FromLabelTo{\State'}{}{\State} \in \Path}$ are the states visited along a
-  path. Note that $\InitialState \in \StatesOf(\Path)$ for every path since all
-  paths start in the initial state.
+  The \textit{states} of a path $\Path = \Tuple{\State_0 \Label_1 \State_1
+  \RepeatSum{,} \State_n}$, $\StatesOf(\Path) = \Set{\State_0\RepeatSum{,}
+  \State_n}$ are the states visited along $\Path$. Note that $\InitialState \in
+  \StatesOf(\Path)$ for every path since all paths start in the initial state.
 \end{definition}
 
 \begin{definition}
-  \Fudge{if every valid path containing q overlaps with C}
-  A \textit{cut}, $C$ of an automaton~$\Automaton = \AutomatonTuple$,
-  $\SeparatingCut(C, \Automaton, \State)$, is a minimal set of transitions whose
-  removal from~$\Transitions$ would cause~$\State \in \States$ to be unreachable
-  from the initial state~$\InitialState$, or cut it off from reaching any
-  accepting state. $\SeparatingCut(\Automaton, \InitialState)$ is crucially
-  undefined if $\Automaton$ accepts any string since it cannot be made unreachable
-  from itself by definition and must have at least onepath to an accepting state
-  if it accepts any string.
+  A \textit{cut}, $C$ of an automaton~$\Automaton = \AutomatonTuple$ to state
+  $\State$, written $\SeparatingCut(C, \Automaton, \State)$, is a minimal set of
+  transitions such that every accepting path $p$ where $\State \in
+  \StatesOf(\Path)$ contains a transition $\Transition \in C$. A cut does not
+  exist for every state; notably it never exists for $\InitialState$.
 \end{definition}
 
 \begin{definition}
@@ -1072,11 +1076,17 @@ definitions:
   every transition. It is redundant to $\Image$ by design.
 \end{definition}
 
-Finally, we present the rules of our calculus for one automaton in
+We present the rules of \Calculus{} for one automaton in
 \cref{tbl:rules:single}. Note that we operate on sets of symbols (terms,
 clauses). Additionally, we also use the convention of splitting the formulas
 into linear inequalities ($\SomeInequalities$) and any other clauses
 ($\SomeClause$).
+
+Note that the filtering function~$\Filter$ is evaluated symbolically in these
+rules, and can in practice be read as a symbolic function from transitions to
+terms (e.g.~\texttt{t} or~\texttt{t+1}). In our implemendation \Catra{},
+described in \cref{sec:implementation}, $\Filter$~is a vector of fresh variables
+with the same size as~$\Transitions$.
 
 We use the shorthand notation~$\Transitions_\Automaton$ to refer to the
 transitions of an automaton~$\Automaton$. Additionally, for an
@@ -1085,26 +1095,25 @@ like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
 \Set{\Transition \in \Transitions \SuchThat \Filter(\Transition) > 0}}$, i.e.
 $\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
 instance, the basis for the matched linear inequalities is
-implicitly~$\SomeInequalities$.
+implicitly~$\SomeInequalities$. Similarly, for our commutative monoid $\Monoid =
+\left(X;+_{\Monoid};0_{\Monoid}\right)$ and the map into it $\Map : \Strings
+\rightarrow X$, we also allow mapping over transitions:
+$\Map(\FromLabelTo{\State}{\Label}{\State'}) = \Map(\Label)$.
 
-These rules are meant to be executed in an automated theorem prover, and are
-read bottom-up. Since a large part of our rules operate by adding and literally
-matching linear (in)equalities in a proof goal, we use the shorthand of listing
-the matched inequalities as antecedents. An example of this can be seen in
-the~\Propagate{} rule.
+The rules of \cref{tbl:rules:single} are meant to be used in tableaux-style
+proofs, and are read bottom-up, where the syntax at the bottom is replaced with
+the one at the top until \Fudge{it is possible to close the proof goal}. Since
+our rules operate by adding and matching linear (in)equalities in a proof goal,
+we use the shorthand of listing the matched inequalities as antecedents. An
+example of this can be seen in the~\Propagate{} rule. \Fudge{We pull solutions
+out of a hat? I have no idea.}
 
-Please note that the filtering function~$\Filter$ is evaluated symbolically in
-these rules, and can in practice be read as a symbolic function from transitions
-to terms (e.g.~\texttt{t} or~\texttt{t+1}), not dissimilar to~$\FlowEq$ below.
-In our implementation, $\Filter$~is a vector of fresh unknown constants with the
-same size as~$\Transitions$.
-
-We assume that every rule only fires when it would add a new clause. For
+We require that every rule only fires when it would add a new clause. For
 example, this means that we cannot use~\Split{} to split on the same term twice.
 This suggests a proof strategy where you \Propagate{} when you can, \Split{}
 when you must, and \Subsume{} when neither is possible anymore.
 
-\begin{table}[h]
+\begin{table}
 \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
   Name & Rule & Prerequisites\\
   \midrule
@@ -1114,17 +1123,17 @@ when you must, and \Subsume{} when neither is possible anymore.
     \inferrule
   {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions_\Automaton} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
   {\SinglePredicateInstance, \SomeInequalities, \SomeClause} & 
-  None \\[5ex]
+  None \\[3ex]
 
   % SPLIT
   \Split & 
   \inferrule{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) = 0 \mid \Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) > 0}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause} &
-  if $\Transition \in \Transitions_\Automaton$ \\[5ex]
+  if $\Transition \in \Transitions_\Automaton$ \\[3ex]
 
   % PROPAGATE
   \Propagate &
   \inferrule{\Connected(\Automaton, \Filter), \Set{\Filter(\Transition') = 0 \SuchThat \Transition' \in C}, \SomeInequalities, \SomeClause, \Filter(\Transition) = 0}{\Connected(\Automaton, \Filter), \Set{\Filter(\Transition') = 0 \SuchThat \Transition' \in C}, \SomeInequalities, \SomeClause} &
-  if $t = \FromLabelTo{\State}{}{\State'} \in \Transitions_\Automaton, \SeparatingCut(C, \Automaton, \State)$ \\[5ex]
+  if $t = \FromLabelTo{\State}{}{\State'} \in \Transitions_\Automaton, \SeparatingCut(C, \Automaton, \State)$ \\[3ex]
 
   % SUBSUME
   \Subsume &
@@ -1134,25 +1143,25 @@ when you must, and \Subsume{} when neither is possible anymore.
   \end{tabular}
   \caption{Derivation rules for one automaton.}\label{tbl:rules:single}
 \end{table}
-
 We use the symbolic function $\FlowEq(\Automaton, \Filter)$ that generates a set
-of existentially quantified linear inequalities with the following definition:
-$$
+of existentially quantified linear inequalities with the following definition,
+where we assign fresh, existentially quantified variables to
+$\FinalStateVar_\State, \Filter(\Transition)$ for every $\State \in
+\AcceptingStates, \Transition \in \Transitions$:
+\[
 \begin{aligned}
-  & \FlowEq(\Automaton, \Filter) = \sum\limits_{\State \in \AcceptingStates} \FinalStateVar_\State = 1 \land \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)} = \Sink(\State) \\
+  & \FlowEq(\Automaton, \Filter) = \sum\limits_{\State \in \AcceptingStates} \FinalStateVar_\State = 1 \land \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)} = \Sink(\State) \land
+  \AndComp{\State \in \AcceptingStates}{\FinalStateVar_\State \geq 0}\\
   & \Sink(\State) = 0 \text{ if } \State \not\in \AcceptingStates, \FinalStateVar_\State \text{ otherwise.} \\
-  & \In(\State, \Filter) = \StartFlow(\State) + \sum_{\Transition = \FromLabelTo{\State_0}{}{\State} \in \Transitions} \Filter(\Transition)\\
+  & \In(\State, \Filter) = \StartFlow(\State) + \sum_{\Transition \in \FromLabelTo{\State'}{}{\State}} \Filter(\Transition)\\
   & \StartFlow(\State)  = 1 \text{ if } \State = \InitialState, \text{ otherwise $0$.} \\
-  & \Out(\State, \Filter) = \sum_{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions} \Filter(\Transition)
+  & \Out(\State, \Filter) = \sum_{\Transition \in \FromLabelTo{\State}{}{\State'}} \Filter(\Transition)
 \end{aligned}
-$$
-Where we transparently assign fresh variables to each state $\State \in
-\States$ as well as every accepting state $\State' \in \AcceptingStates$ and
-existentially quantify them in the whole clause. 
+\]
 
-Additionally, we assume the existence of a rule \PresburgerClose{},
-corresponding to a sound and complete solver for Presburger formulae, modulo the
-monoid~$\Monoid$.
+In addition to \cref{tbl:rules:single}, we assume the existence of a rule
+\PresburgerClose{}, corresponding to a sound and complete solver for Presburger
+formulae, and for the elements of~$\Monoid$.
 
 The $\Propagate{}$ rule allows us to propagate (dis-)connectedness across
 $\Automaton$. It states that we are only allowed to use transitions attached to
@@ -1176,11 +1185,16 @@ progress by eliminating paths through~$\Automaton$.
 
 A decision procedure for our predicate in a tableau-based automated theorem
 prover would start by expanding the predicate using the $\Expand{}$~rule. A
-modestly clever theorem prover would perform algebraic substitution on the
-underlying constants of~$\Filter$, boiling them down to choices of branches,
-which depend on one single variable, and loop transitions. This logic
-corresponds to the placement of counters for optimally edge-profiling the CFG of
-a program, making up a MST of the automaton~\cite{path-profiling}.
+theorem prover would perform algebraic substitution on the underlying constants
+of~$\Filter$, boiling them down to choices of branches, which depend on one
+single variable, and loop transitions. This logic corresponds to the placement
+of counters for optimally edge-profiling the CFG of a program, making up a
+minimum-spanning tree of the automaton~\cite{path-profiling}.
+
+In order to make the examples below tractable, we will assume the existence of a
+rule \EquationReasoning{} that allows us to perform standard algebraic reasoning
+on linear inequalities. This rule is not necessary for correctness or
+completeness, but shortens the examples considerably.
 
 \subsection{An Example}
 
@@ -1191,9 +1205,10 @@ definitions in \cref{fig:example:single:equivalences} (omitting existential
 quantifiers and $x \geq 0$ for every variable to avoid clutter).
 
 \begin{figure}[ht]
-  We define $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$ as follows:
-
-  \begin{minipage}[b]{0.45\linewidth}
+  We define $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$ as in the following two
+  equations, and then apply \EquationReasoning{} (under the implicit assumption
+  that every RHS is $\geq 0$) to obtain the equivalent third definition :
+  \begin{minipage}[b]{0.3\linewidth}
     \begin{equation*}
       \begin{aligned}
         & \Filter(\FromLabelTo{S}{a}{A}) & = \TransitionVar_1 \\
@@ -1206,7 +1221,7 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
     \end{equation*}    
   \end{minipage}
   \hspace{0.5cm}
-  \begin{minipage}[b]{0.45\linewidth}
+  \begin{minipage}[b]{0.3\linewidth}
     \begin{equation*}
       \begin{aligned}
         % S
@@ -1221,23 +1236,21 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
       \end{aligned}  
     \end{equation*}    
   \end{minipage}
+  \begin{minipage}[b]{0.3\linewidth}
+    \begin{equation*}
+      \begin{aligned}
+        & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
+        & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+        & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
+        & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
+      \end{aligned}
+    \end{equation*}    
+  \end{minipage}
   \caption{Equivalences defining $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$
   respectively.}\label{fig:example:single:equivalences}
   \end{figure}
-
-
-Propagating the equivalences from \FlowEq{} gives us (under the implicit
-assumption that every RHS is $\geq 0$):
-\begin{equation*}
-  \begin{aligned}
-    & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
-    & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
-    & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
-    & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
-    & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
-    & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
-  \end{aligned}
-\end{equation*}
 
 \begin{figure}
   \centering
@@ -1274,7 +1287,7 @@ assumption that every RHS is $\geq 0$):
       2k = 2 + 2\TransitionVar_4 + \TransitionVar_3
     \end{matrix}
   }
-  \infer1[Eq. reason]{
+  \infer1[\EquationReasoning{}]{
     \begin{matrix}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       1 - \TransitionVar_6 = 0 \land \\
@@ -1301,7 +1314,7 @@ assumption that every RHS is $\geq 0$):
       2k = 1 + \TransitionVar_3
     \end{matrix}
   }
-  \infer1[Eq. reason]{
+  \infer1[\EquationReasoning{}]{
     \begin{matrix}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       \TransitionVar_6 = 0 \land \\
@@ -1318,7 +1331,7 @@ assumption that every RHS is $\geq 0$):
       2k = 1 + 2\TransitionVar_4 + \TransitionVar_3
     \end{matrix}
   }
-  \infer1[Eq. reason]{
+  \infer1[\EquationReasoning{}]{
     \begin{matrix}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       1 - \TransitionVar_6 > 0 \land \\
@@ -1326,6 +1339,11 @@ assumption that every RHS is $\geq 0$):
     \end{matrix} % BRANCH: > 0
   } % SPLIT
   \infer2[\Split{} $1 - \TransitionVar_6$]{ \Connected(\AcaOrBc{}, \Filter) \land 2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6 }
+  \infer1[\EquationReasoning{}]{
+    \Connected(\AcaOrBc{}, \Filter) \land
+    2k + 1 =
+    \sum\limits_{\Transition \in \Transitions} (\Transition \mapsto 1)(\Label) \cdot \Filter(\Transition)
+  }
   \infer1[\Expand{}]{\Image{}_{\AcaOrBc{}, \Transition \mapsto 1}(\Filter, 2k + 1)}
 \end{prooftree}
 \caption{A derivation for \Calculus{} computing odd lengths in $\AcaOrBc{}$.}\label{fig:derivation:single}
@@ -1344,18 +1362,15 @@ equations.
 
 \subsection{\Calculus{} for one automaton is correct}\label{sec:single:correct}
 
-To be as clear as possible about what it means for our calculus to be correct,
-we use more exact definitions than the traditional soundness and completeness.
-Since correctness is guaranteed by the formulation of the predicate, our
-correctness proof means proving inductively that no rule would invalidate that
-definition.
+Since correctness is defined by the formulation of the $\Image{}$~predicate, our
+correctness proof amounts to proving inductively that no rule would invalidate
+that definition.
 
 \subsubsection{\Calculus{} terminates}
-\begin{lemma}\label{lma:single-terminates}
-  A solver implementing the calculus described in \cref{sec:calculus} starting
-  with some decidable (modulo the solver) set of clauses $\SomeClause{}$ and an
-  instance of our predicate $\SinglePredicateInstance$ will eventually
-  terminate.
+\begin{lemma}\label{lma:single-terminates} A solver implementing the calculus
+  described in \cref{sec:calculus} starting with some decidable set of clauses
+  $\SomeClause{}$ and an instance of our predicate $\SinglePredicateInstance$
+  will eventually terminate.
 \end{lemma}
 
 \begin{proof}
@@ -1367,16 +1382,16 @@ applying $\Subsume$ when no other of the rules is applicable. Hence all
 predicates introduced in the calculus can always be removed.
 
 It remains to prove that each rule is only applied finitely many times. This is
-almost obvious since both \Propagate{} and \Split{} can only be applied to
-transition variables whose $\Filter$ value has no known bound. However, \Split{}
-can always be used to split the proof tree and add clauses in precisely the
-right shape, thereby guaranteeing the ability to make forward progress.
-Therefore, the number of transition variables whose bounds are unknown is
-decreasing monotonically for any given proof goal, and hence termination is
-guaranteed.
+ obvious since both \Propagate{} and \Split{} can only be applied to transition
+ variables whose $\Filter$ value has no known lower bound. However, \Split{} can
+ always be used to split the proof tree and add clauses in precisely the right
+ shape, thereby guaranteeing the ability to make forward progress. Therefore,
+ the number of transition variables whose bounds are unknown is decreasing
+ monotonically for any given proof goal, and hence termination is guaranteed.
 \end{proof}
 
 \subsubsection{\Calculus{} computes the homomorphic image}
+\Fudge{I am unsure of the definitions here}
 \begin{lemma}\label{lma:single-correct}
   Starting with $\SinglePredicateInstance$, we will close the goal with $\top$
   if $\exists s \in \Language(\Automaton) \HoldsThat \Map(s) = \MonoidElement$
