@@ -1,0 +1,15 @@
+digraph Automaton {rankdir = LR;
+initial [shape=plaintext,label=""];
+initial -> start0;
+start0 [shape=circle,label=""];
+start0 -> start0 [label="\Sigma / \begin{bmatrix} 1 \\\ 1 \end{bmatrix}"];
+start0 -> start [label="\epsilon"];
+start [shape=circle,label=""];
+start -> sawA [label="a / \begin{bmatrix} 0 \\\ 1 \end{bmatrix}"]
+sawA -> start [label="b / \begin{bmatrix} 0 \\\ 1 \end{bmatrix}"]
+start -> start [label="c / \begin{bmatrix} 0 \\\ 1 \end{bmatrix}"]
+sawA [shape=circle,label=""];
+final [shape=doublecircle,label=""];
+start -> final [label="\epsilon"];
+final -> final [label="\Sigma / \begin{bmatrix} 0 \\\ 0 \end{bmatrix}"];
+}
