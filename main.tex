@@ -581,95 +581,100 @@ the length. Eliminating the final quantifier gives us the image of $f(\AcaOrBc
 \times \SomethingCSomething)$ modulo odd lengths: $3 + 2k$, for some integer
 $k$.
 
-\Fudge{Fixed until here!}
-
 \subsection{Producing the Parikh image}\label{sec:introduction:parikh}
 
 Now assume that rather than the length (e.g. the count of the characters) we
 want to find the whole Parikh image of the intersection of $\AcaOrBc{}$ and
-$\SomethingCSomething{}$. In other words, now $f$ is a mapping to an object
-(usually represented as a column vector) counting how often each character
-occurs in a string. Since extracting values from a vector is tiresome, we will
-use the shorthand notation $\TransitionCount{a}$ to refer to the number of
-letters a that appear. E.g. $\TransitionCount{a}(\text{curious and curiouser
-still}) = 1$. Note that we still have the property that
-$\TransitionCount{o}(\text{homomorphism}) = \TransitionCount{o}(\text{homo}) +
-\TransitionCount{o}(\text{morphism}) = 2 + 1 = 3$. If you treat the addition as
-element-wise vector addition, this approach works for the vector version as
-well.
+$\SomethingCSomething{}$. In other words, now $f$ is a mapping to a 3-vector
+counting how often each character occurs in a string. Since extracting values
+from a vector is tiresome, we will use the shorthand notation
+$\TransitionCount{a}$ to refer to the number of letters a that appear. E.g.
+$\TransitionCount{a}(\text{curious and curiouser still}) = 1$. Note that we
+still have the property that $\TransitionCount{o}(\text{homomorphism}) =
+\TransitionCount{o}(\text{homo}) + \TransitionCount{o}(\text{morphism}) = 2 + 1
+= 3$. If you treat the addition as element-wise vector addition, this approach
+works for the vector version as well.
 
 For our constraint, we will use $\TransitionCount{a} > \TransitionCount{b}$,
-that is find a count of characters in a string accepted by both automata where
+that is finding a count of characters in a string accepted by both automata where
 there are more a:s than b:s. Since the underlying calculus is the same, we start immediately from Figure~\ref{fig:example-simplify-1}.
 
   We now need to relate the number of times a transition was taken to the
   character counts we are really interested in, as opposed to just the length in
-  the previous example. Note that this, like the length calculus before, puts
-  the two automata into contact with each other, before any product has been
-  computed. Some consideration leads us to the definition that the number of
-  occurrence of each character corresponds to the sum of usages of transitions
-  containing it, e.g. relations of the kind $\TransitionCount{a} = 2 - 2l_c'$,
-  and $\TransitionCount{b} = 2 l_b' + l_c'$.\footnote{For the attentive reader:
-  in this example, we leave the catch-all transitions of $\SomethingCSomething$
-  unconstrained since they will be taken care of by the product and would
-  complicate the reasoning since we cannot yet know which character they will
-  correspond to in the final product. In other words, this is a safe
-  under-approximation that only limits our ability to reason before computing
-  the product.}
+  the previous example. For the $\Sigma$ labels, since we do not know which
+  letter to use, we introduce a sum $r_{a1} + r_{b1} + r_{c1}$ per $\Sigma$
+  transition.
 
-This relation can be combined with the constraint that $\TransitionCount{a} >
-\TransitionCount{b}$, that is that there are more instances in the accepted
-string of letters a than b, to obtain $2 - 2l_c' > 2 l_b' + l_c'$. Combining this
-equation with the requirement from $\SomethingCSomething$ that
-$\TransitionCount{c} \geq 1$ and $\TransitionCount{c} = l_c + l_c'$ from
-$\AcaOrBc$ gives $0 \geq l_b'$, and since we cannot use a transition a negative
-number of times $l_b' = 0$, which gives the automaton in
-Figure~\ref{fig:example-simplify-2}.
+  As in the previous example, we sum the occurrences for each transition to
+  obtain the counts, here with the element-wise vector addition unpacked:
+  \[
+\MonoidElement =   \begin{bmatrix}
+  r_{a1} + r_{a2} \\
+  r_{b1} + r_{b2} \\
+  r_{c1} + r_{c2} + 1 \\
+  \end{bmatrix} =
+  \begin{bmatrix}
+    2 -2l_c' \\
+    2l_b' + l_c' \\
+    l_c + l_c' \\
+    \end{bmatrix} =
+    \begin{bmatrix}
+      \TransitionCount{a} \\
+      \TransitionCount{b} \\
+      \TransitionCount{c}
+      \end{bmatrix}
+  \]
+  
+These equalities can be combined with the constraint that $\TransitionCount{a} >
+\TransitionCount{b}$ to obtain $2 - l_c' > l_b'$. Since we have $1-l_c' \geq 0$
+from one of the transition labels, we know $l_c' \geq 0$, and therefore that $1
+> l_b' \implies l_b' = 0$. Plugging in the same inequality again on the same
+principle, we get $2 - 2l_c' > l_c' \iff l_c' = 0$. This gives us the much
+smaller automaton of \cref{fig:example-simplify-3}.
 
-\begin{figure}[ht]
-  \centering 
-    \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified_2}
-    \caption{$\AcaOrBc{}$ after removing the now unused b-transition.}\label{fig:example-simplify-2}
-  \end{figure}
+% \begin{figure}[t]
+%   \centering 
+%     \includegraphics[width=0.70\linewidth]{aca_or_bc_simplified_2}
+%     \caption{$\AcaOrBc{}$ after removing the now unused b-transition.}\label{fig:example-simplify-2}
+%     \Description[$\AcaOrBc$ without the returning transition from $B$ to $S$]{$\AcaOrBc$ without the returning transition from $B$ to $S$, which now makes the transition from $S$ to $B$ also have the same associated variable $l_c'$.}
+%   \end{figure}
 
-  Plugging in the same inequality again on the same principle, we get $2(1 -
-  l_c') > l_c' \iff 1 > l_c'$ since we are working with integers, and
-  therefore that $l_c' = 0$. This gives us the even smaller automaton of
-  Figure~\ref{fig:example-simplify-3}.
 
-  \begin{figure}[ht]
+  \begin{figure}[t]
     \centering 
-      \includegraphics[width=0.75\linewidth]{aca_or_bc_simplified_3}
+      \includegraphics[width=0.7\linewidth]{aca_or_bc_simplified_3}
       \caption{$\AcaOrBc{}$ after further constraint propagation.}\label{fig:example-simplify-3}
+      \Description[$\AcaOrBc$ without the lower section.]{$\AcaOrBc$ with only its upper section left and the $a$ transitions now set to static 1.}
     \end{figure}
 
 This will produce a straightforward product since both automata now have the
 same shape, where we essentially only need to expand the self-loops of
-$\SomethingCSomething$ and reduce its range labels to only capture a:s, as seen
-in Figure~\ref{fig:final-example}. Note that we got this result by only
-performing linear inequality reasoning on the automata of the product versus the
-number of times each transition would be used.
+$\SomethingCSomething$ and reduce its range labels to only capture a's, as seen
+in \cref{fig:final-example}. Note that we got this result by only performing
+linear inequality reasoning on the automata of the product versus the number of
+times each transition would be used.
 
-\begin{figure}[ht]
+\begin{figure}[t]
 \centering
     \includegraphics[width=0.75\linewidth]{aca_or_bc_times_something_c_something}
     \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ under the constraint
     $\TransitionCount{a} > \TransitionCount{b}$. Note the fresh variables
     introduced for the transitions (for most transitions the same one, since
-    they are all linearly dependent).}\label{fig:final-example}
+    they are all linearly dependent).}\label{fig:final-example} \Description[The
+    final product, still a boring stick automaton with only one loop for an
+    arbitrary number of c's.]{A product of the intermittent automata, which
+    accepts \lstinline{ac.*ca}}
   \end{figure}
 
+%   \begin{figure}[t]
+% \centering
+%     \includegraphics[width=0.75\linewidth]{original_product}
+%     \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ as it would have
+%     appeared if we had computed it from the initial
+%     automata.}\label{fig:original-product}
+%   \end{figure}
 
-  \begin{figure}[ht]
-\centering
-    \includegraphics[width=0.75\linewidth]{original_product}
-    \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ as it would have
-    appeared if we had computed it from the initial
-    automata.}\label{fig:original-product}
-  \end{figure}
-
-
-To obtain the final Parikh image, we need to tie the inequalities for the
+To obtain the final Parikh image, we again need to tie the inequalities for the
 transitions of the automata of the product to the new transition counters we
 introduced in the product automaton. The only interesting transition is the one
 carrying the c, so we will choose that one for illustration. In that case, the
@@ -677,10 +682,7 @@ bridging equation is $r_2 = l_c \land r_2 = r_{\Sigma}$ (and for all others
 $=1$), which gives the Parikh image $\exists_{r_2} \TransitionCount{a} = 1 \land
 \TransitionCount{b} = 0 \land \TransitionCount{c} = r_2 + 1$, and after
 existence-elimination using reasoning on lower bounds (e.g. $r_2 \geq 0$) we
-arrive at $\TransitionCount{c} \geq 1$. For comparison, the $\AcaOrBc{} \times
-\SomethingCSomething{}$ we would have obtained if we had eagerly computed the
-product can be seen in Figure~\ref{fig:original-product}. This would have
-introduced a significantly more complicated existentially quantified formula.
+arrive at $\TransitionCount{c} \geq 1$.
 
 \section{Preliminaries}
 
