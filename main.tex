@@ -184,23 +184,21 @@
    set of linear equations that describe all possible combinations of character
    counts in strings of a given language. Automata-based string solvers
    frequently need to compute the Parikh image of large products (intersections)
-   of automata, which in many operations is both prohibitively slow and
-   memory-intensive. We contribute a novel understanding of how Parikh maps can
-   be tackled as a constraint-solving problem to solve real-world constraints
-   stemming from functions on regular languages, most notably the length
-   constraint. Furthermore, we show how this formulation can be efficiently
-   implemented as a calculus, \Calculus{}, in an automated theorem prover
-   supporting Presburger logic. We also provide an efficient method for deriving
-   the Presburger formula of a given Parikh image, \Fudge{which is good for
-   something} based on techniques for quantifier elimination. We implement
-   \Calculus{} in a tool called \Catra{}, and evaluate it on constraints
-   produced by the \OstrichPlus{} string constraint solver when solving
-   \Fudge{standard string constraint benchmarks involving string lengths}. We
-   show that our solution strictly outperforms the standard eager approach
-   described in~\citeauthor{generate-parikh-image} as well as the
-   over-approximating method recently described
-   by~\citeauthor{approximate-parikh}, and for realistic timeouts for constraint
-   solving also the~\Nuxmv{} model checker.
+   of nondeterministic automata, which in many operations is both prohibitively
+   slow and memory-intensive. We contribute a novel understanding of how Parikh
+   maps can be tackled as a constraint solving problem to solve real-world
+   constraints stemming from functions on regular languages, most notably the
+   length constraint. Furthermore, we show how this formulation can be
+   efficiently implemented as a calculus, \Calculus{}, in an automated theorem
+   prover supporting Presburger logic.  We implement \Calculus{} in a tool
+   called \Catra{}, and evaluate it on constraints produced by the
+   \OstrichPlus{} string constraint solver when solving \Fudge{standard string
+   constraint benchmarks involving string lengths}. We show that our solution
+   strictly outperforms the standard eager approach described
+   in~\citeauthor{generate-parikh-image} as well as the over-approximating
+   method recently described by~\citeauthor{approximate-parikh} by a wuide
+   marigin, and for realistic timeouts for constraint solving also the~\Nuxmv{}
+   model checker.
 \end{abstract}
 
 
@@ -331,7 +329,7 @@ automata labels, including string lengths. This enables us to let both
 calculations inform each other, eliminating unnecessary work, and pruning the
 size of the partial products considered in the computation for a smaller memory
 footprint. Moreover, the method can be used iteratively to tackle smaller chunks
-of the product incrementally, thereby avoiding running out of memory at all.
+of the product incrementally, thereby decreasing the memory footprint.
 
 The problem of computing constraints on Parikh images over products of regular
 languages under a given commutative homomorphism amounts to solving products of
@@ -345,15 +343,8 @@ on exact definitions and side-constraints. The decision problem tackled in this
 paper, determining the emptiness of an intersection of Parikh automata, was
 recently shown to be PSPACE-complete~\cite{graph-queries}.
 
-In addition to the decision problem of determining whether an intersection of
-Parikh automata is empty and the satisfaction problem of finding a value from
-the intersection if it is not, \Catra{} is able to efficiently generate a
-quantifier-free Presburger formula representing an intersection of Parikh
-automata, something beyond the reach of general model checkers like~\Nuxmv.
-\Fudge{This is useful because the moon is made of cheese.}
-
 We implement \Calculus{} as a theory for the \Princess{} automated theorem
-prover in a tool that we call \Catra{}. \Catra also supports using the
+prover in the tool \Catra{}. \Catra also supports using the
 approximate method of \cite{approximate-parikh}, its fall-back variant adapted
 from~\cite{generate-parikh-image}, and an adapter for the \Nuxmv{} model
 checker~\cite{nuxmv}. Using \Catra{}, we compare \Calculus{} to the other two
@@ -364,7 +355,6 @@ In summary, we contribute:
 \begin{itemize}
 \item The \Calculus{} calculus to efficiently compute (a homomorphism on) the
 Parikh image of products of Parikh automata.
-\item A specialised method for quantifier elimination that blends well with \Calculus{} to efficiently compute quantifier-free Presburger representations of a given Parikh image. \Fudge{Why is this good?}
 \item Experiments illustrating the performance of \Calculus{} on real-world examples from string solving, including \NrBenchmarks{} instances in a standardised format made available for future study.
 \item The \Catra{} tool for solving such instances, containing an implementation of \Calculus{}, the over-approximation described in~\cite{approximate-parikh}, and an adapter for the~\Nuxmv{} model checker~\cite{nuxmv}.
 \item Suggestions for how to efficiently implement \Calculus{} in a modern automated theorem prover, including strategies for case splitting, clause learning, and constraint propagation for connectedness.
@@ -1078,7 +1068,7 @@ when you must, and \Subsume{} when neither is possible anymore.
 
 \begin{table}
 \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
-  Name & Rule & Prerequisites\\
+  Name & \text{Rule} & Prerequisites\\
   \midrule
 
   % EXPAND
@@ -1086,17 +1076,17 @@ when you must, and \Subsume{} when neither is possible anymore.
     \inferrule
   {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions_\Automaton} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
   {\SinglePredicateInstance, \SomeInequalities, \SomeClause} & 
-  None \\[3ex]
+  None \\[4ex]
 
   % SPLIT
   \Split & 
   \inferrule{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) = 0 \mid \Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause, \Filter(\Transition) > 0}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause} &
-  if $\Transition \in \Transitions_\Automaton$ \\[3ex]
+  if $\Transition \in \Transitions_\Automaton$ \\[4ex]
 
   % PROPAGATE
   \Propagate &
   \inferrule{\Connected(\Automaton, \Filter), \Set{\Filter(\Transition') = 0 \SuchThat \Transition' \in C}, \SomeInequalities, \SomeClause, \Filter(\Transition) = 0}{\Connected(\Automaton, \Filter), \Set{\Filter(\Transition') = 0 \SuchThat \Transition' \in C}, \SomeInequalities, \SomeClause} &
-  if $t = \FromLabelTo{\State}{}{\State'} \in \Transitions_\Automaton, \SeparatingCut(C, \Automaton, \State)$ \\[3ex]
+  if $t = \FromLabelTo{\State}{}{\State'} \in \Transitions_\Automaton, \SeparatingCut(C, \Automaton, \State)$ \\[4ex]
 
   % SUBSUME
   \Subsume &
@@ -1459,9 +1449,9 @@ To generalise the calculus to calculations on products of automata, we change th
 
   For the calculus, we first extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton.
 
-  \begin{table}[h]
+  \begin{table}[t]
     \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
-      Name & Rule & Prerequisites\\
+      Name & \text{Rule} & Prerequisites\\
       \midrule
     
       % EXPAND
@@ -1478,7 +1468,7 @@ To generalise the calculus to calculations on products of automata, we change th
         \end{matrix}}
         }
       {\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} & 
-      None \\
+      None \\[5ex]
       \Materialise &
       \inferrule
       {    \BindingSum(\Automaton', \Filter),\ImagePredicate{\Automaton'\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
@@ -2127,28 +2117,27 @@ RAM.
 \end{table}
 
 \begin{figure}[t]
-  \begin{minipage}[b]{0.49\linewidth}
-    \centering
-      \includegraphics[width=\textwidth]{graphs/\commit-by-solver.pdf}
-      \caption{The division of statuses per backend.}
-      \label{fig:solve-division}
-      \Description[A bar chart showing three bars, one per backend, illustrating how many instances they could solve]{The bars are divided by satisfiable and unsatisfiable instances. Baseline could seemingly only solve unsatisfiable instances, lazy could solve a few satisfiable and mostly unsatisfiable, and nuxmv could solve about twice as many unsatisfiable as satisfiable instances, and slightly more in total than lazy.}
-  \end{minipage}
-  \begin{minipage}[b]{0.49\linewidth}
-    \centering
-      \includegraphics[width=\textwidth]{graphs/\commit-time-boxplot.pdf}
-      \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
-      \label{fig:runtime-boxplot}
-      \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the lazy backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for lazy. On the other hand, lazy has  a lot of outliers.}
-  \end{minipage}
-  \vspace{0.5cm}
-  \begin{minipage}{\linewidth}
-    \centering
-    \includegraphics[width=0.75\textwidth]{graphs/\commit-cactus.pdf}
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{graphs/\commit-by-solver.pdf}
+    \caption{The division of statuses per backend.}
+    \label{fig:solve-division}
+    \Description[A bar chart showing three bars, one per backend, illustrating how many instances they could solve]{The bars are divided by satisfiable and unsatisfiable instances. Baseline could seemingly only solve unsatisfiable instances, lazy could solve a few satisfiable and mostly unsatisfiable, and nuxmv could solve about twice as many unsatisfiable as satisfiable instances, and slightly more in total than lazy.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{graphs/\commit-time-boxplot.pdf}
+    \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
+    \label{fig:runtime-boxplot}
+    \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the lazy backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for lazy. On the other hand, lazy has  a lot of outliers.}
+  \end{subfigure}
+  \vfill
+  \begin{subfigure}[b]{0.75\textwidth}
+    \includegraphics[width=\textwidth]{graphs/\commit-cactus.pdf}
     \caption{The number of instances solved as the time budget increases, simulated from one \RuntimeTimeout-timeout run.}
     \label{fig:cactus}
     \Description[A cactus plot comparing the performance of nuxmv, lazy and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv on shorter runtimes, but is overtaken by just before the 60-second timeout used in these experiments.}
-  \end{minipage}
+  \end{subfigure}
 \end{figure}
 
 
