@@ -679,15 +679,32 @@ arrive at $\TransitionCount{c} \geq 1$.
 
 \subsection{Monoids}
 
-We write commutative monoids as $\Monoid =
-\left(X;+_{\Monoid};0_{\Monoid}\right)$, where we mean $X$ to be the underlying
-set of elements, $+_{\Monoid}$ to be the (commutative) monoid map, with
-$0_{\Monoid}$ as its neutral element.
+A monoid $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ is an algebraic structure
+consisting of the carrier set of elements, $X$, an associative binary operation
+$X \times X \rightarrow X$ denoted as $\MonoidOp$, that is where for all $a, b,
+c \in X$, $(a \MonoidOp b) \MonoidOp c = a \MonoidOp (b \MonoidOp c)$. Finally,
+$\Monoid$ must have an identity element $0_{\Monoid} \in X$ such that
+$0_{\Monoid} \MonoidOp a = a \MonoidOp 0_{\Monoid} =   a$ for every $a \in X$.
+We sometimes use integer multiplication to represent repeated application of
+$\MonoidOp$, e.g. $3a = a \MonoidOp a \MonoidOp a$, for $a \in X$. $\Monoid$ is
+called \textit{commutative} if $\MonoidOp$ also commutes, that is if $a
+\MonoidOp b = b \MonoidOp a$ for all $a, b \in X$. 
+
+Finally, we sometimes refer to a structure-preserving map between two monoids
+$\Monoid_1, \Monoid_2$ as a \textit{homomorphism} between $\Monoid_1$ and
+$\Monoid_2$, that is a map $\Map : S_1 \rightarrow S_2$ such that $\Map(a
+\MonoidOp_1 b) = \Map(a) \MonoidOp_2 \Map(b)$, where $S_1, S_2$ are the carrier
+sets of $\Monoid_1$ and $\Monoid_2$ respectively, and $\MonoidOp_1, \MonoidOp_2$
+their binary operations.
 
 \subsection{Languages, Finite-state Automata and their Products}
 
 We define an alphabet as a set of symbols $\Alphabet$ with words $\Strings$, and
 the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
+Note that $\Strings = \Tuple{\Alphabet;\Concat{};\epsilon}$, is a
+non-commutative monoid, referred to as the free monoid. The string length
+function, $\Length{s}$ is an example of a homomorphism between $\Strings$
+and~$\mathbb{Z}$.
 
 A non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$ is
 $\AutomatonTuple$ where $\Transitions = \States \times \Alphabet \times
@@ -816,9 +833,9 @@ interested in the full Parikh image, but only in some projections of
 it, for the purposes of this paper we use a generalised version of the
 Parikh map. We consider \emph{arbitrary} homomorphisms
 $\Map:\: \Sigma^* \to \Monoid$, where
-$\Monoid = \left(X;+_{\Monoid};0_{\Monoid}\right)$ is a commutative
+$\Monoid = \left(X;\MonoidOp;0_{\Monoid}\right)$ is a commutative
 monoid; this means that $\Map(\epsilon) = 0_{\Monoid}$ and
-$\Map(u \Concat w) = \Map(u) +_{\Monoid} \Map(w)$. We give several
+$\Map(u \Concat w) = \Map(u) \MonoidOp \Map(w)$. We give several
 examples of such generalised Parikh image later in this section.
 
 Observe that every homomorphism~$\Map:\: \Sigma^* \to \Monoid$ can be
@@ -1075,7 +1092,7 @@ like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
 $\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
 instance, the basis for the matched linear inequalities is
 implicitly~$\SomeInequalities$. Similarly, for our commutative monoid $\Monoid =
-\left(X;+_{\Monoid};0_{\Monoid}\right)$ and the map into it $\Map : \Strings
+\left(X;\MonoidOp;0_{\Monoid}\right)$ and the map into it $\Map : \Strings
 \rightarrow X$, we also allow mapping over transitions:
 $\Map(\FromLabelTo{\State}{\Label}{\State'}) = \Map(\Label)$.
 
