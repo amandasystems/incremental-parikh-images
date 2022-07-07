@@ -1055,10 +1055,11 @@ definitions:
 \end{definition}
 
 We present the rules of \Calculus{} for one automaton in
-\cref{tbl:rules:single}. Note that we operate on sets of symbols (terms,
-clauses). Additionally, we also use the convention of splitting the formulas
-into linear inequalities ($\SomeInequalities$) and any other clauses
-($\SomeClause$).
+\cref{tbl:rules:single}. Note that we operate on sets of
+formulas. Additionally, we also use the convention of splitting the
+formulas into linear equations and inequalities ($\SomeInequalities$)
+and other formulas ($\SomeClause$). \Fudge{need to say that we assume
+  that the predicates (Im, etc.)  only occur positively.}
 
 Note that the filtering function~$\Filter$ is evaluated symbolically in these
 rules, and can in practice be read as a symbolic function from transitions to
@@ -1086,14 +1087,18 @@ we use the shorthand of listing the matched inequalities as antecedents. An
 example of this can be seen in the~\Propagate{} rule. \Fudge{We pull solutions
 out of a hat? I have no idea.}
 
-We require that every rule only fires when it would add a new clause. For
-example, this means that we cannot use~\Split{} to split on the same term twice.
+We require that rules can only be applied when they add new formulas
+on every created branch (the notion of \emph{regularity} of a proof is
+required~\cite{Fitting96a}). For example, this means that \Split{} can
+only be applied to proof goals that contain neither
+$\Filter(\Transition) = 0$ nor $\Filter(\Transition) > 0$, and can
+never be applied to split on the same term twice on the same branch.
 This suggests a proof strategy where you \Propagate{} when you can, \Split{}
 when you must, and \Subsume{} when neither is possible anymore.
 
 \begin{table}
 \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
-  Name & \text{Rule} & Prerequisites\\
+  Name & \text{Rule} & Side conditions\\
   \midrule
 
   % EXPAND
@@ -1338,34 +1343,39 @@ finally subsume, removing the $\Connected{}$ predicate when we are unable to use
 either of the rules, leaving only the satisfiable remnants of the flow
 equations.
 
-\subsection{\Calculus{} for one automaton is correct}\label{sec:single:correct}
+\subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
-Since correctness is defined by the formulation of the $\Image{}$~predicate, our
-correctness proof amounts to proving inductively that no rule would invalidate
-that definition.
+Our correctness proof of \Calculus{} consists of two main parts: we
+first show that the construction of a proof always terminates, and
+then that each of the proof rules in Table~\ref{tbl:rules:single} is
+an equivalence transformation, i.e., does not change the set of
+satisfying assignments of a formula. In combination, those two results
+immediately imply that \Calculus{} gives rise to a decision procedure.
 
 \subsubsection{\Calculus{} terminates}
-\begin{lemma}\label{lma:single-terminates} A solver implementing the calculus
-  described in \cref{sec:calculus} starting with some decidable set of clauses
-  $\SomeClause{}$ and an instance of our predicate $\SinglePredicateInstance$
-  will eventually terminate.
+\begin{lemma}\label{lma:single-terminates}
+  Suppose $\SomeClause{}$ is a set of formulas in which the predicates
+  $\Image$ and $\Connected$ only occur positively. There is no
+  infinite sequence of proofs~$P_0, P_1, P_2, \ldots$ in which $P_0$
+  has $\SomeClause{}$ as root, and each $P_{i+1}$ is derived from
+  $P_i$ by applying one of the rules in Table~\ref{tbl:rules:single}.
 \end{lemma}
 
 \begin{proof}
-The first remaining source of divergence is from leftover predicates. The
-$\Image$ predicate can always be trivially removed by applying \Expand{}. This
-means a leftover $\Image$ predicate can never cause divergence. The only
-remaining predicate then is $\Connected$, which can always be removed by
-applying $\Subsume$ when no other of the rules is applicable. Hence all
-predicates introduced in the calculus can always be removed.
+  The rule~\Expand{} can only be applied finitely often, since each
+  application removes one $\Image$ predicate, and none of the rules
+  introduce new instances of the predicate. The rule~\Subsume{} can
+  only be applied finitely often, since it strictly decreases the
+  combined number of $\Image$ and $\Connected$ predicates in sets of
+  formulas, and none of the rules increases that number.
 
-It remains to prove that each rule is only applied finitely many times. This is
- obvious since both \Propagate{} and \Split{} can only be applied to transition
- variables whose $\Filter$ value has no known lower bound. However, \Split{} can
- always be used to split the proof tree and add clauses in precisely the right
- shape, thereby guaranteeing the ability to make forward progress. Therefore,
- the number of transition variables whose bounds are unknown is decreasing
- monotonically for any given proof goal, and hence termination is guaranteed.
+  To show termination of \Split{} and \Propagate{}, observe that the
+  $\Filter$ in a predicate~$\Connected(\Automaton, \Filter)$ is never
+  updated on a proof branch, which means that the set of terms
+  $\Filter(t)$ for $t \in \Automaton$ on every branch is finite. Each
+  application of \Split{} and \Propagate{} adds a new
+  formula~$\Filter(\Transition) = 0$ or $\Filter(\Transition) > 0$
+  to a proof goal, which can only happen finitely often.
 \end{proof}
 
 \subsubsection{\Calculus{} computes the homomorphic image}
@@ -1476,7 +1486,7 @@ To generalise the calculus to calculations on products of automata, we change th
 
   \begin{table}[t]
     \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
-      Name & \text{Rule} & Prerequisites\\
+      Name & \text{Rule} & Side conditions\\
       \midrule
     
       % EXPAND
