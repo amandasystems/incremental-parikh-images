@@ -117,7 +117,7 @@
 \begin{document}
 
 %% Title information
-\title{An Efficient Calculus for Generalised Parikh Images of Regular Languages}
+\title{A Constraint Solving Approach to Parikh Images of Regular Languages}
                                         %% when present, will be used in
                                         %% header instead of Full Title.
 %% Author information
@@ -196,7 +196,7 @@
    constraint benchmarks involving string lengths}. We show that our solution
    strictly outperforms the standard eager approach described
    in~\citeauthor{generate-parikh-image} as well as the over-approximating
-   method recently described by~\citeauthor{approximate-parikh} by a wuide
+   method recently described by~\citeauthor{approximate-parikh} by a wide
    marigin, and for realistic timeouts for constraint solving also the~\Nuxmv{}
    model checker.
 \end{abstract}
@@ -679,15 +679,32 @@ arrive at $\TransitionCount{c} \geq 1$.
 
 \subsection{Monoids}
 
-We write commutative monoids as $\Monoid =
-\left(X;+_{\Monoid};0_{\Monoid}\right)$, where we mean $X$ to be the underlying
-set of elements, $+_{\Monoid}$ to be the (commutative) monoid map, with
-$0_{\Monoid}$ as its neutral element.
+A monoid $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ is an algebraic structure
+consisting of the carrier set of elements, $X$, an associative binary operation
+$X \times X \rightarrow X$ denoted as $\MonoidOp$, that is where for all $a, b,
+c \in X$, $(a \MonoidOp b) \MonoidOp c = a \MonoidOp (b \MonoidOp c)$. Finally,
+$\Monoid$ must have an identity element $0_{\Monoid} \in X$ such that
+$0_{\Monoid} \MonoidOp a = a \MonoidOp 0_{\Monoid} =   a$ for every $a \in X$.
+We sometimes use integer multiplication to represent repeated application of
+$\MonoidOp$, e.g. $3a = a \MonoidOp a \MonoidOp a$, for $a \in X$. $\Monoid$ is
+called \textit{commutative} if $\MonoidOp$ also commutes, that is if $a
+\MonoidOp b = b \MonoidOp a$ for all $a, b \in X$. 
+
+Finally, we sometimes refer to a structure-preserving map between two monoids
+$\Monoid_1, \Monoid_2$ as a \textit{homomorphism} between $\Monoid_1$ and
+$\Monoid_2$, that is a map $\Map : S_1 \rightarrow S_2$ such that $\Map(a
+\MonoidOp_1 b) = \Map(a) \MonoidOp_2 \Map(b)$, where $S_1, S_2$ are the carrier
+sets of $\Monoid_1$ and $\Monoid_2$ respectively, and $\MonoidOp_1, \MonoidOp_2$
+their binary operations.
 
 \subsection{Languages, Finite-state Automata and their Products}
 
 We define an alphabet as a set of symbols $\Alphabet$ with words $\Strings$, and
 the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
+Note that $\Strings = \Tuple{\Alphabet;\Concat{};\epsilon}$, is a
+non-commutative monoid, referred to as the free monoid. The string length
+function, $\Length{s}$ is an example of a homomorphism between $\Strings$
+and~$\mathbb{Z}$.
 
 A non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$ is
 $\AutomatonTuple$ where $\Transitions = \States \times \Alphabet \times
@@ -817,9 +834,9 @@ interested in the full Parikh image, but only in some projections of
 it, for the purposes of this paper we use a generalised version of the
 Parikh map. We consider \emph{arbitrary} homomorphisms
 $\Map:\: \Sigma^* \to \Monoid$, where
-$\Monoid = \left(X;+_{\Monoid};0_{\Monoid}\right)$ is a commutative
+$\Monoid = \left(X;\MonoidOp;0_{\Monoid}\right)$ is a commutative
 monoid; this means that $\Map(\epsilon) = 0_{\Monoid}$ and
-$\Map(u \Concat w) = \Map(u) +_{\Monoid} \Map(w)$. We give several
+$\Map(u \Concat w) = \Map(u) \MonoidOp \Map(w)$. We give several
 examples of such generalised Parikh image later in this section.
 
 Observe that every homomorphism~$\Map:\: \Sigma^* \to \Monoid$ can be
@@ -1075,7 +1092,7 @@ like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
 $\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
 instance, the basis for the matched linear inequalities is
 implicitly~$\SomeInequalities$. Similarly, for our commutative monoid $\Monoid =
-\left(X;+_{\Monoid};0_{\Monoid}\right)$ and the map into it $\Map : \Strings
+\left(X;\MonoidOp;0_{\Monoid}\right)$ and the map into it $\Map : \Strings
 \rightarrow X$, we also allow mapping over transitions:
 $\Map(\FromLabelTo{\State}{\Label}{\State'}) = \Map(\Label)$.
 
@@ -1241,7 +1258,8 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
 \begin{figure}
   \centering
 \begin{prooftree}
-  \infer0[\PresburgerClose]{
+  \hypo{\bigstar}
+  \infer1[]{
     \begin{matrix}
       1 - \TransitionVar_6 = 0 \land \\
       \TransitionVar_6 = 1 \land \\
@@ -1281,7 +1299,8 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
     \end{matrix}
   }
   % BRANCH:  = 0
-  \infer0[\PresburgerClose{}]{
+  \hypo{\bigstar}
+  \infer1[]{
     \begin{matrix}
       \TransitionVar_3 > 0 \\
       \TransitionVar_6 = 0 \land \\
@@ -1340,17 +1359,21 @@ using the (simplified) flow equations. We can also see how interleaving
 reasoning on the corresponding linear equations helps the production. In both
 branches the reasoning is similar: we conclude that when choosing either path at
 the starting state we must avoid the other one, perform propagation based on
-that fact, use some equational reasoning to derive the expected forms of the
+that fact, use some algebraic reasoning to derive the expected forms of the
 upper and lower bounds to propagate the now disconnected transitions, and
 finally subsume, removing the $\Connected{}$ predicate when we are unable to use
-either of the rules, leaving only the satisfiable remnants of the flow
-equations.
+either of the rules, leaving only the satisfiable remnants of the flow equations
+at the respective leaves marked with~$\bigstar$. To obtain a solution from the
+proof, one would need to perform standard model generation on the remaining
+constraints to obtain values for the sought variable $\MonoidElement$. The full
+Parikh image is the disjunction of the constraints left at the two
+$\bigstar$-marked leaves, after quantifier elimination.
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
 Our correctness proof of \Calculus{} consists of two main parts: we
 first show that the construction of a proof always terminates, and
-then that each of the proof rules in Table~\ref{tbl:rules:single} is
+then that each of the proof rules in \cref{tbl:rules:single} is
 an equivalence transformation, i.e., does not change the set of
 satisfying assignments of a formula. In combination, those two results
 immediately imply that \Calculus{} gives rise to a decision procedure.
@@ -1361,7 +1384,7 @@ immediately imply that \Calculus{} gives rise to a decision procedure.
   $\Image$ and $\Connected$ only occur positively. There is no
   infinite sequence of proofs~$P_0, P_1, P_2, \ldots$ in which $P_0$
   has $\SomeClause{}$ as root, and each $P_{i+1}$ is derived from
-  $P_i$ by applying one of the rules in Table~\ref{tbl:rules:single}.
+  $P_i$ by applying one of the rules in \cref{tbl:rules:single}.
 \end{lemma}
 
 \begin{proof}
@@ -1549,8 +1572,26 @@ substitutions as follows. Note the expansion of the $\Sigma$ labels:
       \end{aligned}
     \end{equation*}
     
+In the derivation tree of \cref{fig:derivation:multi} we start as before, but
+with the product version of the $\Image$ predicate. The only possible rule here
+is $\ExpandM$, which we use to add the corresponding constraints on each
+automata of the product as we would have had in the single-automaton version. We
+perform algebraic reasoning on those equations, along with the constraint on
+$\MonoidElement$ to determine bounds on transition variables that will enable us
+to \Subsume{} and remove one of the $\Connected{}$ predicates. When we have
+finished doing so, we use \Materialise{} to compute the product of the now
+filtered automata. Further algebraic reasoning allows us to remove the final
+instance of $\Connected$. We then perform \Expand{} to get rid of the final
+$\Image$ instance, and are immediately able to $\Subsume$ the resulting
+$\Connected{}$ predicate. This, again, leaves us with a set of linear
+inequalities that we can use to obtain a model of our final $\MonoidElement$
+values (now a vector). Performing quantifier elimination on the remaining clauses would also produce the Presburger formula of the Parikh image under the constraint we started with.
+
+\begin{figure}
+  \centering
 \begin{prooftree}
-  \infer0[\PresburgerClose{}]{
+  \hypo{\bigstar}
+  \infer1[]{
     \begin{matrix}
       1 = \TransitionVar_{10} \land 
       \TransitionVar_3 = \TransitionVar_{11} \land \\
@@ -1664,6 +1705,8 @@ substitutions as follows. Note the expansion of the $\Sigma$ labels:
   }
   \infer1[\ExpandM]{\Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, \VectorLiteral{a, b, c}) \land a > b}
 \end{prooftree}
+\caption{A derivation for \Calculus{} on the Parikh image of strings with more a's than b's in the product of $\AcaOrBc{}$ and $\SomethingCSomething{}$.}\label{fig:derivation:multi}
+\end{figure}
 
 \subsection{The extended calculus is also correct}
 
@@ -2199,39 +2242,41 @@ deviate from what is actually benchmarked in section \cref{sec:experiments}, or
 if the methods used for benchmarking would be unsound. The first problem cannot
 easily be addressed, except by stating that we have been careful in our
 implementation and descriptions alike. The second is more practical. To increase
-the probability that our results are indeed representative both in the sense of
+the probability that our results are representative both in the sense of
 representing runs on expected, real world input and in the statistical sense for
-a given run of \Catra, despite the fact that we use randomness in our
-implementation, we execute many experiments. During the development of \Catra{},
-we have also executed experimeints on different hardware and software
-configurations on smaller samples of instances to ensure that the general trend
-holds. The logs from these executions are distributed along with notes as part
-of the artefact in the interest of transparency. Moreover, we have validated
-\Fudge{all reported satisfiable instances and their witnesses} with \Nuxmv{} to
-ensure that \Calculus{} is indeed sound and does not cheat.
+a given run of \Catra{} despite the use of randomness in our
+implementation we execute many experiments. Moreover, we have validated all
+reported solutions made by \Calculus{} with \Nuxmv{} to ensure that \Calculus{}
+is indeed sound and does not cheat.
 
-Another threat to validity would be if our implementations of the competition
-(baseline and \Nuxmv) would deviate significantly from the expected
-implementations. For \Nuxmv{} we use the default configuration which we believe
-should be performant (or it should not be the default). Additionally, tweaking our invocation of \Nuxmv{} is explicitly made easy for artefact reviewers.
+Another threat to validity would be if the competition (baseline and \Nuxmv)
+would be disadvantaged in our comparison. For \Nuxmv{} we use the default
+configuration which we believe should be performant (or it should not be the
+default). Additionally, tweaking our invocation of \Nuxmv{} is explicitly made
+easy for artefact reviewers. For baseline, our best argument is that the
+solution we use is close to the one found in the \Ostrich{} string solver and
+that it therefore should be realistic.
 
-The most important and most probable threat to validity is our choice of
-implementation platform and our choice of automata library, that is our choice
-not to use one. Since our automata are more advanced than anything supported by
-e.g. the BRICS library, we opted to use our own implementation. There are some
-signs that in particular our product computation is inefficient, notably the
-good performance of low-threshold automata materialisation that prioritises
-computing smaller products. This means that our implementation of \Calculus{}
-makes much less heavy use of our product construction library than the baseline
-implementation does, instead putting its weight into \Princess{}' theorem
-proving abilities. This situation would unfairly advantage \Calculus{} if our
-automata library was indeed the bottleneck. We believe this is unlikely since
-similar performance issues as the ones in baseline in our string solver was the
-instigating reason for this research. Additionally, while we may have a
-constant-factor performance impact from bad implementation, it is less likely
-for our potentially poor implementation to be asymptotically worse than e.g.
-BRICS. However, the performance improvement of \Calculus{} over baseline seen in
-\cref{sec:experiments} is generally not constant.
+The most probable threat to validity is our choice of implementation platform
+and our choice of automata library, that is our choice not to use one. Since our
+automata are more advanced than anything supported by e.g. the BRICS library, we
+opted to use our own implementation. There are some signs that in particular our
+product computation is inefficient, notably the good performance of
+low-threshold automata materialisation that prioritises computing smaller
+products. This means that our implementation of \Calculus{} makes much less
+heavy use of our product construction library than the baseline implementation
+does, instead putting its weight into \Princess{}' theorem proving abilities.
+This situation would unfairly advantage \Calculus{} if our automata library was
+indeed the bottleneck. We believe this is unlikely since similar performance
+issues as the ones in baseline in our string solver was the instigating reason
+for this research. Additionally, while we may have a constant-factor performance
+impact from bad implementation, it is less likely for our potentially poor
+implementation to be asymptotically worse than e.g. BRICS. However, the
+performance improvement of \Calculus{} over baseline seen in
+\cref{sec:experiments} is generally not constant. Additionally, non-systematic
+profiling suggests that both \Princess{}-based backends spend most of their time
+in \Princess{}, suggesting that the automaton implementation is not the
+bottleneck.
 
 \section{Conclusion}
 
