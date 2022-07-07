@@ -8,7 +8,7 @@
 \newcommand{\CountOf}[1]{\#\text{#1}}
 \newcommand{\ImagePredicate}[4]{\Image_{#1, #2}(#3, #4)}
 \newcommand{\Automaton}[0]{\mathcal{A}}
-\newcommand{\NrBenchmarks}[0]{33645}
+\newcommand{\NrBenchmarks}[0]{\numprint{33645}}
 \newcommand{\BatchSize}[0]{ca.~100}
 \newcommand{\BenchmarkRig}[0]{\Fudge{a computer}}
 \newcommand{\ScalaVersion}[0]{2.13.8}
@@ -16,8 +16,8 @@
 \newcommand{\MaxHeapSize}[0]{15~GB}
 \newcommand{\NuxmvVersion}[0]{2.0.0}
 \newcommand{\NrBroken}[0]{\Fudge{9000}}
-\newcommand{\InitialNrBenchmarks}[0]{37913}
-\newcommand{\NrTrivial}[0]{4268}
+\newcommand{\InitialNrBenchmarks}[0]{\numprint{37913}}
+\newcommand{\NrTrivial}[0]{\numprint{4268}}
 \newcommand{\OverheadSeconds}[0]{\Fudge{9000 s}}
 \newcommand{\NrKnownSat}[0]{\Fudge{5}}
 \newcommand{\RuntimeTimeout}[0]{60s}
@@ -55,6 +55,8 @@
 \newcommand{\VectorLiteral}[1]{\Tuple{#1}}
 \newcommand{\TransitionVec}[0]{x}
 \newcommand{\Length}[1]{|#1|}
+\newcommand{\Unsat}[0]{\textsc{Unsat}}
+\newcommand{\Sat}[0]{\textsc{Sat}}
 \newcommand{\RepeatSum}[1]{#1 \cdots #1}
 \newcommand{\SinglePredicateInstance}[0]{\ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement}}
 \DeclareMathOperator{\MonoidMap}{\Pi}
