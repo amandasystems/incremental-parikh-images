@@ -903,30 +903,6 @@ projections to words:
   $\pi_\Alphabet(w') = w$ and $\pi_D(w') \in C$.
 \end{definition}
 
-The decision procedure in \cite{ostrich-plus} for formulas like
-\eqref{eq:substring} will construct a pre-image of $\Language_2$ under
-the substring operation~$\cdot[n:m]$, and check whether this pre-image
-is consistent with the constraint~$x \in \Language_1$. Because the
-substring operation depends on the values of the integer
-variables~$n, m$, it is appropriate to describe the pre-image as
-Parikh automaton of dimension~$2$, resulting in the automaton in
-Fig.~\ref{fig:parikh-automata} (right). The first component of the
-increment vectors is used to count the number of letters eliminated in
-the beginning of the string (value~$n$), while the second component
-records the beginning of the eliminated suffix (value~$m$).
-
-\Fudge{continue}
-
-\iffalse
-\begin{figure}[t]
-  \centering
-      \includegraphics[width=0.5\linewidth]{parikh_automaton}
-      \caption{The automaton part of a Parikh automaton for $\AcaOrBc{}$ with
-      $\Alphabet = \Set{\text{a, b, c}}, d = 3$. The semilinear set/Presburger
-      formula containing the constraints on the final register values cannot be
-      visualised.}\label{fig:parikh-automaton}
-    \end{figure}
-\fi
     
 \begin{figure}[t]
   \centering
@@ -945,6 +921,55 @@ records the beginning of the eliminated suffix (value~$m$).
       The rightmost automaton is the starts with an initial state with a self-loop on any character that increments both registers by one, followed by an epsilon transition to a state with a self-loop on c that increments the lower register by one. From that state, the automaton has an epsilon-transition into the accepting state, as well as a transition on a into a state with only a transition back again, both incrementing the lower register by one. The accepting state has a self-loop on any character that does nothing to the registers.
       }
     \end{figure}
+
+    Applied to \eqref{eq:substring}, the decision procedure in
+\cite{ostrich-plus} will construct a pre-image of $\Language_2$ under
+the substring operation~$\cdot[n:m]$, and check whether this pre-image
+is consistent with the constraint~$x \in \Language_1$. Because the
+substring operation depends on the values of the integer
+variables~$n, m$, a Parikh automaton of dimension~$2$ is a suitable
+formalism to describe the pre-image, resulting
+in the automaton in Fig.~\ref{fig:parikh-automata} (right). The first
+component of the increment vectors is used to count the number of
+letters eliminated in the beginning of the string (value~$n$), while
+the second component records the beginning of the eliminated suffix
+(value~$m$).
+
+Denoting the language described by Fig.~\ref{fig:parikh-automata}
+(right) as $\Language_{pre}$, we can then replace \eqref{eq:substring}
+with an equi-satisfiable formula that no longer contains any explicit
+substring operation:
+%
+\begin{equation}
+  \label{eq:parikh-constraint}
+  p \in \Language_{pre} \wedge~
+  \pi_\Alphabet(p) \in \Language_1
+  \wedge~~ \pi_D(p) =
+  \begin{bmatrix}
+    n \\ m
+  \end{bmatrix}~~
+  \wedge 0 \leq n \leq m \leq |p|
+\end{equation}
+%
+To check the satisfiability of \eqref{eq:parikh-constraint}, we need a
+decision procedure that can process intersections of regular languages
+(in this case, of $\Language_{pre}$ and $\Language_1$, synchronising
+on $\Alphabet$), while imposing the side
+condition~$0 \leq n \leq m \leq |p|$ on the increment sum. In
+\cite{ostrich-plus}, this decision procedure turned out to be main
+bottleneck of the string solver, which was one of the motivations to
+develop the lazy algorithm proposed in this paper.
+
+\iffalse
+\begin{figure}[t]
+  \centering
+      \includegraphics[width=0.5\linewidth]{parikh_automaton}
+      \caption{The automaton part of a Parikh automaton for $\AcaOrBc{}$ with
+      $\Alphabet = \Set{\text{a, b, c}}, d = 3$. The semilinear set/Presburger
+      formula containing the constraints on the final register values cannot be
+      visualised.}\label{fig:parikh-automaton}
+    \end{figure}
+\fi
 
 \section{A Calculus for Generalised Parikh Images}\label{sec:calculus}
 
