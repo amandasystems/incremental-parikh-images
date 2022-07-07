@@ -758,6 +758,7 @@ Note that while Parikh's theorem applies to context-free languages, in this
 paper we focus only on regular languages.
 
 \subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
+\label{sec:verma}
 
 Since Parikh images are semilinear, any Parikh image can be written as a set of linear
 equations. The following construction, here adapted to work on an NFA $\Automaton = \AutomatonTuple$, was presented in \cite{generate-parikh-image}:
@@ -1030,16 +1031,15 @@ definitions:
 
 \begin{definition}\label{def:single-image}
   The Parikh predicate, $\SinglePredicateInstance$, for some automaton
-  $\Automaton = \AutomatonTuple$, modulo some map $\Map$ to a commutative monoid
-  $\Monoid$ as described in \cref{sec:generalised} and with a transition
-  selection function $\Filter:\: \Transitions \to \Naturals$ holds when
-  $\MonoidElement \in \Monoid$ is the Parikh image of $\Automaton$ modulo
-  $\Map$, or more formally when there is an accepting path $\Path =
-  \PathEnumeration \in \Accepting{\Paths(\Automaton)}$ such that:
-  \begin{itemize}
-    \item $\Filter(\Transition) = \TransitionCount(\Transition, \Path)$
-    \item $\MonoidElement = \Map(\WordOf(\Path))$
-  \end{itemize}
+  $\Automaton = \AutomatonTuple$, modulo some map $\Map$ to a
+  commutative monoid $\Monoid$ as described in \cref{sec:generalised}
+  and with a transition selection function
+  $\Filter:\: \Transitions \to \Naturals$ holds when
+  $\MonoidElement \in \Monoid$ is the Parikh image of $\Automaton$
+  modulo $\Map$, or more formally when there is an accepting path
+  $\Path = \PathEnumeration \in \Accepting{\Paths(\Automaton)}$ such
+  that $\Filter(\Transition) = \TransitionCount(\Transition, \Path)$
+  for all $t \in \Transitions$, and $\MonoidElement = \Map(\WordOf(\Path))$.
 \end{definition}
 
 \begin{definition}
@@ -1062,8 +1062,8 @@ and other formulas ($\SomeClause$). \Fudge{need to say that we assume
   that the predicates (Im, etc.)  only occur positively.}
 
 Note that the filtering function~$\Filter$ is evaluated symbolically in these
-rules, and can in practice be read as a symbolic function from transitions to
-terms (e.g.~\texttt{t} or~\texttt{t+1}). In our implemendation \Catra{},
+rules, and can in practice be read as a function from transitions to
+$\Naturals$-valued terms (e.g.~\texttt{t} or~\texttt{t+1}). In our implementation \Catra{},
 described in \cref{sec:implementation}, $\Filter$~is a vector of fresh variables
 with the same size as~$\Transitions$.
 
@@ -1079,9 +1079,12 @@ implicitly~$\SomeInequalities$. Similarly, for our commutative monoid $\Monoid =
 \rightarrow X$, we also allow mapping over transitions:
 $\Map(\FromLabelTo{\State}{\Label}{\State'}) = \Map(\Label)$.
 
-The rules of \cref{tbl:rules:single} are meant to be used in tableaux-style
-proofs, and are read bottom-up, where the syntax at the bottom is replaced with
-the one at the top until \Fudge{it is possible to close the proof goal}. Since
+Each of the rules of \cref{tbl:rules:single} should be read and
+applied bottom-up, and relates
+premises~$\SomeClause_1, \ldots, \SomeClause_k$ with some
+conclusion~$\SomeClause$. When constructing a proof, we start from some
+root~$\SomeClause$, and then apply proof rules to the goals of the proof
+until a goal can be closed, or no more rule is applicable. Since
 our rules operate by adding and matching linear (in)equalities in a proof goal,
 we use the shorthand of listing the matched inequalities as antecedents. An
 example of this can be seen in the~\Propagate{} rule. \Fudge{We pull solutions
@@ -1378,100 +1381,72 @@ immediately imply that \Calculus{} gives rise to a decision procedure.
   to a proof goal, which can only happen finitely often.
 \end{proof}
 
-\subsubsection{\Calculus{} computes the homomorphic image}
-\Fudge{I am unsure of the definitions here}
+\subsubsection{The rules in Table~\ref{tbl:rules:single} are solution-preserving}
+
 \begin{lemma}\label{lma:single-correct}
-  Starting with $\SinglePredicateInstance$, we will close the goal with $\top$
-  if $\exists s \in \Language(\Automaton) \HoldsThat \Map(s) = \MonoidElement$
-  and $\bot$ otherwise.
+  Consider an application of one of the rules in
+  Table~\ref{tbl:rules:single}, with
+  premises~$\SomeClause_1, \ldots, \SomeClause_k$ and
+  conclusion~$\SomeClause$. An assignment~$\beta$ satisfies the
+  conclusion~$\SomeClause$ if and only if it satisfies one of the
+  premises~$\SomeClause_i$.
 \end{lemma}
+
 \begin{proof}
-Since we are always guaranteed to terminate following
-\cref{lma:single-terminates}, we know that we will close the goal eventually.
-Additionally, the property of \cref{lma:single-terminates} is trivially obtained
-from the semantics of the $\Image$ predicate as defined in
-\cref{def:single-image}. This means that we only need to prove the preservation
-of those properties to prove \cref{lma:single-correct}.
+  This property has to be shown by analysing the possible applications
+  of each proof rule.
 
-\Fudge{I don't understand.}
-  % \[
-  % \begin{aligned}
-  %   & \inferrule
-  %   {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions_\Automaton} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
-  %   {\SinglePredicateInstance, \SomeInequalities, \SomeClause} &\beta \models R_0 \iff \exists i : \beta \models R_i
-  % \end{aligned}
-  % \]
-
-\begin{lemma}\label{lma:expand-preserves}
-  \Expand{} preserves the semantics of $\Image$.
-\end{lemma}
-\begin{proof}
-
-  After application of \Expand{}, $\FlowEq$ guarantees that any
-  $\Filter(\Transition)$  for every $\Transition \in \Automaton$ is consistent
-  with the flow through the automaton. After its application, the proof goal
-  either contains an unsatisfiable set of Presburger formulae if the flow is
-  infeasible, otherwise a satisfiable set. An infesaible flow can happen in
-  either of these conditions:
+  \Expand{} unfolds the definition of the $\Image$ predicate. To show
+  that the rule is solution-preserving we prove the equivalence of the
+  upper and lower sets of formulas:
   \begin{itemize}
-    \item if $\Filter$ demands that some transition $\Transition$ is visited more times than would be allowed by $\Automaton$, or
-    \item if the path described by $\Filter$ is not consistent with a path from
-    $\InitialState$ to some state $\State$ in $\AcceptingStates$.
+  \item Assume that $\beta$ satisfies the conclusion, which means that
+    there is some accepting path
+    $\Path = \PathEnumeration \in \Accepting{\Paths(\Automaton)}$ with
+    $\val_\beta(\Filter(\Transition)) = \TransitionCount(\Transition,
+    \Path)$ and $\val_\beta(\MonoidElement) =
+    \Map(\WordOf(\Path))$. Since immediately implies that $\beta$
+    satisfies $\Connected(\Automaton, \Filter)$, since a path is
+    connected, and $\FlowEq(\Automaton, \Filter)$ since an accepting
+    path satisfies the flow equations. The
+    equation~$\MonoidElement = \sum_{\Transition \in
+      \Transitions_\Automaton}\Filter(\Transition) \cdot
+    \Map(\Transition)$ holds because of
+    $\val_\beta(\Filter(\Transition)) = \TransitionCount(\Transition,
+    \Path)$.
+  \item Assume that $\beta$ satisfies the premise, which implies that
+    $\val_\beta(\Filter)$ describes a consistent, connected flow of
+    the automaton. By the same argument as in
+    \cite{generate-parikh-image} (Section~\ref{sec:verma}), this flow
+    can be mapped to an accepting path~$\Path$ of $\Automaton$ such
+    that each transition~$\Transition$ occurs on $\Path$ exactly
+    $\val_\beta(\Filter(\Transition))$ times. Together with the equation
+    $\val_\beta(\Filter(\Transition)) = \TransitionCount(\Transition,
+    \Path)$, this implies that $\beta$ satisfies $\SinglePredicateInstance$.
   \end{itemize}
 
-  Note that \Expand{} is taken directly from the existing formulation of
-  \eqref{eq:generate-parikh}.
+  In \Split{}, we make use of the fact that $\Filter(\Transition)$ is
+  $\Naturals$-valued by definition. For any $\beta$, clearly exactly
+  one of $\Filter(\Transition) = 0$ or $\Filter(\Transition) > 0$ will
+  be satisfied, implying the property.
+
+  For \Propagate{}, suppose that
+  $\SeparatingCut(C, \Automaton, \State)$, which means that every
+  accepting path visiting~$q$ contains at least one of the transitions
+  in $C$. For a $\beta$ satisfying $\Connected(\Automaton, \Filter)$
+  and $\Filter(\Transition') = 0$ for $\Transition' \in C$, this means
+  that also $\val_\beta(\Filter(\Transition)) = 0$ has to hold.
+
+  Finally, for \Subsume{}, observe that if \Split{} cannot be applied,
+  then a goal must contain~$\Filter(\Transition) = 0$ or
+  $\Filter(\Transition) > 0$ for every $\Transition$. In case the
+  formulas in $\SomeInequalities$ are inconsistent, an application of
+  \Subsume{} is trivially solution-preserving; therefore assume that
+  $\SomeInequalities$ is consistent, which means that it contains
+  exactly one of $\Filter(\Transition) = 0$ or
+  $\Filter(\Transition) > 0$ for each $\Transition$.
 \end{proof}
 
-\begin{lemma}\label{lma:split-preserves}
-  \Split{} preserves the semantics of $\Image$.
-\end{lemma}
-\begin{proof}
-  \Split{} allows us to case-split at most once on each transition $\Transition
-  \in \Transitions$. This means that our proof tree at its leaves will be
-  guaranteed to have all transitions of known bounds in the correct format. This
-  means that once \Split{} is at fixpoint, the status (present or absent) of any
-  transition is known. Therefore it preserves the semantics of the $\Image$
-  predicate.
-\end{proof}
-
-\begin{lemma}\label{lma:propagate-preserves}
-  \Propagate{} preserves the semantics of $\Image$.
-\end{lemma}
-\begin{proof}
-  \Propagate{} will lazily enforce connectedness to any state. If it can be
-  applied, there exists a cut $C$ in $\Automaton$ such that some state $\State$
-  for any incoming transition $\Transition \in \Transitions_\Automaton$ has
-  $\Filter(t) = 0$  as part of the equations of the proof goal, and such that
-  $\State$ has an outgoing transition $\Transition'$ whose lower bound is not
-  $0$. Adding this conclusion will make equations unsatisfiable precisely if
-  there exists a transition $\Transition \in \Transitions_\Automaton$ such that
-  $\Filter(\Transition)$ is inconsistent with the homomorphic image, since it
-  implies that the selection of transitions is disconnected.
-\end{proof}
-
-\begin{lemma}\label{lma:subsume-preserves}
-  \Subsume{} preserves the semantics of $\Image$.
-\end{lemma}
-\begin{proof}
-  Since this rule can \emph{only} be applied if no other rule can, it means that
-  the upper and lower bounds of any transition $\Transition \in \Transitions$ as
-  defined by $\Filter(\Transition)$ is known, meaning clauses of the shape
-  $\Filter(\Transition) > 0$ or $\Filter(\Transition) = 0$ are present in the
-  proof goal for every transition and that the $\Image$ predicate has been
-  consumed by \Expand{} to be replaced by $\Connected$. This in turns means that
-  the goal can be closed only if the assignment of $\Filter$ is consistent with
-  an accepting path through $\Automaton$.
-  
-  It also means that \Propagate{} must have been applied whenever possible, meaning that for any transition $\Transition$ starting in a state $\State$ that is disconnected the corresponding $\Filter$ values, we must have applied $\Propagate{}$ to derive $\Filter(\Transition) = 0$. Note that for an infeasible assignment (such as an unsatisfiable instance) this would contradict other decisions, but it would preserve the semantics of $\Image$.
-\end{proof}
-
-Since the final step we execute is \Subsume, which we know from
-\cref{lma:subsume-preserves} preserves the semantics of $\Image$ and each step
-along the way
-(\cref{lma:expand-preserves,lma:split-preserves,lma:propagate-preserves}), it
-holds that \Calculus{} for one automaton also preserves the semantics.
-\end{proof}
 
 \section{Parikh Images from Products of Automata}\label{sec:multiple}
 
