@@ -1364,7 +1364,7 @@ equations.
 
 Our correctness proof of \Calculus{} consists of two main parts: we
 first show that the construction of a proof always terminates, and
-then that each of the proof rules in Table~\ref{tbl:rules:single} is
+then that each of the proof rules in \cref{tbl:rules:single} is
 an equivalence transformation, i.e., does not change the set of
 satisfying assignments of a formula. In combination, those two results
 immediately imply that \Calculus{} gives rise to a decision procedure.
@@ -1375,7 +1375,7 @@ immediately imply that \Calculus{} gives rise to a decision procedure.
   $\Image$ and $\Connected$ only occur positively. There is no
   infinite sequence of proofs~$P_0, P_1, P_2, \ldots$ in which $P_0$
   has $\SomeClause{}$ as root, and each $P_{i+1}$ is derived from
-  $P_i$ by applying one of the rules in Table~\ref{tbl:rules:single}.
+  $P_i$ by applying one of the rules in \cref{tbl:rules:single}.
 \end{lemma}
 
 \begin{proof}
@@ -2241,39 +2241,41 @@ deviate from what is actually benchmarked in section \cref{sec:experiments}, or
 if the methods used for benchmarking would be unsound. The first problem cannot
 easily be addressed, except by stating that we have been careful in our
 implementation and descriptions alike. The second is more practical. To increase
-the probability that our results are indeed representative both in the sense of
+the probability that our results are representative both in the sense of
 representing runs on expected, real world input and in the statistical sense for
-a given run of \Catra, despite the fact that we use randomness in our
-implementation, we execute many experiments. During the development of \Catra{},
-we have also executed experimeints on different hardware and software
-configurations on smaller samples of instances to ensure that the general trend
-holds. The logs from these executions are distributed along with notes as part
-of the artefact in the interest of transparency. Moreover, we have validated
-\Fudge{all reported satisfiable instances and their witnesses} with \Nuxmv{} to
-ensure that \Calculus{} is indeed sound and does not cheat.
+a given run of \Catra despite the fact that we use randomness in our
+implementation we execute many experiments. Moreover, we have validated all
+reported solutions made by \Calculus{} with \Nuxmv{} to ensure that \Calculus{}
+is indeed sound and does not cheat.
 
-Another threat to validity would be if our implementations of the competition
-(baseline and \Nuxmv) would deviate significantly from the expected
-implementations. For \Nuxmv{} we use the default configuration which we believe
-should be performant (or it should not be the default). Additionally, tweaking our invocation of \Nuxmv{} is explicitly made easy for artefact reviewers.
+Another threat to validity would be if the competition (baseline and \Nuxmv)
+would be disadvantaged in our comparison. For \Nuxmv{} we use the default
+configuration which we believe should be performant (or it should not be the
+default). Additionally, tweaking our invocation of \Nuxmv{} is explicitly made
+easy for artefact reviewers. For baseline, our best argument is that the
+solution we use is close to the one found in the \Ostrich{} string solver and
+that it therefore should be realistic.
 
-The most important and most probable threat to validity is our choice of
-implementation platform and our choice of automata library, that is our choice
-not to use one. Since our automata are more advanced than anything supported by
-e.g. the BRICS library, we opted to use our own implementation. There are some
-signs that in particular our product computation is inefficient, notably the
-good performance of low-threshold automata materialisation that prioritises
-computing smaller products. This means that our implementation of \Calculus{}
-makes much less heavy use of our product construction library than the baseline
-implementation does, instead putting its weight into \Princess{}' theorem
-proving abilities. This situation would unfairly advantage \Calculus{} if our
-automata library was indeed the bottleneck. We believe this is unlikely since
-similar performance issues as the ones in baseline in our string solver was the
-instigating reason for this research. Additionally, while we may have a
-constant-factor performance impact from bad implementation, it is less likely
-for our potentially poor implementation to be asymptotically worse than e.g.
-BRICS. However, the performance improvement of \Calculus{} over baseline seen in
-\cref{sec:experiments} is generally not constant.
+The most probable threat to validity is our choice of implementation platform
+and our choice of automata library, that is our choice not to use one. Since our
+automata are more advanced than anything supported by e.g. the BRICS library, we
+opted to use our own implementation. There are some signs that in particular our
+product computation is inefficient, notably the good performance of
+low-threshold automata materialisation that prioritises computing smaller
+products. This means that our implementation of \Calculus{} makes much less
+heavy use of our product construction library than the baseline implementation
+does, instead putting its weight into \Princess{}' theorem proving abilities.
+This situation would unfairly advantage \Calculus{} if our automata library was
+indeed the bottleneck. We believe this is unlikely since similar performance
+issues as the ones in baseline in our string solver was the instigating reason
+for this research. Additionally, while we may have a constant-factor performance
+impact from bad implementation, it is less likely for our potentially poor
+implementation to be asymptotically worse than e.g. BRICS. However, the
+performance improvement of \Calculus{} over baseline seen in
+\cref{sec:experiments} is generally not constant. Additionally, non-systematic
+profiling suggests that both \Princess{}-based backends spend most of their time
+in \Princess{}, suggesting that the automaton implementation is not the
+bottleneck.
 
 \section{Conclusion}
 
