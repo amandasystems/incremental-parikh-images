@@ -1962,27 +1962,20 @@ baseline back-end. An example of an input file corresponding to our running
 example introduced in \cref{sec:motivation} can be seen in
 \cref{lst:input-example}.
 
-Please note that \Catra{} uses symbolic labels for automata. A symbolic label is
-defined as a range of matching single Unicode code points. This allows succinct
-representation of many regular expression patterns such as \lstinline{(a-z).*}
-which would have otherwise required $27$~nearly identical transitions. In this
-instance, the transition would be defined as \lstinline{a -> b [97, 122]}, as the
-interval is closed from both edges.
+\Catra{} uses symbolic labels for automata. A symbolic label is defined as a
+finite range of Unicode code points. This allows succinct representation of many
+regular expression patterns such as \lstinline{(a-z).*} which would have
+otherwise required $27$~transitions. The transition for the range would be
+written \lstinline{a -> b [97, 122]}.
 
-In satisfaction mode, supported by all back-ends, \Catra{} tries to satisfy the
-constraints expressed by the input file, reporting satisfiable with register
-assignments or unsatisfiable much like traditional~SAT- or SMT solvers would.
-Additionally, the baseline and our own back-end also support generation of the
-Presburger formula describing the constraints of the input file.
+In satisfaction mode, supported by all backends, \Catra{} tries to satisfy the
+constraints expressed by the input file, reporting \Sat{} with register
+assignments or \Unsat{} much like traditional~SAT- or SMT solvers would.
+Additionally, baseline and \Calculus{} also support generation of the Presburger
+formula describing the constraints of the input file. Baseline uses standard
+quantifier elimination, and \Calculus{} uses the method described in
+\cref{sec:finding-the-image}.
 
-\Catra{} can solve equations of Parikh images. An equation like
-$\ParikhMap(\Automaton_1 \times \Automaton_2) = \ParikhMap(\Automaton_3 \times
-\Automaton_4)$ would be expressed as one \lstinline{synchronised} block per side of
-the equation containing their respective terms followed by a
-\lstinline{constraint} requiring all their counters to agree (e.g
-\lstinline|Aa = Ba && Ab = Bb ...|). Note that the product construction will implicitly require the counters of each term to agree with each other (and the product), so equalities between all counters of all automata are not necessary.
-
-We implement \Calculus{} as a theory plug-in for the \Princess{} theorem prover.
 Since \Princess{} does not support multiple-arity predicates like the ones we
 use in \Calculus{}, we have implemented variable-length arguments using
 additional helper predicates. These are $\Unused{}(\Automaton)$, which marks an
@@ -1994,19 +1987,17 @@ order to differentiate instances of the predicates.
 
 \subsection{Implementing the Baseline}\label{sec:implementing-baseline}
 
-We implement the baseline approach using the same Presburger solver
-(\Princess{}), input file parser, and automaton implementation as \Catra. We
-do this in order to make the comparison between methods as fair as possible, and
-give us the ability to compare the efficiency of the calculus rules themselves.
-Using the formula of Equation~\ref{eq:generate-parikh}, we produce quantified
-Presburger formulae for each successive term and add them to Princess. In this
-fashion we compute the product incrementally term by term, checking
-satisfiability in each step. We use a priority queue to select which
-term to use for the next step of the product, and order it by the number
-of transitions as a heuristic for the size of the automaton. We use this heuristic
-to avoid computing large (and therefore slow) products until we have to, banking
-our hopes on finding a source of unsatisfiability early. The pseudocode for
-our implementation can be seen in Algorithm~\ref{alg:baseline}.
+We baseline using the same Presburger solver (\Princess{}), input file parser,
+and automaton implementation as \Catra. We do this in order to better analyse
+the impact of the calculus rules themselves. Using the formula of
+\eqref{eq:generate-parikh}, we produce quantified Presburger formulae for each
+successive term and add them to \Princess. We compute the product incrementally
+term by term, checking satisfiability at each step. We use a priority queue to
+select automata for each step, and order it by the number of transitions as a
+heuristic for the size of the automata. We use this heuristic to avoid computing
+large (and therefore slow) products until we have to, banking our hopes on
+computing an empty intermittent product early. The pseudocode for our
+implementation can be seen in \cref{alg:baseline}.
 
 \begin{algorithm}
   \caption{How we implement the baseline approach}\label{alg:baseline}
@@ -2044,37 +2035,46 @@ our implementation can be seen in Algorithm~\ref{alg:baseline}.
 
   \end{algorithm}
 
-It should be noted that our automata (including the successive products) are
-always by construction forward- and backward- reachable-minimal. We avoid
-computing fully minimal automata since it is unclear when an automaton with
-registers can be safely minimised. This guarantees that any automaton we produce
-only contains states that are both reachable from the initial state and has a
-path to an accepting state. We never perform any other minimisation on the
-automata for either backend. More complex minimisation was left out since
-performing minimisation on automata with counters is non-trivial, and indeed
-already minimising symbolic automata is itself risks exponential blowup
-\cite{minimising-symbolic}.
+As an optimisation, our automata (including intermittent products) are created
+forward- and backward- reachable-minimal. Any automaton we produce only contains
+states that are both reachable from the initial state and has a path to an
+accepting state. We never perform any other minimisation on the automata for
+either backend. More complex minimisation was left out since performing
+minimisation on automata with counters is non-trivial, and minimising symbolic
+automata risks exponential blowup \cite{minimising-symbolic}.
 
 \subsection{Heuristics and search strategies}
 
 There are a number of choices left unspecified in \Calculus{} as described in
-Sections~\ref{sec:calculus} and~\ref{sec:multiple}. For example, the order of
-materialisation of intermediate products and the order of splitting. In
-addition, the splitting specified in the general calculus is correct but
-inefficient. In this section we describe additional implementation details used
-to enhance our solution.
+\cref{sec:calculus,sec:multiple}. For example, the order of materialisation of
+intermediate products and the order of splitting. In this section we describe
+additional implementation details and techniques used to enhance \Catra.
 
 \subsubsection{Splitting, Materialisation, and Propagation}
 
 We order our rule applications so that we first propagate connectedness if
-possible, then perform materialisation if tractable (see below!), then finally
-resort to splitting if we must.
+possible, then perform materialisation if tractable as defined below, then
+finally resort to splitting if we must.
 
-In addition to the splitting on individual transition variables described in Table~\ref{tbl:rules:single}, where we randomly select a variable whose bounds are not known, we also prefer splitting to sever/include a strongly connected component. We randomly select an automaton where we can compute a cut to at least one strongly connecting component that can be severed from the initial state, e.g. where the strongly connected component does not contain the initial state and where the sum of the transition variables we have associated with the transitions of a minimal cut between the initial state and an arbitrary state in the component is not known to be greater than 0, but also not equal to 0. If there are multiple such strongly connected components we choose one randomly. We then proceed to split on the cut as if it were a regular transition, e.g. its sum being zero or nonzero. In this way we use our splitting strategy to drive the connectedness constraint towards propagation by cutting off loops from the automata.
+In addition to applying \Split{} as described in \cref{tbl:rules:single} to
+randomly selected transitions, we prefer splitting to sever a strongly connected
+from the initial state. We randomly select an automaton where we can compute a
+cut between an SCC and the initial state, that is where the SCC does not contain
+the initial state and where the sum of the transition variables of the
+transitions in the cut is not known to be positive. If there are multiple such
+strongly connected components we choose one randomly. We then proceed to split
+on the sum of the transition variables of the cut as if it were a regular
+transition, e.g. its sum being zero or nonzero. In this way we drive \Calculus{}
+towards applying \Propagate{}.
 
 The implementation of the connectedness constraint is opportunistic and straightforward. We compute a set of dead states by performing forward and backwards reachability computations on an automaton, where we disregard any transition whose associated variable is known to be zero. After that we add clauses ensuring any transition variable associated with a transition starting in a dead state is zero.
 
-Product materialisation, then, is the final piece of the puzzle. In the current implementation, we put off computing intermediate products until at least all but 2 transition variables of one of them have a known status, e.g. either is known to be zero or known to be positive. The number was chosen experimentally, and we observe a consistent trend that to have a low number and therefore a high threshold for materialisation is better throughout the implementation of other features. The other automaton for the product is selected randomly.
+Product materialisation is the final piece of the puzzle. In the current
+implementation we put off computing intermediate products until at least all but
+two transition variables of one of the automata is known to be either present or
+absent. The number was chosen experimentally, and we observe a consistent trend
+towards lower numbers being better. The other automaton for the product is
+selected randomly.
 
 \subsubsection{Clause Learning}
 
@@ -2082,16 +2082,14 @@ Product materialisation, then, is the final piece of the puzzle. In the current 
 been experimentally shown to increase the performance in aggregate (though not
 strictly). We do not currently implement all the proposed features of
 \cref{sec:ext:backjumping}, but we do implement forward-reachability cut
-learning (which had a very modest improvement in performance). No sophisticated
-clause learning for products has been implemented.
+learning. No sophisticated clause learning for products has been implemented.
 
 \subsubsection{Random Restarts}
 
 Finally, we perform restarts scaled by the Luby series~\cite{luby}. Experimental
 results have shown this to have a large improvement in performance, which is
 unsurprising given how many random choices we make during solving and how
-tail-heavy our problem is. It seems to be very easy to get stuck with a poor
-choice of product to materialise or transitions to split on.
+tail-heavy our problem is.
 
 \section{Evaluation}\label{sec:experiments}
 
@@ -2131,6 +2129,9 @@ additional instances fail with an error. Both problems are due to
 non-deterministic bugs in the clause learning. Note that \Calculus{} is sound:
 it never misreports an unsatisfiable instance as \Sat{}, and all
 \Fudge{\numprint{6218}} satisfying assignments have been verified by \Nuxmv{}.
+Baseline performs worse on satisfiable instances because it executes a heuristic
+meant to detect unsatisfiability early at a heavy penalty to satisfiable
+instances.
 
 \begin{table}
   \centering
