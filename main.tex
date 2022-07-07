@@ -409,8 +409,8 @@ a value in some commutative monoid and the string $s$, where
 $\varphi(\MonoidElement)$ is some set of constraints on $\MonoidElement$:
 \begin{equation*}
   \AndComp{}{\begin{aligned}
-  & \mathtt{ac^*a|b(bb)^*c} \text{ accepts } s\\
-  & \mathtt{.^*c.^*} \text{ accepts } s \\
+  & \mathtt{/}\SndRegex{}\mathtt{/} \text{ accepts } s\\
+  & \mathtt{/}\FstRegex{}\mathtt{/} \text{ accepts } s \\
   & \MonoidElement = f(s) \\
   & \varphi(\MonoidElement)
   \end{aligned}}
@@ -433,22 +433,72 @@ f\left(\text{morphism}\right) = f\left(\text{homomorphism}\right) = 12$, and we
 let $\varphi(\MonoidElement) = \exists k \HoldsThat m = 2k + 1 \land k \geq 0$,
 i.e. require that the length of the string is odd.
 
-\begin{figure}[t]
-  \begin{minipage}[b]{0.70\linewidth}
+\begin{figure}[p]
   \centering 
-  \includegraphics[scale=0.9]{aca_or_bc}
-  \caption{An automaton recognising the regular expression
-    $\mathtt{ac^*a|b(bb)^*c}$. \Fudge{this is actually not the right
-      regular expression. the automaton also accepts words in which a
-      b is followed by a.}}\label{fig:aca-or-bc}
-
-    \includegraphics[scale=0.9]{something_c_something}
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{aca_or_bc}
     \caption{An automaton recognising the regular expression
-    $\mathtt{.^*c.^*}$.}\label{fig:something-c-something}
-  \end{minipage}
-  \Description[Two deterministic finite automata, one above the other]{NFAs 
-    recognising the languages ac^*a|b(bb)^*c and ac^*a|b(bb)^*c respectively.
-    The first one has 4 states and the second one 2.}
+      $\FstRegex{}$.}\label{fig:aca-or-bc}
+      \Description[An NFA recognising $\FstRegex{}$]{An NFA recognising $\FstRegex{}$. It has 4 states.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth} 
+    \includegraphics[width=\textwidth]{something_c_something}
+    \caption{An automaton recognising the regular expression
+    $\SndRegex{}$.}\label{fig:something-c-something}
+    \Description[An NFA recognising $\SndRegex{}$]{An NFA recognising $\FstRegex{}$. It has 2 states.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{aca_or_bc_simplified}
+    \caption{$\AcaOrBc{}$ with its symbolic transition counters after
+    simplification of their equations.}\label{fig:example-simplify-1}
+    \Description[The automaton $\AcaOrBc{}$ labelled with variables counting the number of times each transition is taken, after having simplified the equations.]{The starting state shows an initial flow of 1, with two outgoing transitions to $A$ ($1-l_c'$ on letter a, and $l_b' + l_c'$ on b respectively). $A$ has a flow of $l_c$, and its outgoing transition into the final state, $F$ is the same as the incoming one from $S$, the initial state. The $B$ transition has an outgoing transition labeled $c/ l_c'$ to the final state $F$, and one backwards transition $b / l_b'$ to the starting state.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{something_c_something_length_simplified}
+    \caption{$\SomethingCSomething{}$ after using linear reasoning over lengths to replace a variable.}\label{fig:example-length-reduced}
+    \Description[The automaton $\SomethingCSomething{}$ after reasoning over lengths.]{The same automaton as before for $\SomethingCSomething{}$, but with the transition from start to final annotated with a constant number 1, and the leftmost self-loop transition replaced with the equation $1 + l_c + 2l_b' -
+    r_\Sigma'$.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{aca_or_bc_length_split_1}
+      \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{S}{a}{A}$ is not
+      used.}\label{fig:aca-or-bc-length-split-1}
+      \Description[The automaton \AcaOrBc{} where we have removed the transition
+      from $S$ to $A$.]{ The state $A$ hangs free without incoming transitions,
+      and only the lower part of the automaton remains.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{aca_or_bc_length_split_2}
+      \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{S}{a}{A}$ \emph{is} used.}\label{fig:aca-or-bc-length-split-2}
+      \Description[$\AcaOrBc{}$ with the transition from $B$ to $F$ removed.]{$\AcaOrBc{}$ when we keep the transition from $S$ to $A$. This removes the transition between $B$ and $F$, but otherwise maintains the automaton.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{length_split_product}
+      \caption{The product of $\AcaOrBc$ and $\SomethingCSomething$ after
+      case splitting and removal of dead states.}\label{fig:length-split-product}
+      \Description[$\AcaOrBc{}$ with the transition from $B$ to $F$ removed.]{$\AcaOrBc{}$ with the transition from $B$ to $F$ removed. There now remains only one path to an accepting state.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+      \includegraphics[width=\textwidth]{aca_or_bc_simplified_3}
+      \caption{$\AcaOrBc{}$ after further constraint propagation.}\label{fig:example-simplify-3}
+      \Description[$\AcaOrBc$ without the lower section.]{$\AcaOrBc$ with only its upper section left and the $a$ transitions now set to static 1.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.6\textwidth}
+        \includegraphics[width=\textwidth]{aca_or_bc_times_something_c_something}
+        \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ under the constraint
+        $\TransitionCount{a} > \TransitionCount{b}$.}\label{fig:final-example} \Description[The
+        final product, still a boring stick automaton with only one loop for an
+        arbitrary number of c's.]{A product of the intermittent automata, which
+        accepts \lstinline{ac.*ca}}
+  \end{subfigure}    
   \end{figure}
 
 The na\"ive approach would be to first compute the product of the automata, then
@@ -472,14 +522,6 @@ eliminate some of the variables in the graphs above, for example to introduce
 the constant number $1$ in \cref{fig:something-c-something}, which comes from $1
 + r_\Sigma = x + r_\Sigma$ solved for $x$.
 
-\begin{figure}[t]
-  \centering 
-    \includegraphics[width=0.50\linewidth]{aca_or_bc_simplified}
-    \caption{$\AcaOrBc{}$ with its symbolic transition counters after
-    simplification of their equations.}\label{fig:example-simplify-1}
-    \Description[The automaton $\AcaOrBc{}$ labelled with variables counting the number of times each transition is taken, after having simplified the equations.]{The starting state shows an initial flow of 1, with two outgoing transitions to $A$ ($1-l_c'$ on letter a, and $l_b' + l_c'$ on b respectively). $A$ has a flow of $l_c$, and its outgoing transition into the final state, $F$ is the same as the incoming one from $S$, the initial state. The $B$ transition has an outgoing transition labeled $c/ l_c'$ to the final state $F$, and one backwards transition $b / l_b'$ to the starting state.}
-  \end{figure}
-
 We sum the individual transition variables to get the length $\MonoidElement$ we
 are actually interested in. For example the image of $f$ on
 $\SomethingCSomething$ is given by $\exists_{r_\Sigma, r_\Sigma'} \: 2k + 1 =
@@ -502,14 +544,6 @@ considers the number of times each transition is taken and the existence of a
 path from an initial to an accepting state, but omits the connectivity of that
 path in the presence of loops. For example, no valid path would have both $l_c >
 0$ and $1 - l_c' = 0$, but no such restriction exists in the formula above.
-
-\begin{figure}[t]
-  \centering 
-    \includegraphics[width=0.4\linewidth]{something_c_something_length_simplified}
-    \caption{$\SomethingCSomething{}$ after using linear reasoning over lengths to replace a variable.}\label{fig:example-length-reduced}
-    \Description[The automaton $\SomethingCSomething{}$ after reasoning over lengths.]{The same automaton as before for $\SomethingCSomething{}$, but with the transition from start to final annotated with a constant number 1, and the leftmost self-loop transition replaced with the equation $1 + l_c + 2l_b' -
-    r_\Sigma'$.}
-  \end{figure}
 
 Still, this approximate view allows us to perform further reasoning. Since we
 know that the length of a string accepted by the intersection of the two
@@ -536,46 +570,20 @@ This creates two cases: $1-l_c' = 0$ and $1-l_c' > 0$. We start with the first
 case, and after propagating the now known values and removing any transition
 that becomes zero, we get the automaton of \cref{fig:aca-or-bc-length-split-1}.
 
-
-\begin{figure}[t]
-  \centering 
-    \includegraphics[width=0.75\linewidth]{aca_or_bc_length_split_1}
-    \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{S}{a}{A}$ is not
-    used.}\label{fig:aca-or-bc-length-split-1}
-    \Description[The automaton \AcaOrBc{} where we have removed the transition
-    from $S$ to $A$.]{ The state $A$ hangs free without incoming transitions,
-    and only the lower part of the automaton remains.}
-  \end{figure}
-
-  We immediately notice that the self-loop of state $A$ is now disconnected from
-  the initial state and must be removed. This condition can be detected
-  efficiently using standard forwards/backwards reachability from the initial
-  and accepting states respectively. In other words, $2k+1 = 0$ for this case
-  and is implied by the splitting constraint. However, no choice of integer $k$
-  will satisfy this equation. Therefore, we close this branch and proceed with
-  the other one -- where $1-l_c' > 0$. Note that we do so without ever computing
-  a potentially expensive product of automata.
-
-  \begin{figure}[t]
-    \centering 
-      \includegraphics[width=0.5\linewidth]{aca_or_bc_length_split_2}
-      \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{S}{a}{A}$ \emph{is} used.}\label{fig:aca-or-bc-length-split-2}
-      \Description[$\AcaOrBc{}$ with the transition from $B$ to $F$ removed.]{$\AcaOrBc{}$ when we keep the transition from $S$ to $A$. This removes the transition between $B$ and $F$, but otherwise maintains the automaton.}
-    \end{figure}
+We immediately notice that the self-loop of state $A$ is now disconnected from
+the initial state and must be removed. This condition can be detected
+efficiently using standard forwards/backwards reachability from the initial
+and accepting states respectively. In other words, $2k+1 = 0$ for this case
+and is implied by the splitting constraint. However, no choice of integer $k$
+will satisfy this equation. Therefore, we close this branch and proceed with
+the other one -- where $1-l_c' > 0$. Note that we do so without ever computing
+a potentially expensive product of automata.
   
 Plugging in the assumption $1-l_c' > 0$ (and its consequence that $l_c' = 0$),
 we also get a reduced variant of $\AcaOrBc$, as seen in
 \cref{fig:aca-or-bc-length-split-2}. Note that there is now no way to select any
 transition variable to disconnect a loop from a path between $S$ and $F$,
 and we can therefore stop worrying about enforcing connectivity at all.
-
-\begin{figure}[t]
-  \centering 
-    \includegraphics[width=0.5\linewidth]{length_split_product}
-    \caption{The product of $\AcaOrBc$ and $\SomethingCSomething$ after
-    case splitting and removal of dead states.}\label{fig:length-split-product}
-    \Description[$\AcaOrBc{}$ with the transition from $B$ to $F$ removed.]{$\AcaOrBc{}$ with the transition from $B$ to $F$ removed. There now remains only one path to an accepting state.}
-  \end{figure}
 
 Before continuing, we need to tie the inequalities for the transitions of the
 automata of the product to the new transition counting variables we introduced
@@ -652,32 +660,12 @@ smaller automaton of \cref{fig:example-simplify-3}.
 %     \Description[$\AcaOrBc$ without the returning transition from $B$ to $S$]{$\AcaOrBc$ without the returning transition from $B$ to $S$, which now makes the transition from $S$ to $B$ also have the same associated variable $l_c'$.}
 %   \end{figure}
 
-
-  \begin{figure}[t]
-    \centering 
-      \includegraphics[width=0.7\linewidth]{aca_or_bc_simplified_3}
-      \caption{$\AcaOrBc{}$ after further constraint propagation.}\label{fig:example-simplify-3}
-      \Description[$\AcaOrBc$ without the lower section.]{$\AcaOrBc$ with only its upper section left and the $a$ transitions now set to static 1.}
-    \end{figure}
-
 This will produce a straightforward product since both automata now have the
 same shape, where we essentially only need to expand the self-loops of
 $\SomethingCSomething$ and reduce its range labels to only capture a's, as seen
 in \cref{fig:final-example}. Note that we got this result by only performing
 linear inequality reasoning on the automata of the product versus the number of
 times each transition would be used.
-
-\begin{figure}[t]
-\centering
-    \includegraphics[width=0.75\linewidth]{aca_or_bc_times_something_c_something}
-    \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ under the constraint
-    $\TransitionCount{a} > \TransitionCount{b}$. Note the fresh variables
-    introduced for the transitions (for most transitions the same one, since
-    they are all linearly dependent).}\label{fig:final-example} \Description[The
-    final product, still a boring stick automaton with only one loop for an
-    arbitrary number of c's.]{A product of the intermittent automata, which
-    accepts \lstinline{ac.*ca}}
-  \end{figure}
 
 %   \begin{figure}[t]
 % \centering
@@ -828,67 +816,6 @@ calculus introduced in this paper, by contrast, lazily enforces the
 connectedness constraint of this encoding (the final three clauses) while also
 interleaving the computation of products of automata and propagating information
 between the steps to reduce the amount of work that needs to be done.
-
-\subsubsection{An Example}
-We apply \eqref{eq:generate-parikh} to the automaton $\AcaOrBc{}$ of \cref{fig:aca-or-bc}. We then get the quantified Presburger formula seen in \eqref{eq:parikh-formula}. As before, we omit the implicit existential quantifiers for brevity, along with the constranints requiring all variables to be nonnegative. We also omit the $\land$-clauses between each line. In other words, in this example, only the variables $\LetterVar_a, \LetterVar_b, \LetterVar_c, \LetterVar_d, \LetterVar_e$, and $\LetterVar_f$ are free, and corresponds to the counts of the respective subscript letter.
-
-\begin{equation}
-  \begin{aligned}
-  \ParikhMap(\Automaton):=\:
-  &\LetterVar_{a} = \TransitionVar_{\FromLabelTo{0}{a}{1}} + \TransitionVar_{\FromLabelTo{1}{a}{3}} \land \LetterVar_{b} = \TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{2}{b}{0}} \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}} + \TransitionVar_{\FromLabelTo{2}{c}{3}}\\
-  &\FinalStateVar_{3} > 0 \implies \StateVar_{3} > 0\\
-  &\TransitionVar_{\FromLabelTo{0}{b}{2}} + \TransitionVar_{\FromLabelTo{0}{a}{1}} - \TransitionVar_{\FromLabelTo{2}{b}{0}} = 1 \land  \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0\\
-  & \TransitionVar_{\FromLabelTo{2}{b}{0}} + \TransitionVar_{\FromLabelTo{2}{c}{3}} - \TransitionVar_{\FromLabelTo{0}{b}{2}} = 0 \land \FinalStateVar_{3}  - \TransitionVar_{\FromLabelTo{1}{a}{3}} - \TransitionVar_{\FromLabelTo{2}{c}{3}} = 0\\
-  &\TransitionVar_{\FromLabelTo{0}{a}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} > 0 \implies \StateVar_{2} > 0\\
-  &\TransitionVar_{\FromLabelTo{1}{c}{1}} > 0 \implies \StateVar_{1} > 0 \land \TransitionVar_{\FromLabelTo{1}{a}{3}} > 0 \implies \StateVar_{3} > 0\\
-  &\TransitionVar_{\FromLabelTo{2}{b}{0}} > 0 \implies \StateVar_{0} > 0 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} > 0 \implies \StateVar_{3} > 0\\
-  &\StateVar_{0} > 0 \implies \left(\StateVar_{0} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{0}{a}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{0} = \StateVar_{2} + 1 \land \TransitionVar_{\FromLabelTo{0}{b}{2}} \geq 1 \land \StateVar_{2} \geq 1\right)\\
-  &\StateVar_{1} > 0 \implies \left(\StateVar_{1} = \StateVar_{1} + 1 \land \TransitionVar_{\FromLabelTo{1}{c}{1}} \geq 1 \land \StateVar_{1} \geq 1\right) \lor \left(\StateVar_{1} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{1}{a}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
-  &\StateVar_{2} > 0 \implies \left(\StateVar_{2} = \StateVar_{0} + 1 \land \TransitionVar_{\FromLabelTo{2}{b}{0}} \geq 1 \land \StateVar_{0} \geq 1\right) \lor \left(\StateVar_{2} = \StateVar_{3} + 1 \land \TransitionVar_{\FromLabelTo{2}{c}{3}} \geq 1 \land \StateVar_{3} \geq 1\right)\\
-  &\StateVar_{3} > 0 \implies \FinalStateVar_{3} = 1
-  \end{aligned}
-  \label{eq:parikh-formula}
-  \end{equation}
-    
-  We see here that the formula encodes the choice of path at the start of the
-  automaton ($\TransitionVar_{\FromLabelTo{0}{b}{2}} +
-  \TransitionVar_{\FromLabelTo{0}{a}{1}} -
-  \TransitionVar_{\FromLabelTo{2}{b}{0}} = 1$), and the dependency between that
-  choice and the following outgoing transition, e.g. in
-  $\TransitionVar_{\FromLabelTo{1}{a}{3}} -
-  \TransitionVar_{\FromLabelTo{0}{a}{1}} = 0$. Here we only have one choice of
-  incoming flow; from $\FinalStateVar_3$, corresponding to the only accepting
-  state.
-
-
-Note that one of the $\lor$-clauses can be immediately removed since it contains
-the contradiction $\StateVar_{1} = \StateVar_{1} + 1$, arising from cycles.The
-unsatisfiability is by design, and ensures that two states in a cycle cannot
-vouch for each other's connectedness.
-
-Assume we are really interested in occurrences with the letter a, i.e. we solve
-for $\LetterVar_a > 0$. This implies that $\StateVar_{1} > 0 \land \StateVar_{3}
-> 0$ (essentially, that the state our transition of interest started in is
-reachable), in turn implying that $\FinalStateVar_3 = 1$. Plugging in these
-facts, we get:
-\begin{equation}
-  \begin{aligned}
-  &\LetterVar_{a} = 2 \land \LetterVar_{b} = 0 \land \LetterVar_{c} = \TransitionVar_{\FromLabelTo{1}{c}{1}}\\
-  & \StateVar_{3} > 0\\
-  &\StateVar_{0} > 0 \implies \StateVar_{0} = \StateVar_{3} + 2\\
-  \end{aligned}
-  \label{eq:parikh-formula-calc}
-  \end{equation}
-
-We can then proceed to eliminate the remaining existentially quantified
-variables to obtain the formula $\LetterVar_{a} = 2 \land \LetterVar_{b} = 0
-\land \LetterVar_{c} \geq 0$ without too much effort.
-
-  This example, in addition to showing how the encoding works, has hopefully
-  also illustrated one of the key insights behind the design of \Calculus: the
-  fact that even few additional constraints on the Parikh image can dramatically
-  reduce the difficulty of computing it.
-
   
 \section{Generalised Parikh Maps}\label{sec:generalised}
 
@@ -934,17 +861,6 @@ formula~$\alpha \in L(\Language_1) \wedge \beta \in L(\Language_2)
 procedures to reason about membership constraints
 like~$\alpha \in L(\Language_1)$, avoiding the computation of
 the complete image~$L(\Language_1)$.
-
-Intuitively, this produces a simpler problem than computing the Parikh image, as
-we now ignore not just the order of characters but also their differences.
-This
-means that the branching automaton of \cref{fig:len-branch} becomes
-equivalent to the non-branching automaton of \cref{fig:len-branch-free}.
-Note that the elimination of the choice of paths also effectively eliminates the
-possibility of disconnecting one of the self-loops. This, in turn, means that we
-can eliminate all of the connectedness implications of the quantified formula,
-which would in turn simplify it (and the quantifier elimination of it)
-considerably.
 
 \subsection{Example~2: Generalised String Constraints with Integer
   Datatype}\label{sec:parikh-automata}
@@ -1034,20 +950,6 @@ records the beginning of the eliminated suffix (value~$m$).
     $\epsilon$-transitions, which could be eliminated in the standard
     way.}\label{fig:parikh-automata}
     \end{figure}
-
-
-\iffalse
-An example of a Parikh automata version of $\AcaOrBc{}$ can be seen in
-\cref{fig:parikh-automaton}. A corresponding Presburger version of the
-constraint seen in \cref{sec:motivation} is $\psi(\Vec{v}) = v_1 > v_2$.
-
-Generally, we can encode the problem as follows:
-\begin{enumerate}
-  \item The morphism ($\Map$) we would use is $\pi_{v}$
-  \item The monoid operation is element-wise vector addition, which is trivially commutative.
-  \item \Fudge{We would just add the constraints on the final values!?}
-\end{enumerate}
-\fi
 
 \section{A Calculus for Generalised Parikh Images}\label{sec:calculus}
 
@@ -1541,66 +1443,6 @@ along the way
 holds that \Calculus{} for one automaton also preserves the semantics.
 \end{proof}
 
-\subsection{Finding the Presburger representation of a homomorphic image}\label{sec:finding-the-image}
-
-To find the Presburger form of the homomorphic image efficiently, we adapt the
-quantifier elimination approach of~\cite{qe} to our problem domain. The core
-method is the same: we incrementally use \Calculus{} to find models,
-\Generalise{} the models we find into a quantifier-free Presburger formula with
-the $\MonoidElement$ as the only free variable (algorithm~\ref{alg:generalise}), add the
-negated formula as a constraint, and continue enumerating models until none
-remain. The disjunction of the generalised models we enumerated is now our
-image.
-
-\begin{algorithm}
-  \caption{$\Generalise{}(\Automaton, \Filter, a)$ will generalise a final product $\Automaton$ and a model $a$ under the homomorphism $\Map$.}\label{alg:generalise}
-  \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
-  \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
-  \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
-
-  $\Automaton' \gets \Tuple{\Automaton_\States, \Automaton_{\InitialState}, \Automaton_\AcceptingStates, \Set{\Transition \in \Automaton_\Transitions \SuchThat a(\Filter(\Transition)) \neq 0}}$
-
-  \Fudge{// This notation might be too much but IT'S OBVIOUS DAMMIT}
-
-  \KwRet{\EliminateQuantifiers{$\Map(\ParikhMap(\Automaton'))$}}
-  \end{algorithm}
-
-
-  \begin{algorithm}
-    \DontPrintSemicolon
-    \caption{$\FindImage{}(\Automaton_1 \times \ldots \times \Automaton_k, \Map)$ will find the Presburger form for the product $\Automaton_1 \times \ldots \times \Automaton_k$ modulo a homomorphism $\Map$ where the only free variable is/are the one(s) representing the monoid element of $\Map$.}\label{alg:find-image}
-    \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
-    \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
-    \SetKwFunction{NewTheoremProver}{newTheoremProver}
-    \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
-    \SetKwFunction{FreshVariable}{freshVariable}
-    \SetKwFunction{Assert}{assert}
-    \SetKwFunction{GetModel}{getModel}
-    \SetKwData{ImageVar}{image}
-  
-$p \gets \NewTheoremProver{}$\;
-$\Filter(\Transition) := \FreshVariable{p}$ for every $\Transition \in \Transitions_{\Automaton}$\;
-$\MonoidElement \gets$ \FreshVariable{$p$}\;
-\Assert{$p, \exists \MonoidElement, \Filter(\Transition) \text{ for every } \Transition \in \Transitions_\Automaton \HoldsThat \ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement} \land \AndComp{\Transition \in \Transitions}{\Filter(\Transition) \geq 0}$}\;
-$\ImageVar \gets \bot$\;
-\While{$p$ has more models}{
-  $\Tuple{\Automaton, a} \gets \GetModel(p)$\;
-  $G \gets \Generalise{}(\Automaton, \Filter, a)$\;
-  $\ImageVar \gets G \lor \Image$\;
-  \Assert{$p, \lnot G$}\;
-  }
-    \KwRet{\ImageVar}
-    \end{algorithm}
-
-    The attentive reader will notice that the \GetModel{} function is
-    nonstandard in that it returns both the model and the automaton used to
-    generate it. Since we implement algorithm~\ref{alg:find-image} inside a theorem
-    prover under our control, we are able to glean such internal data structures. This should be considered fair game, since we are in practice implementing a specialised form of quantifier elimination, which is an internal affair.
-    
-    The performance of this approach is evaluated in
-    \cref{sec:evaluation:finding-image}, where we benchmark our implementation
-    of it.
-
 \section{Parikh Images from Products of Automata}\label{sec:multiple}
 
 To generalise the calculus to calculations on products of automata, we change the main predicate to take arbitrarily many automata:
@@ -1988,6 +1830,63 @@ written with modularity in mind, and it should be straightforward to extend both
 the input grammar and automata implementations to accommodate multi-track
 automata with arbitrary synchronisation.
 
+\subsection{Finding the Presburger representation of a homomorphic image}\label{sec:finding-the-image}
+
+To find the Presburger form of the homomorphic image efficiently, we adapt the
+quantifier elimination approach of~\cite{qe} to our problem domain. The core
+method is the same: we incrementally use \Calculus{} to find models,
+\Generalise{} the models we find into a quantifier-free Presburger formula with
+the $\MonoidElement$ as the only free variable (algorithm~\ref{alg:generalise}), add the
+negated formula as a constraint, and continue enumerating models until none
+remain. The disjunction of the generalised models we enumerated is now our
+image.
+
+\begin{algorithm}
+  \caption{$\Generalise{}(\Automaton, \Filter, a)$ will generalise a final product $\Automaton$ and a model $a$ under the homomorphism $\Map$.}\label{alg:generalise}
+  \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
+  \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
+  \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
+
+  $\Automaton' \gets \Tuple{\Automaton_\States, \Automaton_{\InitialState}, \Automaton_\AcceptingStates, \Set{\Transition \in \Automaton_\Transitions \SuchThat a(\Filter(\Transition)) \neq 0}}$
+
+  \KwRet{\EliminateQuantifiers{$\Map(\ParikhMap(\Automaton'))$}}
+  \end{algorithm}
+
+
+  \begin{algorithm}
+    \DontPrintSemicolon
+    \caption{$\FindImage{}(\Automaton_1 \times \ldots \times \Automaton_k, \Map)$ will find the Presburger form for the product $\Automaton_1 \times \ldots \times \Automaton_k$ modulo a homomorphism $\Map$ where the only free variable is/are the one(s) representing the monoid element of $\Map$.}\label{alg:find-image}
+    \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
+    \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
+    \SetKwFunction{NewTheoremProver}{newTheoremProver}
+    \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
+    \SetKwFunction{FreshVariable}{freshVariable}
+    \SetKwFunction{Assert}{assert}
+    \SetKwFunction{GetModel}{getModel}
+    \SetKwData{ImageVar}{image}
+  
+$p \gets \NewTheoremProver{}$\;
+$\Filter(\Transition) := \FreshVariable{p}$ for every $\Transition \in \Transitions_{\Automaton}$\;
+$\MonoidElement \gets$ \FreshVariable{$p$}\;
+\Assert{$p, \exists \MonoidElement, \Filter(\Transition) \text{ for every } \Transition \in \Transitions_\Automaton \HoldsThat \ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement} \land \AndComp{\Transition \in \Transitions}{\Filter(\Transition) \geq 0}$}\;
+$\ImageVar \gets \bot$\;
+\While{$p$ has more models}{
+  $\Tuple{\Automaton, a} \gets \GetModel(p)$\;
+  $G \gets \Generalise{}(\Automaton, \Filter, a)$\;
+  $\ImageVar \gets G \lor \Image$\;
+  \Assert{$p, \lnot G$}\;
+  }
+    \KwRet{\ImageVar}
+    \end{algorithm}
+
+    The \GetModel{} function is nonstandard in that it returns both the model
+    and its associated automaton. Since algorithm~\ref{alg:find-image} is
+    essentially a form of quantifier elimination and therefore an internal affair
+    to the theorem prover, this should be considered fair game.
+    
+    A preliminary implementation of this approach is available as part
+    of~\Catra, but has been neither optimised nor fully tested.
+
 \section{Implementation}\label{sec:implementation}
 
 We implement a calculus for Parikh automata as described in
@@ -2024,9 +1923,8 @@ interval is closed from both edges.
 In satisfaction mode, supported by all back-ends, \Catra{} tries to satisfy the
 constraints expressed by the input file, reporting satisfiable with register
 assignments or unsatisfiable much like traditional~SAT- or SMT solvers would.
-Additionally, the baseline and our own back-end also support efficient
-generation of the Presburger formula describing the constraints of the input
-file using the method described in \cref{sec:finding-the-image}.
+Additionally, the baseline and our own back-end also support generation of the
+Presburger formula describing the constraints of the input file.
 
 \Catra{} can solve equations of Parikh images. An equation like
 $\ParikhMap(\Automaton_1 \times \Automaton_2) = \ParikhMap(\Automaton_3 \times
@@ -2214,7 +2112,7 @@ instance, but most of all on satisfiable instances. In fact, the baseline
 approach was significantly harder to benchmark due to its much higher demand for
 RAM. 
 
-\begin{table}[ht]
+\begin{table}
   \centering
   \input{graphs/solved_pivot_table.tex}
   \caption{The result of running the respective back-ends by instance
@@ -2223,18 +2121,34 @@ RAM.
   from the table. }\label{tab:solve-status}
 \end{table}
 
-\begin{figure}[ht]
-  \includegraphics[width=0.75\linewidth]{graphs/\commit-by-solver.pdf}
-  \caption{The division of statuses per backend.}
-  \label{fig:solve-division}
+\begin{figure}[t]
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+      \includegraphics[width=\textwidth]{graphs/\commit-by-solver.pdf}
+      \caption{The division of statuses per backend.}
+      \label{fig:solve-division}
+      \Description[A bar chart showing three bars, one per backend, illustrating how many instances they could solve]{The bars are divided by satisfiable and unsatisfiable instances. Baseline could seemingly only solve unsatisfiable instances, lazy could solve a few satisfiable and mostly unsatisfiable, and nuxmv could solve about twice as many unsatisfiable as satisfiable instances, and slightly more in total than lazy.}
+  \end{minipage}
+  \begin{minipage}[b]{0.49\linewidth}
+    \centering
+      \includegraphics[width=\textwidth]{graphs/\commit-time-boxplot.pdf}
+      \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
+      \label{fig:runtime-boxplot}
+      \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the lazy backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for lazy. On the other hand, lazy has  a lot of outliers.}
+  \end{minipage}
+  \vspace{0.5cm}
+  \begin{minipage}{\linewidth}
+    \centering
+    \includegraphics[width=0.75\textwidth]{graphs/\commit-cactus.pdf}
+    \caption{The number of instances solved as the time budget increases, simulated from one \RuntimeTimeout-timeout run.}
+    \label{fig:cactus}
+    \Description[A cactus plot comparing the performance of nuxmv, lazy and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv on shorter runtimes, but is overtaken by just before the 60-second timeout used in these experiments.}
+  \end{minipage}
 \end{figure}
 
 
-\begin{figure}[ht]
-  \includegraphics[width=0.75\linewidth]{graphs/\commit-time-boxplot.pdf}
-  \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
-  \label{fig:runtime-boxplot}
-\end{figure}
+
+
 
 
 % \begin{figure}[ht]
@@ -2253,12 +2167,8 @@ RAM.
 
 A cactus plot showing the number of instances solved within a given timeout for each backend can be seen in Figure~\ref{fig:cactus}. \Fudge{We see here that some solver is fast and some other is not}.
 
-\begin{figure}[ht]
-  \includegraphics[width=0.75\linewidth]{graphs/\commit-cactus.pdf}
-  \caption{The number of instances solved as the time budget increases, simulated from one \RuntimeTimeout-timeout run.}
-  \label{fig:cactus}
-\end{figure}
 
+\iffalse
 \subsection{Finding a Presburger Formula}\label{sec:evaluation:finding-image}
 
 For baseline and \Calculus{}, \Catra{} offers the ability to find the equivalent Presburger formula representing a given instance. For baseline, we use the built-in quantifier elimination facilities of the underlying \Princess{} theorem prover, while for \Catra{} we use the specially tailored approach described in \cref{sec:finding-the-image}. For this experiment, we use only the~\NrKnownSat{} instances known to be satisfiable from the previous experiment detailed in \cref{sec:scaling,sec:runtime}. 
@@ -2275,6 +2185,7 @@ something happens}.
   \caption{The number of instances \Catra{} was able to find the Presburger form of the image for within a given number of seconds per backend.}
   \label{fig:cactus:image}
 \end{figure}
+\fi
 
 \subsection{Threats to Validity}
 

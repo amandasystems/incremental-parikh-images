@@ -1,8 +1,10 @@
 \usepackage{amsmath}
 \DeclareMathOperator{\Image}{Im}
 \newcommand{\commit}[0]{2396a59}
-\newcommand{\SomethingCSomething}[0]{\Automaton_{\mathtt{.*c.*}}}
-\newcommand{\AcaOrBc}[0]{\Automaton_{\mathtt{ac^*a|b(bb)^*c}}}
+\newcommand{\FstRegex}[0]{\mathtt{(bb)^\ast(ac^\ast{}a|bc)}}
+\newcommand{\SndRegex}[0]{\mathtt{.^\ast{}c.^\ast}}
+\newcommand{\SomethingCSomething}[0]{\Automaton_{\SndRegex}}
+\newcommand{\AcaOrBc}[0]{\Automaton_{\FstRegex}}
 \newcommand{\CountOf}[1]{\#\text{#1}}
 \newcommand{\ImagePredicate}[4]{\Image_{#1, #2}(#3, #4)}
 \newcommand{\Automaton}[0]{\mathcal{A}}
