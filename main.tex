@@ -1405,7 +1405,7 @@ immediately imply that \Calculus{} gives rise to a decision procedure.
 \begin{lemma}\label{lma:single-terminates}
   Suppose $\SomeClause{}$ is a set of formulas in which the predicates
   $\Image$ and $\Connected$ only occur positively. There is no
-  infinite sequence of proofs~$P_0, P_1, P_2, \ldots$ in which $P_0$
+  infinite sequence of proofs~$P_r0, P_1, P_2, \ldots$ in which $P_0$
   has $\SomeClause{}$ as root, and each $P_{i+1}$ is derived from
   $P_i$ by applying one of the rules in \cref{tbl:rules:single}.
 \end{lemma}
@@ -1490,7 +1490,11 @@ immediately imply that \Calculus{} gives rise to a decision procedure.
   \Subsume{} is trivially solution-preserving; therefore assume that
   $\SomeInequalities$ is consistent, which means that it contains
   exactly one of $\Filter(\Transition) = 0$ or
-  $\Filter(\Transition) > 0$ for each $\Transition$.
+  $\Filter(\Transition) > 0$ for each $\Transition$. Since
+  \Propagate{} is not applicable, the transitions~$\Transition$ with
+  $\Filter(\Transition) > 0$ must form a connect sub-graph of the
+  automaton; this means that $\Connected(\Automaton, \Filter)$ is
+  redundant as it is implied by $\SomeInequalities$.
 \end{proof}
 
 
