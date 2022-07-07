@@ -117,7 +117,7 @@
 \begin{document}
 
 %% Title information
-\title{An Efficient Calculus for Generalised Parikh Images of Regular Languages}
+\title{A Constraint Solving Approach to Parikh Images of Regular Languages}
                                         %% when present, will be used in
                                         %% header instead of Full Title.
 %% Author information
@@ -196,7 +196,7 @@
    constraint benchmarks involving string lengths}. We show that our solution
    strictly outperforms the standard eager approach described
    in~\citeauthor{generate-parikh-image} as well as the over-approximating
-   method recently described by~\citeauthor{approximate-parikh} by a wuide
+   method recently described by~\citeauthor{approximate-parikh} by a wide
    marigin, and for realistic timeouts for constraint solving also the~\Nuxmv{}
    model checker.
 \end{abstract}
@@ -1255,7 +1255,8 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
 \begin{figure}
   \centering
 \begin{prooftree}
-  \infer0[\PresburgerClose]{
+  \hypo{\bigstar}
+  \infer1[]{
     \begin{matrix}
       1 - \TransitionVar_6 = 0 \land \\
       \TransitionVar_6 = 1 \land \\
@@ -1295,7 +1296,8 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
     \end{matrix}
   }
   % BRANCH:  = 0
-  \infer0[\PresburgerClose{}]{
+  \hypo{\bigstar}
+  \infer1[]{
     \begin{matrix}
       \TransitionVar_3 > 0 \\
       \TransitionVar_6 = 0 \land \\
@@ -1354,11 +1356,15 @@ using the (simplified) flow equations. We can also see how interleaving
 reasoning on the corresponding linear equations helps the production. In both
 branches the reasoning is similar: we conclude that when choosing either path at
 the starting state we must avoid the other one, perform propagation based on
-that fact, use some equational reasoning to derive the expected forms of the
+that fact, use some algebraic reasoning to derive the expected forms of the
 upper and lower bounds to propagate the now disconnected transitions, and
 finally subsume, removing the $\Connected{}$ predicate when we are unable to use
-either of the rules, leaving only the satisfiable remnants of the flow
-equations.
+either of the rules, leaving only the satisfiable remnants of the flow equations
+at the respective leaves marked with~$\bigstar$. To obtain a solution from the
+proof, one would need to perform standard model generation on the remaining
+constraints to obtain values for the sought variable $\MonoidElement$. The full
+Parikh image is the disjunction of the constraints left at the two
+$\bigstar$-marked leaves, after quantifier elimination.
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
@@ -1591,8 +1597,26 @@ substitutions as follows. Note the expansion of the $\Sigma$ labels:
       \end{aligned}
     \end{equation*}
     
+In the derivation tree of \cref{fig:derivation:multi} we start as before, but
+with the product version of the $\Image$ predicate. The only possible rule here
+is $\ExpandM$, which we use to add the corresponding constraints on each
+automata of the product as we would have had in the single-automaton version. We
+perform algebraic reasoning on those equations, along with the constraint on
+$\MonoidElement$ to determine bounds on transition variables that will enable us
+to \Subsume{} and remove one of the $\Connected{}$ predicates. When we have
+finished doing so, we use \Materialise{} to compute the product of the now
+filtered automata. Further algebraic reasoning allows us to remove the final
+instance of $\Connected$. We then perform \Expand{} to get rid of the final
+$\Image$ instance, and are immediately able to $\Subsume$ the resulting
+$\Connected{}$ predicate. This, again, leaves us with a set of linear
+inequalities that we can use to obtain a model of our final $\MonoidElement$
+values (now a vector). Performing quantifier elimination on the remaining clauses would also produce the Presburger formula of the Parikh image under the constraint we started with.
+
+\begin{figure}
+  \centering
 \begin{prooftree}
-  \infer0[\PresburgerClose{}]{
+  \hypo{\bigstar}
+  \infer1[]{
     \begin{matrix}
       1 = \TransitionVar_{10} \land 
       \TransitionVar_3 = \TransitionVar_{11} \land \\
@@ -1706,6 +1730,8 @@ substitutions as follows. Note the expansion of the $\Sigma$ labels:
   }
   \infer1[\ExpandM]{\Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, \VectorLiteral{a, b, c}) \land a > b}
 \end{prooftree}
+\caption{A derivation for \Calculus{} on the Parikh image of strings with more a's than b's in the product of $\AcaOrBc{}$ and $\SomethingCSomething{}$.}\label{fig:derivation:multi}
+\end{figure}
 
 \subsection{The extended calculus is also correct}
 
@@ -2243,7 +2269,7 @@ easily be addressed, except by stating that we have been careful in our
 implementation and descriptions alike. The second is more practical. To increase
 the probability that our results are representative both in the sense of
 representing runs on expected, real world input and in the statistical sense for
-a given run of \Catra despite the fact that we use randomness in our
+a given run of \Catra{} despite the use of randomness in our
 implementation we execute many experiments. Moreover, we have validated all
 reported solutions made by \Calculus{} with \Nuxmv{} to ensure that \Calculus{}
 is indeed sound and does not cheat.
