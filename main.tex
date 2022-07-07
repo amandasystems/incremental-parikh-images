@@ -951,6 +951,9 @@ records the beginning of the eliminated suffix (value~$m$).
     sake of presentation, the Parikh automaton contains
     $\epsilon$-transitions, which could be eliminated in the standard
     way.}\label{fig:parikh-automata}
+    \Description[An 2-state automaton (left) and a slightly larger automaton with counters (right).]{
+      The rightmost automaton is the starts with an initial state with a self-loop on any character that increments both registers by one, followed by an epsilon transition to a state with a self-loop on c that increments the lower register by one. From that state, the automaton has an epsilon-transition into the accepting state, as well as a transition on a into a state with only a transition back again, both incrementing the lower register by one. The accepting state has a self-loop on any character that does nothing to the registers.
+      }
     \end{figure}
 
 \section{A Calculus for Generalised Parikh Images}\label{sec:calculus}
@@ -2289,7 +2292,7 @@ to the expected Presburger formulae.
 \appendix
 \section{Appendix}
 
-\begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:introduction:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
+\begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
   // So far we only support integer counters. Note that we have individual
   // counters for each automaton to avoid surprises for product construction.
   counter int l_a, l_b, l_c, r_c;
