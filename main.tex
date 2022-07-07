@@ -954,11 +954,13 @@ string constraints~\cite{ostrich-plus}. Consider, for instance, a
 constraint involving the substring operation:
 \begin{equation}
   \label{eq:substring}
-  x \in \Language_1 \wedge \; 0 \leq n \leq m < |x| \wedge x[n:m] \in \Language_2
+  x \in \Language_1 \wedge \; 0 \leq n \leq m \leq |x| \wedge x[n:m] \in \Language_2
 \end{equation}
 in which $x$ is a string variable, $n, m$ are integer variables, and
 $x[n:m]$ denotes the substring of $x$ starting at position~$n$ running
-until position~$m$. To illustrate the decision procedure in
+until position~$m$. This constraint belongs to an expressive fragment
+of string logic that cannot be decided by most state-of-the-art string
+solvers. To illustrate the decision procedure proposed in
 \cite{ostrich-plus} for string constraints of this kind, suppose that
 $\Language_2$ is defined by the regular
 expression~$\mathtt{(ab|c)*}$. An automaton recognising this language
@@ -968,32 +970,46 @@ We can model \eqref{eq:substring} using the notion of a \emph{Parikh
   automaton}~\cite{parikh-automata,expressiveness}. A Parikh automaton
 is an automaton in which transitions are labelled both with characters
 from the alphabet~$\Alphabet$, and with offset vectors defining the
-increments of a finite number of counters.
-
-In the following definitions, we use (as in~\cite{expressiveness}) the following notation:
-\begin{itemize}
-  \item $\Alphabet$ is an alphabet
-  \item $D$ is a finite subset of $\Naturals^d$, for some $d \in \Naturals^+$ (e.g. vectors of length $d$)
-\end{itemize}
-
-\begin{definition}\label{def:projections}
-  We define two projections on the composite alphabet $\left(\Alphabet \times D\right)^*$:
-  \begin{itemize}
-    \item $\pi_{\Alphabet} := (a, \Vector{v}) \mapsto a$ or the projection on $\Alphabet$ is the monoid morphism from $\left(\Alphabet \times D\right)^*$ to $\Alphabet^*$, and the opposite projection
-    \item $\pi_{v} := (a, \Vector{v}) \mapsto \Vector{v}$, called the
-    \emph{extended Parikh image}.
-  \end{itemize}
-\end{definition}
+increments of a finite number of counters. This means that Parikh
+automata recognise words over an extended
+alphabet~$\Alphabet \times D$, where $D \subseteq \Naturals^d$ is a
+finite set of increment vectors (notation as
+in~\cite{expressiveness}). We use the symbols~$\pi_\Alphabet, \pi_D$
+to denote projections to the first and the second component of a
+composite letter~$(a, \Vector{v})$, respectively, and extend those
+projections to words:
+\begin{equation*}
+  \pi_\Alphabet((a_1, \Vector{v}_1) \RepeatSum{\Concat} (a_k, \Vector{v}_k))
+  ~=~ a_1 \RepeatSum{\Concat} a_k,
+  \qquad
+  \pi_D((a_1, \Vector{v}_1) \RepeatSum{\Concat} (a_k, \Vector{v}_k))
+  ~=~ \Vector{v}_1 \RepeatSum{+} \Vector{v}_k.
+\end{equation*}
 
 \begin{definition}\label{def:parikh-automata} A Parikh automaton of dimension $d
-  \geq 0$ is a pair $\Tuple{\Automaton, C}$, where $C \subseteq \Naturals^d$ is
-  a semi-linear set (or, equivalently, a Presburger formula), and $\Automaton$
-  is a finite automaton with the alphabet $\Alphabet \times D$, where $D
-  \subseteq \Naturals^d$. We say that $\Tuple{\Automaton, \varphi}$
-  \emph{recognises} the language, $\Language(\Automaton, C)$, that is it
-  recognises the language created by is the $\pi_\Alphabet$-projection on
-  $\Alphabet$ whose $\pi_{v} \subseteq C$.
+  \geq 0$ is a pair $\Tuple{\Automaton, C}$, where
+  $C \subseteq \Naturals^d$ is a semi-linear set (or, equivalently, a
+  Presburger formula), and $\Automaton$ is a finite automaton with the
+  alphabet $\Alphabet \times D$, where $D \subseteq \Naturals^d$. We
+  say that $\Tuple{\Automaton, \varphi}$ recognises a
+  word~$w \in \Alphabet^*$ if and only if the automaton has a run
+  accepting an extended word~$w' \in (\Alphabet \times D)^*$ such that
+  $\pi_\Alphabet(w') = w$ and $\pi_D(w') \in C$.
 \end{definition}
+
+The decision procedure in \cite{ostrich-plus} for formulas like
+\eqref{eq:substring} will construct a pre-image of $\Language_2$ under
+the substring operation~$\cdot[n:m]$, and check whether this pre-image
+is consistent with the constraint~$x \in \Language_1$. Because the
+substring operation depends on the values of the integer
+variables~$n, m$, it is appropriate to describe the pre-image as
+Parikh automaton of dimension~$2$, resulting in the automaton in
+Fig.~\ref{fig:parikh-automata} (right). The first component of the
+increment vectors is used to count the number of letters eliminated in
+the beginning of the string (value~$n$), while the second component
+records the beginning of the eliminated suffix (value~$m$).
+
+\Fudge{continue}
 
 \iffalse
 \begin{figure}[t]
@@ -1008,15 +1024,19 @@ In the following definitions, we use (as in~\cite{expressiveness}) the following
     
 \begin{figure}[t]
   \centering
-  \includegraphics[scale=0.9]{counter_automaton_pre}
+  \raisebox{5ex}{\includegraphics[scale=0.9]{counter_automaton_pre}}
   \hfill
   \includegraphics[scale=0.9]{counter_automaton}
   \caption{An automaton recognising the language $\mathtt{(ab|c)*}$
-    (left), and a Parikh automaton describing the pre-image of the
-    substring operation (right).}\label{fig:parikh-automata}
+    (left), and a Parikh automaton describing the pre-image of this
+    language under the substring operation~$\cdot[n:m]$ (right). For
+    sake of presentation, the Parikh automaton contains
+    $\epsilon$-transitions, which could be eliminated in the standard
+    way.}\label{fig:parikh-automata}
     \end{figure}
 
 
+\iffalse
 An example of a Parikh automata version of $\AcaOrBc{}$ can be seen in
 \cref{fig:parikh-automaton}. A corresponding Presburger version of the
 constraint seen in \cref{sec:motivation} is $\psi(\Vec{v}) = v_1 > v_2$.
@@ -1027,6 +1047,7 @@ Generally, we can encode the problem as follows:
   \item The monoid operation is element-wise vector addition, which is trivially commutative.
   \item \Fudge{We would just add the constraints on the final values!?}
 \end{enumerate}
+\fi
 
 \section{A Calculus for Generalised Parikh Images}\label{sec:calculus}
 
