@@ -66,7 +66,7 @@
 \usepackage{listings}
 \usepackage{csquotes}
 \usepackage{proof}
-\usepackage{cleveref}
+\usepackage[capitalise]{cleveref}
 \usepackage{algorithm2e}      
 \usepackage{multirow}
 \usepackage{mathpartir}
@@ -246,7 +246,7 @@
 
 %% Keywords
 %% comma separated list
-\keywords{parikh images, string solvers, model checking}  %% \keywords are mandatory in final camera-ready submission
+\keywords{Parikh images, string solvers, model checking}  %% \keywords are mandatory in final camera-ready submission
 
 
 %% \maketitle
@@ -354,20 +354,8 @@ of the product incrementally, thereby decreasing the memory footprint.
 The key ideas of \Calculus{} is a combination of problem-aware case splitting,
 lazy enforcement of automata connectivity, and lazy computation of products.
 
-The problem of computing constraints on Parikh images over products of regular
-languages under a given commutative homomorphism amounts to solving products of
-Parikh automata. Parikh automata are regular automata extended with integer
-counters with given increments and decrements for each transition, where we
-allow checking a set of linear constraints on the final values of the counters
-(but not their intermittent values) \cite{parikh-automata}. Parikh automata
-without constraints on the final values on their registers are also sometimes
-called cost-enriched automata, weighted automata or counter automata, depending
-on exact definitions and side-constraints. The decision problem tackled in this
-paper, determining the emptiness of an intersection of Parikh automata, was
-recently shown to be PSPACE-complete~\cite{graph-queries}.
-
 We implement \Calculus{} as a theory for the \Princess{} automated theorem
-prover in the tool \Catra. \Catra also supports the approximate method of
+prover in the tool \Catra. \Catra{} also supports the approximate method of
 \cite{approximate-parikh}, its fall-back variant adapted
 from~\cite{generate-parikh-image}, and an adapter for the \Nuxmv{} model
 checker~\cite{nuxmv}. Using \Catra, we compare \Calculus{} to the other two
@@ -386,24 +374,37 @@ Parikh image of products of Parikh automata.
 
 \subsection{Related Work}
 
-Parikh image computations as well as Parikh automata \cite{parikh-automata}
-feature extensively in string solvers, including as mentioned above \Ostrich{}
-and \OstrichPlus{} \cite{ostrich,ostrich-plus}, but also formes the basis of
-Trau~\cite{trau-pldi}, and occurs in \textsc{Sloth}~\cite{sloth}. Parikh images
-frequently appear when introducing cardinality constraints like length or string
-indexing. The state-of-the-art approach to handling Parikh image computation is
-to over-approximate the Parikh image of a product of $k$~automata
-$\ParikhMap(\Automaton_1 \times \ldots \times \Automaton_k)$ with the
-conjunction of the automata's parikh maps, $\AndComp{i=1}^{k}
+The problem of computing constraints on Parikh images over products of regular
+languages under a given commutative homomorphism amounts to solving products of
+Parikh automata. Parikh automata are regular automata extended with integer
+counters with given increments and decrements for each transition, where we
+allow checking a set of linear constraints on the final values of the counters
+(but not their intermittent values) \cite{parikh-automata}. Parikh automata
+without constraints on the final values on their registers are also sometimes
+called cost-enriched automata, weighted automata or counter automata, depending
+on exact definitions and side-constraints. The decision problem tackled in this
+paper, determining the emptiness of an intersection of Parikh automata, was
+recently shown to be PSPACE-complete~\cite{graph-queries}.
+
+Parikh image computations as well as Parikh automata feature extensively in
+string solvers, including as mentioned above \Ostrich{} and \OstrichPlus{}
+\cite{ostrich,ostrich-plus}, but also forms the basis of Trau~\cite{trau-pldi},
+and occurs in \textsc{Sloth}~\cite{sloth}. Parikh images frequently appear when
+introducing cardinality constraints like length or string indexing. The
+state-of-the-art approach to handling Parikh image computation is to
+over-approximate the Parikh image of a product of $k$~automata
+$\ParikhMap(\Language(\Automaton_1) \cap \ldots \cap \Language(\Automaton_k))$ with the
+conjunction of the automata's parikh maps, $\bigwedge_{i=1}^{k}
 \ParikhMap(\Automaton_i)$. This approach works only for unsatisfiable instances,
 and will require falling back to computing the product of the automata before
-using the standard approach for finding its image originally presented in~\cite{generate-parikh-image}.
+using the standard approach for finding its image originally presented
+in~\cite{generate-parikh-image}.
 
 Outside of string solvers, Parikh automata have been proposed as the basis of
 queries~\cite{graph-queries}, and for solving cardinalities in model checking
 problems involving epistemic logic~\cite{epistemic-logic}.
 
-Many other generalisations of the Parikh than the ones we use here have been
+Many other generalisations of the Parikh image than the projections we use here have been
 studied. Prominent examples include generalising the Parikh map to segments of a
 fixed length \cite{KARHUMAKI1980155} and the more general Parikh matrix, which
 gives more information about a word than the standard Parikh image
@@ -421,14 +422,12 @@ reasoning. We begin by considering the following set of string and other
 constraints, which we want to solve for all possible values of $\MonoidElement$,
 a value in some commutative monoid and the string $s$, where
 $\varphi(\MonoidElement)$ is some set of constraints on $\MonoidElement$:
-\begin{equation*}
-  \AndComp{}{\begin{aligned}
-  & \mathtt{/}\SndRegex{}\mathtt{/} \text{ accepts } s\\
-  & \mathtt{/}\FstRegex{}\mathtt{/} \text{ accepts } s \\
-  & \MonoidElement = f(s) \\
-  & \varphi(\MonoidElement)
-  \end{aligned}}
- \end{equation*}
+\[
+   s \in \Language(\mathtt{/}\SndRegex{}\mathtt{/})  \land
+   s \in \Language(\mathtt{/}\FstRegex{}\mathtt{/})  \land
+   \MonoidElement = f(s)  \land
+   \varphi(\MonoidElement)
+\]
 
 We will represent the strings using the nondeterministic finite automata
  $\SomethingCSomething{}$ (\cref{fig:something-c-something}) and $\AcaOrBc{}$
@@ -438,7 +437,7 @@ We will represent the strings using the nondeterministic finite automata
  \emph{automata-aware splitting}, \emph{lazy enforcement of automata
  connectivity}, and \emph{incremental materialisation of products}.
  
-\subsection{Counting string lengths}
+\subsection{Counting String Lengths}
 
 To keep things simple, in this first example we let $f$ be the function that
 gives the length of a given string; $f\left(\text{curious and curiouser
@@ -512,7 +511,8 @@ i.e. require that the length of the string is odd.
         final product, still a boring stick automaton with only one loop for an
         arbitrary number of c's.]{A product of the intermittent automata, which
         accepts \lstinline{ac.*ca}}
-  \end{subfigure}    
+  \end{subfigure}
+  \caption{The collection of automata we use as running examples in this paper, with annotations illustrating intermittent states of our calculus.}    
   \end{figure}
 
 The na\"ive approach would be to first compute the product of the automata, then
@@ -616,7 +616,7 @@ the length. Eliminating the final quantifier gives us the image of $f(\AcaOrBc
 \times \SomethingCSomething)$ modulo odd lengths: $3 + 2k$, for some integer
 $k$.
 
-\subsection{Producing the Parikh image}\label{sec:introduction:parikh}
+\subsection{Counting Letters}\label{sec:introduction:parikh}
 
 Now assume that rather than the length (e.g. the count of the characters) we
 want to find the whole Parikh image of the intersection of $\AcaOrBc{}$ and
@@ -704,7 +704,7 @@ arrive at $\TransitionCount{c} \geq 1$.
 \subsection{Monoids}
 
 A monoid $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ is an algebraic structure
-consisting of the carrier set of elements, $X$, an associative binary operation
+consisting of the non-empty carrier set of elements, $X$, an associative binary operation
 $X \times X \rightarrow X$ denoted as $\MonoidOp$, that is where for all $a, b,
 c \in X$, $(a \MonoidOp b) \MonoidOp c = a \MonoidOp (b \MonoidOp c)$. Finally,
 $\Monoid$ must have an identity element $0_{\Monoid} \in X$ such that
@@ -714,26 +714,25 @@ $\MonoidOp$, e.g. $3a = a \MonoidOp a \MonoidOp a$, for $a \in X$. $\Monoid$ is
 called \textit{commutative} if $\MonoidOp$ also commutes, that is if $a
 \MonoidOp b = b \MonoidOp a$ for all $a, b \in X$. 
 
-Finally, we sometimes refer to a structure-preserving map between two monoids
-$\Monoid_1, \Monoid_2$ as a \textit{homomorphism} between $\Monoid_1$ and
-$\Monoid_2$, that is a map $\Map : S_1 \rightarrow S_2$ such that $\Map(a
+Finally, a \textit{homomorphism} is a structure-preserving map between two monoids
+$\Monoid_1, \Monoid_2$, that is a map $\Map : S_1 \rightarrow S_2$ such that $\Map(a
 \MonoidOp_1 b) = \Map(a) \MonoidOp_2 \Map(b)$, where $S_1, S_2$ are the carrier
 sets of $\Monoid_1$ and $\Monoid_2$ respectively, and $\MonoidOp_1, \MonoidOp_2$
 their binary operations.
 
 \subsection{Languages, Finite-state Automata and their Products}
 
-We define an alphabet as a set of symbols $\Alphabet$ with words $\Strings$, and
+We define an alphabet as a finite set of symbols $\Alphabet$ with words $\Strings$, and
 the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
 Note that $\Strings = \Tuple{\Alphabet;\Concat{};\epsilon}$, is a
 non-commutative monoid, referred to as the free monoid. The string length
 function, $\Length{s}$ is an example of a homomorphism between $\Strings$
 and~$\mathbb{Z}$.
 
-A non-deterministic automaton~$\Automaton$ with alphabet~$\Alphabet$ is
-$\AutomatonTuple$ where $\Transitions = \States \times \Alphabet \times
-\States$, $\States$ is its states, $\InitialState$ is w.l.o.g. assumed to be the
-single initial state, and $\AcceptingStates$ is its set of accepting states.  We
+An automaton~$\Automaton$ with alphabet~$\Alphabet$ is
+$\AutomatonTuple$ where $\Transitions \subseteq \States \times \Alphabet \times
+\States$, $\States$ is its states, $\InitialState$ its
+initial state, and $\AcceptingStates$ is its set of accepting states.  We
 write a transition $\Transition = \Tuple{\State, \Label, \State'} \in
 \Transitions$ as $\Transition = \FromLabelTo{\State}{\Label}{\State'}$.
 Similarly, we use the notation $\FromLabelTo{\State}{}{}$ to refer to the set of
@@ -802,7 +801,7 @@ paper we focus only on regular languages.
 \label{sec:verma}
 
 Since Parikh images are semilinear, any Parikh image can be written as a set of linear
-equations. The following construction, here adapted to work on an NFA $\Automaton = \AutomatonTuple$, was presented in \cite{generate-parikh-image}:
+equations. The following construction for an NFA $\Automaton = \AutomatonTuple$ is based on the version for context-free grammars presented in \cite{generate-parikh-image}:
 \begin{equation}
 \begin{aligned}
 \ParikhMap(\Automaton) := 
@@ -811,7 +810,7 @@ equations. The following construction, here adapted to work on an NFA $\Automato
 & \AndComp{\State \in \AcceptingStates}{\FinalStateVar_{\State} > 0 \longrightarrow  \StateVar_{\State} > 0}\\
 & \AndComp{\State \in \States}{
   \left(\FinalStateVar_{\State} \text{ if } \State \in \AcceptingStates \text{ otherwise } 0 \right) +
-  \sum_{\Transition = \FromLabelTo{\State}{}{}} \Filter(\Transition) - \sum_{\Transition = \FromLabelTo{}{}{\State}} \Filter(\Transition)
+  \sum_{\Transition \in \FromLabelTo{\State}{}{}} \Filter(\Transition) - \sum_{\Transition \in \FromLabelTo{}{}{\State}} \Filter(\Transition)
 = \begin{cases}
     1 \text{  if $\State = \InitialState$} \\
     0 \text{ otherwise}
@@ -825,7 +824,7 @@ equations. The following construction, here adapted to work on an NFA $\Automato
 } \\
 &\AndComp{\State \in \States}{
   \StateVar_{\State} > 0 \longrightarrow
-  \left(\FinalStateVar_{\State} = 1 \text{ if } \State \in \AcceptingStates \land \right) \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
+  \OrComp{\Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions}{
     \StateVar_{\State} = \StateVar_{\State'} + 1 \land 
     \TransitionVar_{\Transition} \geq 1 \land
   \StateVar_{\State'} \geq 1
@@ -835,7 +834,7 @@ equations. The following construction, here adapted to work on an NFA $\Automato
 \label{eq:generate-parikh}
 \end{equation}
 
-All variables $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ are
+All variables $\TransitionVar_\Transition, \StateVar_\State, \FinalStateVar_\State$ are
 existentially quantified and the free variables $\LetterVar_\Letter$ make up the
 image. $\StateVar_\State$ represents the distance of state $\State$ from
 $\InitialState$ in a spanning tree, $\TransitionVar_\Transition$ how many times
@@ -849,19 +848,22 @@ connectedness constraint of this encoding (the final three clauses) while also
 interleaving the computation of products of automata and propagating information
 between the steps to reduce the amount of work that needs to be done.
   
-\section{Projections on Parikh Maps}\label{sec:generalised}
+\subsection{Theorem Proving}
+
+We assume basic familiarity with theorem provers, in particular sequent calculus
+or similar. For reference, see e.g. \cite{Fitting96a}.
+
+\section{Projections on Parikh Images}\label{sec:generalised}
 
 It is easy to see that the Parikh map~$\ParikhMap$ represents a
 homomorphism from the (free) non-commutative monoid~$\Strings$ to the
 (free) commutative monoid~$\Naturals^k$. As we are often not
 interested in the full Parikh image, but only in some projections of
-it, for the purposes of this paper we use a generalised version of the
-Parikh map. We consider \emph{arbitrary} homomorphisms
+it. We consider \emph{arbitrary} homomorphisms
 $\Map:\: \Sigma^* \to \Monoid$, where
 $\Monoid = \left(X;\MonoidOp;0_{\Monoid}\right)$ is a commutative
-monoid; this means that $\Map(\epsilon) = 0_{\Monoid}$ and
-$\Map(u \Concat w) = \Map(u) \MonoidOp \Map(w)$. We give several
-examples of such generalised Parikh image later in this section.
+monoid. We give several
+examples of such projections on Parikh images later in this section.
 
 Observe that every homomorphism~$\Map:\: \Sigma^* \to \Monoid$ can be
 represented as the composition~$h' \circ \ParikhMap$, for some
@@ -2175,9 +2177,8 @@ tail-heavy our problem is.
 We evaluate the performance of \Catra{} on~\NrBenchmarks{} instances of Parikh
 automata intersection problems generated by the \OstrichPlus{} string constraint
 solver when solving the PyEx benchmarks~\cite{pyex}. After generating an
-initial~\InitialNrBenchmarks{}, we remove misgenerated instances that did not
-parse, as well as~\NrTrivial{} instances solved in under five seconds by
-baseline. The benchmarks are run on commit~\texttt{\commit}.
+initial~\InitialNrBenchmarks{},we remove~\NrTrivial{} instances solved in under
+five seconds by baseline. We also attempted to benchmark instances generated by \Ostrich{} solving the kaluza-len (\numprint{38227} instances) and pyex-len (\numprint{791} instances) benchmark suites, but had to discard them since they were all trivial. For instance, on a laptop, \Calculus{} could solve every instance from kaluza-len in under five seconds, mean about 0.1s. The benchmarks are run on commit~\texttt{\commit}.
 
 The benchmarks are executed in parallel using GNU Parallel~\cite{parallel},
 since they are mostly single-threaded and initial results showed negligible
@@ -2196,27 +2197,31 @@ executing the instance, and exclude time spent parsing (usually far below
 
 \subsection{Execution Time and Ability to Solve Instances}\label{sec:runtime}
 
-In \cref{fig:solve-division} we show how many of the~\NrBenchmarks{} instances
+In \cref{fig:solve-division} we show how many of the~\NrBenchmarks{} instances left after excluding the trivial instances, among them the \numprint{38227} and \numprint{791} instances generated from kaluza-len and pyex-len respectively,
 the respective back-ends could solve and with which status. A full summary of
-their outcomes is also available in \cref{tab:solve-status}. We see that
-\Calculus{} generally outperforms \Nuxmv{} on unsatisfiable instances, while
-being worse at satisfiable instances. Both \Nuxmv{} and \Calculus{} strictly
-outperform baseline on every kind of instance, but most of all on satisfiable
-instances. \Cref{tab:solve-status} also shows a small number of bugs in
-\Calculus{}: 27~satisfiable instances are misreported as \Unsat{}, and 20
-additional instances fail with an error. Both problems are due to
-non-deterministic bugs in the clause learning. Note that \Calculus{} is sound:
-it never misreports an unsatisfiable instance as \Sat{}, and all
-\Fudge{\numprint{6218}} satisfying assignments have been verified by \Nuxmv{}.
+their outcomes is also available in \cref{tab:solve-status}. Note that we lack
+ground truth for all instances. We see that \Calculus{} generally outperforms
+\Nuxmv{} on determining unsatisfiability, while being worse at satisfiable
+instances. Both \Nuxmv{} and \Calculus{} strictly outperform baseline on every
+kind of instance, but most of all on satisfiable instances, and \Calculus{}
+outperforms \Nuxmv{}. \Nuxmv{} and \Calculus{} disagree on 38 instances, where
+\Nuxmv{} returns \Sat{} and \Calculus{} returns \Unsat{}. We believe this to be
+caused by a non-deterministically triggered bug in the clause learning of
+\Calculus{}, but have not had time to further investigate it. We have however
+validated all \numprint{3908} satisfying assignments from \Calculus{} with
+\Nuxmv{}. \Cref{tab:solve-status} also shows a small number of crashing bugs in
+our implementation.
+
 Baseline performs worse on satisfiable instances because it executes a heuristic
 meant to detect unsatisfiability early at a heavy penalty to satisfiable
-instances.
+instances. The heuristic is enabled since it is unrealistic to assume that we
+know in advance whether an instance is satisfiable or not, but we do know that
+unsatisfiable instances are more common.
 
 \begin{table}
   \centering
   \input{graphs/solved_pivot_table.tex}
-  \caption{The result of running the respective back-ends by instance
-  satisifiability (satisifiable or unsatisifiable) with a timeout of
+  \caption{The result of running the respective back-ends with a timeout of
   \RuntimeTimeout. Instances solved by no backend within the timeout are omitted
   from the table. }\label{tab:solve-status}
 \end{table}
@@ -2227,7 +2232,7 @@ instances.
     \includegraphics[width=\textwidth]{graphs/\commit-by-solver.pdf}
     \caption{The division of statuses per backend.}
     \label{fig:solve-division}
-    \Description[A bar chart showing three bars, one per backend, illustrating how many instances they could solve]{The bars are divided by satisfiable and unsatisfiable instances. Baseline could seemingly only solve unsatisfiable instances, lazy could solve a few satisfiable and mostly unsatisfiable, and nuxmv could solve about twice as many unsatisfiable as satisfiable instances, and slightly more in total than lazy.}
+    \Description[A bar chart showing three bars, one per backend, illustrating how many instances they could solve]{The bars are divided by satisfiable and unsatisfiable instances. Baseline could seemingly only solve unsatisfiable instances, lazy could solve a few satisfiable and mostly unsatisfiable, and nuxmv could solve about twice as many unsatisfiable as satisfiable instances, and slightly less in total than lazy.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
@@ -2241,7 +2246,7 @@ instances.
     \includegraphics[width=\textwidth]{graphs/\commit-cactus.pdf}
     \caption{The number of instances solved as the time budget increases, simulated from one \RuntimeTimeout-timeout run.}
     \label{fig:cactus}
-    \Description[A cactus plot comparing the performance of nuxmv, lazy and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv on shorter runtimes, but is overtaken by just before the 60-second timeout used in these experiments.}
+    \Description[A cactus plot comparing the performance of nuxmv, lazy and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv.}
   \end{subfigure}
 \end{figure}
 
@@ -2249,9 +2254,8 @@ instances.
 
 A cactus plot showing the number of instances solved within a given timeout for
 each backend can be seen in \cref{fig:cactus}. Here, we see clearly that
-\Calculus{} outperforms \Nuxmv{} for shorter timeouts, and that \Nuxmv{} is
-only able to catch up once we increase the timeout to far beyond what would be
-normal for a string solver.
+\Calculus{} outperforms \Nuxmv{} in general, but that \Nuxmv{} might have better
+long-term scaling properties.
 
 \iffalse
 \subsection{Finding a Presburger Formula}\label{sec:evaluation:finding-image}
@@ -2361,7 +2365,24 @@ to the expected Presburger formulae.
 %% Appendix
 \appendix
 \section{Appendix}
-
+\subsection{Per-instance comparison between backends}
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{graphs/\commit-duels-lazy-baseline-scatter.pdf}
+    \caption{Per-instance runtime between baseline and \Calculus{}}
+    \label{fig:duels:baseline}
+    \Description[A scatter plot showing individual instances as dots compared to \Calculus{} and baseline]{The plot shows most dots at the bottom of the plot, with some plots collected at the right-hand side.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{graphs/\commit-duels-lazy-nuxmv-scatter.pdf}
+    \caption{Per-instance runtime between baseline and \Calculus{}}
+    \label{fig:duels:nuxmv}
+    \Description[A scatter plot showing individual instances as dots compared to \Calculus{} and \Nuxmv{}]{The plot shows flames of dots between the bottom and top, with a line of dots near the right-hand side corresponding to timeouts.}
+  \end{subfigure}
+\end{figure}
+\subsection{Example instance for \Catra{}}
 \begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
   // So far we only support integer counters. Note that we have individual
   // counters for each automaton to avoid surprises for product construction.
