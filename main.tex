@@ -1756,7 +1756,7 @@ values (now a vector). Performing quantifier elimination on the remaining clause
           0,
           \TransitionVar_3} \land \\
       \Connected(\SomethingCSomething{}, \Filter) \land \\
-      \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
+      \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
       \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
     \end{matrix}
   }
@@ -1778,7 +1778,7 @@ values (now a vector). Performing quantifier elimination on the remaining clause
         \TransitionVar_3} \land \\
     \Connected(\AcaOrBc{}, \Filter) \land 
     \Connected(\SomethingCSomething{}, \Filter) \land \\
-    \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
+    \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
     \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
   \end{matrix}
   }
@@ -1797,11 +1797,11 @@ values (now a vector). Performing quantifier elimination on the remaining clause
           } \land \\
       \Connected(\AcaOrBc{}, \Filter) \land 
       \Connected(\SomethingCSomething{}, \Filter) \land \\
-      \Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, 
+      \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
       \VectorLiteral{a, b, c}) \land a > b
     \end{matrix}
   }
-  \infer1[\ExpandM]{\Image{}_{\AcaOrBc{}\times\SomethingCSomething{}, \Map}(\Filter, \VectorLiteral{a, b, c}) \land a > b}
+  \infer1[\ExpandM]{\Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, \VectorLiteral{a, b, c}) \land a > b}
 \end{prooftree}
 \caption{A derivation for \Calculus{} on the Parikh image of strings with more a's than b's in the product of $\AcaOrBc{}$ and $\SomethingCSomething{}$.}\label{fig:derivation:multi}
 \end{figure}
