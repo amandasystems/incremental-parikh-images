@@ -1714,63 +1714,49 @@ $\VectorLiteral{2, 0, 1}$.
   \centering
 \begin{prooftree}
   \hypo{
-    \begin{aligned}
-      1 = \TransitionVar_{10} \land 
-      \TransitionVar_3 = \TransitionVar_{11} \land \\
-      1 = \TransitionVar_{12} \land 
-      1 = \TransitionVar_{11} \land 
-      2 > 0
-    \end{aligned}  
+    {\begin{array}{lll}
+      1 = \TransitionVar_{10} & \land \TransitionVar_3 = \TransitionVar_{11} & \land 1 = \TransitionVar{12} \\ 
+      \land 1 = \TransitionVar_{11} &  & \land 2 > 0
+    \end{array}}  
   }
   \infer1[\Subsume{}, \Expand{}, \Subsume{}]{
-    \begin{aligned}
-      1 = \TransitionVar_{10} \land 
-      \TransitionVar_3 = \TransitionVar_{11} \land  \\
-      1 = \TransitionVar_{12} \land 
-      1 = \TransitionVar_{11} \land \\
-      \Image{}_{\Automaton', \Map}(\Filter, 
-      \VectorLiteral{2, 0, 1}) \land 
-      \Connected(\SomethingCSomething{}, \Filter) \land
-        2 > 0
-    \end{aligned}  
+    {\begin{array}{ll}
+      2 > 0 \land 1 = \TransitionVar_{10} & \land \TransitionVar_3 = \TransitionVar_{11} \\
+      \land 1 = \TransitionVar_{12} & \land 1 = \TransitionVar_{11} \\
+      \land \Image{}_{\Automaton', \Map}(\Filter, \VectorLiteral{2, 0, 1}) & \land \Connected(\SomethingCSomething{}, \Filter) \\
+    \end{array}}  
   }
   \infer1[\EquationReasoning{}]{
-    \begin{aligned}
-      1 = \TransitionVar_{10} \land
-      \TransitionVar_3 = \TransitionVar_{11} \land
-      1 = \TransitionVar_{12} \land
-      1 = \TransitionVar_{11} \land \\
-      \Image{}_{\Automaton', \Map}(\Filter, 
+  {  \begin{array}{ll}
+      1 = \TransitionVar_{10} \land \TransitionVar_3 = \TransitionVar_{11} & 
+      \land 1 = \TransitionVar_{12} \land 1 = \TransitionVar_{11} \\
+      \land \Image{}_{\Automaton', \Map}(\Filter, 
       \VectorLiteral{
         \TransitionVar_{7a} + \TransitionVar_{9a},
         0,
-        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \\
-        \TransitionVar_6 + \TransitionVar_4 = 0 \land 
-        1 - \TransitionVar_6 > 0 \land
-        \TransitionVar_6 = 0 \land 
-        \TransitionVar_4 = 0 \land
-        \TransitionVar_3 > 0 \land
-        2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land 
+        \TransitionVar_6 + \TransitionVar_4 = 0 \\
+        \land 1 - \TransitionVar_6 > 0 \land \TransitionVar_6 = 0 &
+        \land \TransitionVar_4 = 0 \land  \TransitionVar_3 > 0 \\
+        \land 2\TransitionVar_6 + \TransitionVar_4 = 0 & \land 
           \VectorLiteral{
         \TransitionVar_{7a} + \TransitionVar_{9a},
         0,
-        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1} 
         = \VectorLiteral{
           2,
           0,
-          \TransitionVar_3} \land \\
-      \Connected(\SomethingCSomething{}, \Filter) \land
+          \TransitionVar_3} \\ \land 
+      \Connected(\SomethingCSomething{}, \Filter) &
       \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-    \end{aligned}  
+    \end{array} } 
   }
   \infer1[\Materialise]{
-    \begin{aligned}
-      \TransitionVar_6 + \TransitionVar_4 = 0 \land 
-      1 - \TransitionVar_6 > 0 \land
-      \TransitionVar_6 = 0 \land 
-      \TransitionVar_4 = 0 \land
-      \TransitionVar_3 > 0 \land
-      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+    {\begin{array}{ll}
+      \TransitionVar_6 + \TransitionVar_4 = 0 \land 1 - \TransitionVar_6 > 0 &
+      \land \TransitionVar_6 = 0  \land \TransitionVar_4 = 0 \\
+      \land \TransitionVar_3 > 0 & \land 2\TransitionVar_6 + \TransitionVar_4 = 0 \\
+      \land 
       \VectorLiteral{
         \TransitionVar_{7a} + \TransitionVar_{9a},
         0,
@@ -1778,20 +1764,24 @@ $\VectorLiteral{2, 0, 1}$.
         = \VectorLiteral{
           2,
           0,
-          \TransitionVar_3} \land \\
-      \Connected(\SomethingCSomething{}, \Filter) \land \\
+          \TransitionVar_3} & \land
+      \Connected(\SomethingCSomething{}, \Filter) \\
+      \land 
       \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
-      \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-    \end{aligned}
+      \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
+    \end{array}}
   }
   \infer1[\Subsume{}]{
-  \begin{aligned}
+  {\begin{array}{ll}
     \TransitionVar_6 + \TransitionVar_4 = 0 \land 
-    1 - \TransitionVar_6 > 0 \land
+    1 - \TransitionVar_6 > 0 &
+    \land
     \TransitionVar_6 = 0 \land 
-    \TransitionVar_4 = 0 \land
-    \TransitionVar_3 > 0 \land
-    2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
+    \TransitionVar_4 = 0 \\
+    \land
+    \TransitionVar_3 > 0 & \land
+    2\TransitionVar_6 + \TransitionVar_4 = 0 \\ 
+    \land
     \VectorLiteral{
       \TransitionVar_{7a} + \TransitionVar_{9a},
       0,
@@ -1799,12 +1789,14 @@ $\VectorLiteral{2, 0, 1}$.
       = \VectorLiteral{
         2,
         0,
-        \TransitionVar_3} \land \\
-    \Connected(\AcaOrBc{}, \Filter) \land 
-    \Connected(\SomethingCSomething{}, \Filter) \land \\
+        \TransitionVar_3} & \land 
+    \Connected(\AcaOrBc{}, \Filter) \\
+    \land 
+    \Connected(\SomethingCSomething{}, \Filter) \\
+    \land 
     \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
-    \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-  \end{aligned}
+    \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
+  \end{array}}
   }
   \infer1[\EquationReasoning]{
     \begin{aligned}
