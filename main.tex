@@ -66,7 +66,7 @@
 \usepackage{listings}
 \usepackage{csquotes}
 \usepackage{proof}
-\usepackage{cleveref}
+\usepackage[capitalise]{cleveref}
 \usepackage{algorithm2e}      
 \usepackage{multirow}
 \usepackage{mathpartir}
@@ -355,7 +355,7 @@ The key ideas of \Calculus{} is a combination of problem-aware case splitting,
 lazy enforcement of automata connectivity, and lazy computation of products.
 
 We implement \Calculus{} as a theory for the \Princess{} automated theorem
-prover in the tool \Catra. \Catra also supports the approximate method of
+prover in the tool \Catra. \Catra{} also supports the approximate method of
 \cite{approximate-parikh}, its fall-back variant adapted
 from~\cite{generate-parikh-image}, and an adapter for the \Nuxmv{} model
 checker~\cite{nuxmv}. Using \Catra, we compare \Calculus{} to the other two
@@ -388,13 +388,13 @@ recently shown to be PSPACE-complete~\cite{graph-queries}.
 
 Parikh image computations as well as Parikh automata feature extensively in
 string solvers, including as mentioned above \Ostrich{} and \OstrichPlus{}
-\cite{ostrich,ostrich-plus}, but also formes the basis of Trau~\cite{trau-pldi},
+\cite{ostrich,ostrich-plus}, but also forms the basis of Trau~\cite{trau-pldi},
 and occurs in \textsc{Sloth}~\cite{sloth}. Parikh images frequently appear when
 introducing cardinality constraints like length or string indexing. The
 state-of-the-art approach to handling Parikh image computation is to
 over-approximate the Parikh image of a product of $k$~automata
-$\ParikhMap(\Automaton_1 \times \ldots \times \Automaton_k)$ with the
-conjunction of the automata's parikh maps, $\AndComp{i=1}^{k}
+$\ParikhMap(\Language(\Automaton_1) \cap \ldots \cap \Language(\Automaton_k))$ with the
+conjunction of the automata's parikh maps, $\bigwedge_{i=1}^{k}
 \ParikhMap(\Automaton_i)$. This approach works only for unsatisfiable instances,
 and will require falling back to computing the product of the automata before
 using the standard approach for finding its image originally presented
@@ -404,7 +404,7 @@ Outside of string solvers, Parikh automata have been proposed as the basis of
 queries~\cite{graph-queries}, and for solving cardinalities in model checking
 problems involving epistemic logic~\cite{epistemic-logic}.
 
-Many other generalisations of the Parikh than the ones we use here have been
+Many other generalisations of the Parikh image than the projections we use here have been
 studied. Prominent examples include generalising the Parikh map to segments of a
 fixed length \cite{KARHUMAKI1980155} and the more general Parikh matrix, which
 gives more information about a word than the standard Parikh image
@@ -422,14 +422,12 @@ reasoning. We begin by considering the following set of string and other
 constraints, which we want to solve for all possible values of $\MonoidElement$,
 a value in some commutative monoid and the string $s$, where
 $\varphi(\MonoidElement)$ is some set of constraints on $\MonoidElement$:
-\begin{equation*}
-  \AndComp{}{\begin{aligned}
-  & \mathtt{/}\SndRegex{}\mathtt{/} \text{ accepts } s\\
-  & \mathtt{/}\FstRegex{}\mathtt{/} \text{ accepts } s \\
-  & \MonoidElement = f(s) \\
-  & \varphi(\MonoidElement)
-  \end{aligned}}
- \end{equation*}
+\[
+   s \in \Language(\mathtt{/}\SndRegex{}\mathtt{/})  \land
+   s \in \Language(\mathtt{/}\FstRegex{}\mathtt{/})  \land
+   \MonoidElement = f(s)  \land
+   \varphi(\MonoidElement)
+\]
 
 We will represent the strings using the nondeterministic finite automata
  $\SomethingCSomething{}$ (\cref{fig:something-c-something}) and $\AcaOrBc{}$
@@ -513,7 +511,8 @@ i.e. require that the length of the string is odd.
         final product, still a boring stick automaton with only one loop for an
         arbitrary number of c's.]{A product of the intermittent automata, which
         accepts \lstinline{ac.*ca}}
-  \end{subfigure}    
+  \end{subfigure}
+  \caption{The collection of automata we use as running examples in this paper, with annotations illustrating intermittent states of our calculus.}    
   \end{figure}
 
 The na\"ive approach would be to first compute the product of the automata, then
@@ -617,7 +616,7 @@ the length. Eliminating the final quantifier gives us the image of $f(\AcaOrBc
 \times \SomethingCSomething)$ modulo odd lengths: $3 + 2k$, for some integer
 $k$.
 
-\subsection{Producing the Parikh image}\label{sec:introduction:parikh}
+\subsection{Satisfying Constraints on Occurrence of Letters}\label{sec:introduction:parikh}
 
 Now assume that rather than the length (e.g. the count of the characters) we
 want to find the whole Parikh image of the intersection of $\AcaOrBc{}$ and
