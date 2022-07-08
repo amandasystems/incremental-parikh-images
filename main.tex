@@ -1072,11 +1072,12 @@ definitions:
 
 \begin{definition}\label{def:single-image}
   The Parikh predicate, $\SinglePredicateInstance$, for some automaton
-  $\Automaton = \AutomatonTuple$, modulo some map $\Map$ to a
+  $\Automaton = \AutomatonTuple$, modulo some map $\Map : \Alphabet^* \to \Monoid$ to a
   commutative monoid $\Monoid$ as described in \cref{sec:generalised}
   and with a transition selection function
   $\Filter:\: \Transitions \to \Naturals$ holds when
-  $\MonoidElement \in \Monoid$ is the Parikh image of $\Automaton$
+  $\MonoidElement \in \Monoid$ is an element of the Parikh image of
+  $\Language(\Automaton)$
   modulo $\Map$, or more formally when there is an accepting path
   $\Path = \PathEnumeration \in \Accepting{\Paths(\Automaton)}$ such
   that $\Filter(\Transition) = \TransitionCount(\Transition, \Path)$
@@ -1147,7 +1148,7 @@ when you must, and \Subsume{} when neither is possible anymore.
   % EXPAND
   \Expand & 
     \inferrule
-  {\Connected(\Automaton, \Filter) \land \FlowEq(\Automaton, \Filter) \land \MonoidElement = \sum_{\Transition \in \Transitions_\Automaton} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
+  {\Connected(\Automaton, \Filter) ,~ \FlowEq(\Automaton, \Filter) ,~ \MonoidElement = \sum_{\Transition \in \Transitions_\Automaton} \Filter(\Transition) \cdot \Map(\Transition), \SomeInequalities, \SomeClause}
   {\SinglePredicateInstance, \SomeInequalities, \SomeClause} & 
   None \\[4ex]
 
@@ -1500,14 +1501,35 @@ immediately imply that \Calculus{} gives rise to a decision procedure.
 
 \section{Parikh Images from Products of Automata}\label{sec:multiple}
 
-To generalise the calculus to calculations on products of automata, we change the main predicate to take arbitrarily many automata:
+We now generalise our calculus to natively work with intersections of
+regular languages, or equivalently products of automata. For this
+extension, we change the main predicate~$\Image$ to be indexed by a
+vector of automata~$\Tuple{\Automaton_1, \ldots, \Automaton_k}$.  For
+simplicity, we assume that the sets of states of the $k$ automata (and
+therefore also the transition sets) are pairwise disjoint. 
 \begin{definition}\label{def:multiple}
-  $\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}$
-  is true exactly when the single-automaton version of the predicate would hold
-  for the automaton.
+  Suppose $\Automaton_1, \ldots, \Automaton_k$ are automata,
+  $\Map : \Alphabet^* \to \Monoid$ is a map to a commutative monoid
+  $\Monoid$,
+  $\Filter: \bigcup_{i=1}^k \Transitions_{\Automaton_i} \to \Naturals$
+  is a transition selection function, and
+  $\MonoidElement \in \Monoid$. The predicate
+  $\ImagePredicate{\Tuple{\Automaton_1, \ldots,
+      \Automaton_k}}{\Map}{\Filter}{\MonoidElement}$ is true exactly
+  when there are accepting paths~$\Path_1, \ldots, \Path_k$ of the
+  respective automata, such that for each $i \in \{1, \ldots, k\}$ and
+  $\Transition \in \Transitions_{\Automaton_i}$ it holds that
+  \begin{itemize}
+  \item the multiplicity of $\Transition$ on $\Path_i$ is consistent with
+    $\Filter$, that is,
+    $\Filter(\Transition) = \TransitionCount(\Transition, \Path_i)$,
+  \item the automata all accept the same
+    word~$\WordOf(\Path_i) = \WordOf(\Path_1)$, and
+  \item the accepted word is mapped to
+    $\MonoidElement = \Map(\WordOf(\Path_i)) =
+    \Map(\WordOf(\Path_1))$.
+  \end{itemize}
 \end{definition}
-
-  For the calculus, we first extend $\Expand$ to generate flow equations and instances of $\Connected$ for each automaton.
 
   \begin{table}[t]
     \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
@@ -1518,47 +1540,93 @@ To generalise the calculus to calculations on products of automata, we change th
       \ExpandM & 
       \inferrule
       {
-        {\begin{matrix}
-          \Set{ 
-            \MonoidElement = \sum_{\Transition \in \Transitions_{\Automaton_i}} \Filter(\Transition) \cdot \Map(\Transition)
-          \SuchThat \Automaton_i \in \Automaton_1,\ldots,\Automaton_k}, \\
-          \Set{\FlowEq(\Automaton_i), \Connected(\Automaton_i) \SuchThat \Automaton_i \in \Automaton_1,\ldots,\Automaton_k}, \\
-          \ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \\
+       {\begin{array}{c}
+           \left\{
+           \FlowEq(\Automaton_i, \Filter),~~
+           \Connected(\Automaton_i, \Filter),~~
+           \MonoidElement = \sum_{\Transition \in \Transitions_{\Automaton_i}} \Filter(\Transition) \cdot \Map(\Transition)
+           \right\}_{i=1}^k,
+           \\[4ex]
+          \ImagePredicate{\Tuple{\Automaton_1, \ldots, \Automaton_k}}{\Map}{\Filter}{\MonoidElement}, ~
           \SomeInequalities, \SomeClause
-        \end{matrix}}
+        \end{array}}
         }
-      {\ImagePredicate{\Automaton_1\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} & 
+      {\ImagePredicate{\Tuple{\Automaton_1, \ldots, \Automaton_k}}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} & 
       None \\[5ex]
       \Materialise &
       \inferrule
-      {    \BindingSum(\Automaton', \Filter),\ImagePredicate{\Automaton'\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause}
-      {\ImagePredicate{\Automaton_1\times\Automaton_2\times\ldots\times\Automaton_k}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} &
-      $\Automaton' = \Automaton_1\times\Automaton_2$ \\
+      {{
+         \begin{array}{c}
+           \FlowEq(\Automaton', \Filter'),~
+           \Connected(\Automaton', \Filter'),~
+           \BindingSum(\Automaton_i, \Automaton_j, \Filter')
+           \\\ImagePredicate{
+                     \Tuple{\Automaton_1, \Automaton_{i-1}, \Automaton_{i+1}, \ldots,
+                     \Automaton_{j-1}, \Automaton_{j+1}, \ldots, \Automaton_k,
+                     \Automaton'},~ \SomeInequalities, \SomeClause
+           }{\Map}{\Filter'}{\MonoidElement}
+           \end{array}}
+           }
+      {\ImagePredicate{\Tuple{\Automaton_1, \ldots, \Automaton_i, \ldots, \Automaton_j, \ldots, \Automaton_k}}{\Map}{\Filter}{\MonoidElement},~ \SomeInequalities, \SomeClause} &
+      $\begin{array}{@{}l@{}}
+         \Filter' = \Extend(\Automaton_i, \Automaton_j,\Filter),\\
+         1 \leq i < j \leq k, \\
+      \Automaton' = \Automaton_i \times \Automaton_j,\\
+      \end{array}$ \\
       \bottomrule
       \end{tabular}
       \caption{Additional derivation rules for products of arbitrarily many automata.}\label{tbl:rules:multi}
     \end{table}
 
-\ExpandM{} must be applied before any other rule, like \Expand{}, but unlike \Expand{}, \ExpandM{} does not remove the $\Image$~predicate since it is needed to keep track of the product.
+    For the calculus (\cref{tbl:rules:multi}), we first extend
+    $\Expand$ to generate flow equations and instances of $\Connected$
+    for each automaton, resulting in a new rule $\ExpandM$.  Unlike
+    \Expand{}, \ExpandM{} does not remove the $\Image$~predicate,
+    since it is needed to keep track of the currently considered
+    partial products.
 
-Before we can begin to define our final rule, we need to talk about product states.
+The rule~$\Materialise$ introduces the product of two individual
+automata~$\Automaton_i, \Automaton_j$; this step eliminates
+$\Automaton_i, \Automaton_j$ as index of the $\Image$ predicate, and
+instead adds the product~$\Automaton_i \times \Automaton_j$, while
+also introducing the flow equations and the $\Connected$ predicate.
 
-Then we introduce the rule $\Materialise$, used to compute a partial product between two terms:
+The rule~$\Materialise$ also has to connect the newly introduced
+product~$\Automaton_i \times \Automaton_j$ to the previous automata
+$\Automaton_i, \Automaton_j$. This is done by extending the
+selection function~$\Filter$ to $\Filter'$, mapping the transitions of the product
+to fresh variables~$x_{\Transition}$:
+\begin{equation*}
+  \Extend(\Automaton_i, \Automaton_j,\sigma)(t)
+  ~~=~~
+  \begin{cases}
+    x_{\Transition} & t \in \Transitions_{\Automaton_i \times \Automaton_j}
+    \\
+    \Filter(t) & \text{otherwise}
+  \end{cases}
+\end{equation*}
 
-  With the following helper symbolic function:
-
+The multiplicity of transitions in the product then has to be related
+to the multiplicities in the individual automata, modelled using the
+$\BindingSum$ predicate. The predicate expresses that the multiplicity
+of a transition~$\Transition \in \Transitions_{\Automaton_i}$ in
+$\Automaton_i$ has to coincide with the sum of the multiplicities of
+transitions in $\Automaton_i \times \Automaton_j$ derived from $t$,
+and similarly for $\Automaton_j$:
+%
   $$
-  \BindingSum(\Automaton_1 \times \Automaton_2, \Filter) = \bigcup
+  \BindingSum(\Automaton_i, \Automaton_j, \Filter') ~~=~~
   \begin{aligned}
   & \Set{ 
-    \left<\Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State_R}}} \Filter(\Transition')\right>
-  \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_1} } , \\ 
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State_R}}} \Filter'(\Transition')
+  \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_i} } \cup\mbox{} \\ 
   & \Set{
-    \left<\Filter(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State_L, \State'}}} \Filter(\Transition')\right> \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_2}
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State_L, \State'}}} \Filter'(\Transition') \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_j}
   }
   \end{aligned}
 $$
 
+\iffalse
 Note that this definition implies that $\Filter(\Transition) =
 \Filter(\Transition')$ whenever two transitions $\Transition \in
 \Transitions_{\Automaton_1}, \Transition' \in \Transitions_{\Automaton_2}$
@@ -1566,8 +1634,9 @@ produces a product transition $\Transition'' \in \Transitions_{\Automaton_1
 \times \Automaton_2}$. This corresponds to our intuition that the terms of the
 product must agree on the value they accept. As before, we implicitly map
 $\Filter$ to fresh terms for each transition in the product.
+\fi
 
-Finally, for instances of precisely one automaton, neither rule applies and we
+For instances of precisely one automaton, neither rule applies and we
 perform the calculus as before.
 
 \subsection{An Example}\label{sec:multiple:example}
