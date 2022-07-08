@@ -1,6 +1,6 @@
 \usepackage{amsmath}
 \DeclareMathOperator{\Image}{\textsc{Im}}
-\newcommand{\commit}[0]{2396a59}
+\newcommand{\commit}[0]{cc64639}
 \newcommand{\FstRegex}[0]{\mathtt{(bb)^\ast(ac^\ast{}a|bc)}}
 \newcommand{\SndRegex}[0]{\mathtt{.^\ast{}c.^\ast}}
 \newcommand{\SomethingCSomething}[0]{\Automaton_{\SndRegex}}
@@ -8,18 +8,16 @@
 \newcommand{\CountOf}[1]{\#\text{#1}}
 \newcommand{\ImagePredicate}[4]{\Image_{#1, #2}(#3, #4)}
 \newcommand{\Automaton}[0]{\mathcal{A}}
-\newcommand{\NrBenchmarks}[0]{\numprint{33645}}
+\newcommand{\NrBenchmarks}[0]{\numprint{37913}}
 \newcommand{\BatchSize}[0]{ca.~100}
-\newcommand{\BenchmarkRig}[0]{\Fudge{a computer}}
+\newcommand{\BenchmarkRig}[0]{4 servers running Ubuntu 11.0 with an Intel Xeon E5520 processor at 2.27GHz and 16 cores, each running 10 parallel jobs}
 \newcommand{\ScalaVersion}[0]{2.13.8}
-\newcommand{\JvmVersion}[0]{AdoptOpenJDK Java 11.0.11}
-\newcommand{\MaxHeapSize}[0]{15~GB}
+\newcommand{\JvmVersion}[0]{AdoptOpenJDK Java 11.0.15}
+\newcommand{\MaxHeapSize}[0]{4~GB}
 \newcommand{\NuxmvVersion}[0]{2.0.0}
 \newcommand{\NrBroken}[0]{\Fudge{9000}}
-\newcommand{\InitialNrBenchmarks}[0]{\numprint{37913}}
-\newcommand{\NrTrivial}[0]{\numprint{4268}}
-\newcommand{\OverheadSeconds}[0]{\Fudge{9000 s}}
-\newcommand{\NrKnownSat}[0]{\Fudge{5}}
+\newcommand{\InitialNrBenchmarks}[0]{\numprint{38227}}
+\newcommand{\NrTrivial}[0]{\numprint{314}}
 \newcommand{\RuntimeTimeout}[0]{60s}
 \newcommand{\ImageTimeout}[0]{\Fudge{5~minutes}}
 \newcommand{\Path}[0]{p}
