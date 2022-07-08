@@ -810,7 +810,7 @@ equations. The following construction for an NFA $\Automaton = \AutomatonTuple$ 
 & \AndComp{\State \in \AcceptingStates}{\FinalStateVar_{\State} > 0 \longrightarrow  \StateVar_{\State} > 0}\\
 & \AndComp{\State \in \States}{
   \left(\FinalStateVar_{\State} \text{ if } \State \in \AcceptingStates \text{ otherwise } 0 \right) +
-  \sum_{\Transition = \FromLabelTo{\State}{}{}} \Filter(\Transition) - \sum_{\Transition = \FromLabelTo{}{}{\State}} \Filter(\Transition)
+  \sum_{\Transition \in \FromLabelTo{\State}{}{}} \Filter(\Transition) - \sum_{\Transition \in \FromLabelTo{}{}{\State}} \Filter(\Transition)
 = \begin{cases}
     1 \text{  if $\State = \InitialState$} \\
     0 \text{ otherwise}
@@ -824,7 +824,7 @@ equations. The following construction for an NFA $\Automaton = \AutomatonTuple$ 
 } \\
 &\AndComp{\State \in \States}{
   \StateVar_{\State} > 0 \longrightarrow
-  \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
+  \OrComp{\Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions}{
     \StateVar_{\State} = \StateVar_{\State'} + 1 \land 
     \TransitionVar_{\Transition} \geq 1 \land
   \StateVar_{\State'} \geq 1
@@ -848,19 +848,22 @@ connectedness constraint of this encoding (the final three clauses) while also
 interleaving the computation of products of automata and propagating information
 between the steps to reduce the amount of work that needs to be done.
   
-\section{Projections on Parikh Maps}\label{sec:generalised}
+\subsection{Theorem Proving}
+
+We assume basic familiarity with theorem provers, in particular sequent calculus
+or similar. For reference, see e.g. \cite{Fitting96a}.
+
+\section{Projections on Parikh Images}\label{sec:generalised}
 
 It is easy to see that the Parikh map~$\ParikhMap$ represents a
 homomorphism from the (free) non-commutative monoid~$\Strings$ to the
 (free) commutative monoid~$\Naturals^k$. As we are often not
 interested in the full Parikh image, but only in some projections of
-it, for the purposes of this paper we use a generalised version of the
-Parikh map. We consider \emph{arbitrary} homomorphisms
+it. We consider \emph{arbitrary} homomorphisms
 $\Map:\: \Sigma^* \to \Monoid$, where
 $\Monoid = \left(X;\MonoidOp;0_{\Monoid}\right)$ is a commutative
-monoid; this means that $\Map(\epsilon) = 0_{\Monoid}$ and
-$\Map(u \Concat w) = \Map(u) \MonoidOp \Map(w)$. We give several
-examples of such generalised Parikh image later in this section.
+monoid. We give several
+examples of such projections on Parikh images later in this section.
 
 Observe that every homomorphism~$\Map:\: \Sigma^* \to \Monoid$ can be
 represented as the composition~$h' \circ \ParikhMap$, for some
