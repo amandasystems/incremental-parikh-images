@@ -1305,17 +1305,17 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
   \centering
 \begin{prooftree}
   \hypo[]{
-    \begin{matrix}
+    \begin{aligned}
       1 - \TransitionVar_6 = 0 \land \\
       \TransitionVar_6 = 1 \land \\
       \TransitionVar_4 + 1 > 0 \land \\
       \TransitionVar_3 = 0 \land \\
       2 + \TransitionVar_4 > 0 \land \\
       k = 1 + \TransitionVar_4 
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\Subsume{}]{
-    \begin{matrix}
+    \begin{aligned}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       1 - \TransitionVar_6 = 0 \land \\
       \TransitionVar_6 = 1 \land \\
@@ -1323,10 +1323,10 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
       \TransitionVar_3 = 0 \land \\
       2 + \TransitionVar_4 > 0 \land \\
       k = 1 + \TransitionVar_4 
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\Propagate]{
-    \begin{matrix}
+    \begin{aligned}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       1 - \TransitionVar_6 = 0 \land \\
       \TransitionVar_6 = 1 \land \\
@@ -1334,58 +1334,58 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
       \TransitionVar_3 \geq 0 \land \\
       2 + \TransitionVar_4 \geq 0 \land \\
       2k = 2 + 2\TransitionVar_4 + \TransitionVar_3
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\EquationReasoning{}]{
-    \begin{matrix}
+    \begin{aligned}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       1 - \TransitionVar_6 = 0 \land \\
       2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6
-    \end{matrix}
+    \end{aligned}
   }
   % BRANCH:  = 0'
   \hypo{
-    \begin{matrix}
+    \begin{aligned}
       \TransitionVar_3 > 0 \land \\
       \TransitionVar_6 = 0 \land \\
       2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
       1 - \TransitionVar_6 > 0 \land \\
       2k = 1 + \TransitionVar_3
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\Subsume{}]{
-    \begin{matrix}
+    \begin{aligned}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       \TransitionVar_3 > = 0 \land \\
       \TransitionVar_6 = 0 \land \\
       2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
       1 - \TransitionVar_6 > 0 \land \\
       2k = 1 + \TransitionVar_3
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\EquationReasoning{}]{
-    \begin{matrix}
+    \begin{aligned}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       \TransitionVar_6 = 0 \land \\
       1 - \TransitionVar_6 > 0 \land \\
       2\TransitionVar_6 + \TransitionVar_4 = 0\\
       2k = 1 + 2\TransitionVar_4 + \TransitionVar_3
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\Propagate{}]{
-    \begin{matrix}
+    \begin{aligned}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       \TransitionVar_6 = 0 \land \\
       1 - \TransitionVar_6 > 0 \land \\
       2k = 1 + 2\TransitionVar_4 + \TransitionVar_3
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\EquationReasoning{}]{
-    \begin{matrix}
+    \begin{aligned}
       \Connected(\AcaOrBc{}, \Filter) \land \\
       1 - \TransitionVar_6 > 0 \land \\
       2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6
-    \end{matrix} % BRANCH: > 0
+    \end{aligned} % BRANCH: > 0
   } % SPLIT
   \infer2[\Split{} $1 - \TransitionVar_6$]{ \Connected(\AcaOrBc{}, \Filter) \land 2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6 }
   \infer1[\EquationReasoning{}]{
@@ -1714,16 +1714,16 @@ $\VectorLiteral{2, 0, 1}$.
   \centering
 \begin{prooftree}
   \hypo{
-    \begin{matrix}
+    \begin{aligned}
       1 = \TransitionVar_{10} \land 
       \TransitionVar_3 = \TransitionVar_{11} \land \\
       1 = \TransitionVar_{12} \land 
       1 = \TransitionVar_{11} \land 
       2 > 0
-    \end{matrix}  
+    \end{aligned}  
   }
   \infer1[\Subsume{}, \Expand{}, \Subsume{}]{
-    \begin{matrix}
+    \begin{aligned}
       1 = \TransitionVar_{10} \land 
       \TransitionVar_3 = \TransitionVar_{11} \land  \\
       1 = \TransitionVar_{12} \land 
@@ -1732,14 +1732,14 @@ $\VectorLiteral{2, 0, 1}$.
       \VectorLiteral{2, 0, 1}) \land 
       \Connected(\SomethingCSomething{}, \Filter) \land
         2 > 0
-    \end{matrix}  
+    \end{aligned}  
   }
   \infer1[\EquationReasoning{}]{
-    \begin{matrix}
+    \begin{aligned}
       1 = \TransitionVar_{10} \land
-      \TransitionVar_3 = \TransitionVar_{11} 
+      \TransitionVar_3 = \TransitionVar_{11} \land
       1 = \TransitionVar_{12} \land
-      1 = \TransitionVar_{11} \\
+      1 = \TransitionVar_{11} \land \\
       \Image{}_{\Automaton', \Map}(\Filter, 
       \VectorLiteral{
         \TransitionVar_{7a} + \TransitionVar_{9a},
@@ -1761,10 +1761,10 @@ $\VectorLiteral{2, 0, 1}$.
           \TransitionVar_3} \land \\
       \Connected(\SomethingCSomething{}, \Filter) \land
       \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-    \end{matrix}  
+    \end{aligned}  
   }
   \infer1[\Materialise]{
-    \begin{matrix}
+    \begin{aligned}
       \TransitionVar_6 + \TransitionVar_4 = 0 \land 
       1 - \TransitionVar_6 > 0 \land
       \TransitionVar_6 = 0 \land 
@@ -1782,10 +1782,10 @@ $\VectorLiteral{2, 0, 1}$.
       \Connected(\SomethingCSomething{}, \Filter) \land \\
       \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
       \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\Subsume{}]{
-  \begin{matrix}
+  \begin{aligned}
     \TransitionVar_6 + \TransitionVar_4 = 0 \land 
     1 - \TransitionVar_6 > 0 \land
     \TransitionVar_6 = 0 \land 
@@ -1804,10 +1804,10 @@ $\VectorLiteral{2, 0, 1}$.
     \Connected(\SomethingCSomething{}, \Filter) \land \\
     \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
     \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-  \end{matrix}
+  \end{aligned}
   }
   \infer1[\EquationReasoning]{
-    \begin{matrix}
+    \begin{aligned}
       \VectorLiteral{a, b, c} = \VectorLiteral{
           2 - 2\TransitionVar_6,
           2\TransitionVar_4 + 3\TransitionVar_6,
@@ -1823,7 +1823,7 @@ $\VectorLiteral{2, 0, 1}$.
       \Connected(\SomethingCSomething{}, \Filter) \land \\
       \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
       \VectorLiteral{a, b, c}) \land a > b
-    \end{matrix}
+    \end{aligned}
   }
   \infer1[\ExpandM]{\Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, \VectorLiteral{a, b, c}) \land a > b}
 \end{prooftree}
