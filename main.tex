@@ -2146,8 +2146,7 @@ instances.
 \begin{table}
   \centering
   \input{graphs/solved_pivot_table.tex}
-  \caption{The result of running the respective back-ends by instance
-  satisifiability (satisifiable or unsatisifiable) with a timeout of
+  \caption{The result of running the respective back-ends with a timeout of
   \RuntimeTimeout. Instances solved by no backend within the timeout are omitted
   from the table. }\label{tab:solve-status}
 \end{table}
@@ -2292,7 +2291,24 @@ to the expected Presburger formulae.
 %% Appendix
 \appendix
 \section{Appendix}
-
+\subsection{Per-instance comparison between backends}
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{graphs/\commit-duels-lazy-baseline-scatter.pdf}
+    \caption{Per-instance runtime between baseline and \Calculus{}}
+    \label{fig:duels:baseline}
+    \Description[A scatter plot showing individual instances as dots compared to \Calculus{} and baseline]{The plot shows most dots at the bottom of the plot, with some plots collected at the right-hand side.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=\textwidth]{graphs/\commit-duels-lazy-nuxmv-scatter.pdf}
+    \caption{Per-instance runtime between baseline and \Calculus{}}
+    \label{fig:duels:nuxmv}
+    \Description[A scatter plot showing individual instances as dots compared to \Calculus{} and \Nuxmv{}]{The plot shows flames of dots between the bottom and top, with a line of dots near the right-hand side corresponding to timeouts.}
+  \end{subfigure}
+\end{figure}
+\subsection{Example instance for \Catra{}}
 \begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
   // So far we only support integer counters. Note that we have individual
   // counters for each automaton to avoid surprises for product construction.
