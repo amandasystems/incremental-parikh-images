@@ -1284,8 +1284,7 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
 \begin{figure}
   \centering
 \begin{prooftree}
-  \hypo{\bigstar}
-  \infer1[]{
+  \hypo[]{
     \begin{matrix}
       1 - \TransitionVar_6 = 0 \land \\
       \TransitionVar_6 = 1 \land \\
@@ -1324,11 +1323,10 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
       2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6
     \end{matrix}
   }
-  % BRANCH:  = 0
-  \hypo{\bigstar}
-  \infer1[]{
+  % BRANCH:  = 0'
+  \hypo{
     \begin{matrix}
-      \TransitionVar_3 > 0 \\
+      \TransitionVar_3 > 0 \land \\
       \TransitionVar_6 = 0 \land \\
       2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
       1 - \TransitionVar_6 > 0 \land \\
@@ -1338,7 +1336,7 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
   \infer1[\Subsume{}]{
     \begin{matrix}
       \Connected(\AcaOrBc{}, \Filter) \land \\
-      \TransitionVar_3 > = 0 \\
+      \TransitionVar_3 > = 0 \land \\
       \TransitionVar_6 = 0 \land \\
       2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
       1 - \TransitionVar_6 > 0 \land \\
@@ -1382,18 +1380,24 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
 
 In \cref{fig:derivation:single}, we see how we start by expanding the predicate
 using the (simplified) flow equations. We can also see how interleaving
-reasoning on the corresponding linear equations helps the production. In both
+reasoning on the corresponding linear equations helps the deduction. In both
 branches the reasoning is similar: we conclude that when choosing either path at
 the starting state we must avoid the other one, perform propagation based on
 that fact, use some algebraic reasoning to derive the expected forms of the
 upper and lower bounds to propagate the now disconnected transitions, and
 finally subsume, removing the $\Connected{}$ predicate when we are unable to use
-either of the rules, leaving only the satisfiable remnants of the flow equations
-at the respective leaves marked with~$\bigstar$. To obtain a solution from the
+either of the rules, leaving only a set of linear equations. To obtain a solution from the
 proof, one would need to perform standard model generation on the remaining
 constraints to obtain values for the sought variable $\MonoidElement$. The full
 Parikh image is the disjunction of the constraints left at the two
-$\bigstar$-marked leaves, after quantifier elimination.
+leaves after quantifier elimination.
+
+Following the values of $\Filter$, we can read out the path corresponding to our solution in the product, and with that a word. In our case, for the right branch we have $\Filter(\FromLabelTo{S}{b}{B}) = 0,
+\Filter(\FromLabelTo{A}{c}{A})  > 0,
+\Filter(\FromLabelTo{B}{b}{S}) = 0,
+\Filter(\FromLabelTo{S}{a}{A}) = 1 ,
+\Filter(\FromLabelTo{A}{a}{F}) = 1 ,
+\Filter(\FromLabelTo{B}{c}{F}) = 0$. We can read out a word along it: aca, accca, etc, and the corresponding constraint: $\exists k : \TransitionVar_3 = 2k -1 \land \TransitionVar_3 > 0 \land k \geq 0$.
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
