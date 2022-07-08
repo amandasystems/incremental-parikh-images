@@ -1692,8 +1692,7 @@ values (now a vector). Performing quantifier elimination on the remaining clause
 \begin{figure}
   \centering
 \begin{prooftree}
-  \hypo{\bigstar}
-  \infer1[]{
+  \hypo{
     \begin{matrix}
       1 = \TransitionVar_{10} \land 
       \TransitionVar_3 = \TransitionVar_{11} \land \\
@@ -1942,8 +1941,7 @@ does not differentiate between values, it would have required no adaptation at
 all. With a somewhat liberal interpretation of what we are allowed to map to
 (e.g. fresh terms), it is possible to use $\Map$ to represent choice operations
 like the ones in a range label. In \Catra{}, we frontload this problem by
-requiring the user to encode their input as a Parikh automaton. \Fudge{How is
-the encoding of Ostrich Plus automata done?}
+requiring the user to encode their input as a Parikh automaton. For an example of how automata can be encoded, see \cref{sec:parikh-automata}.
 
 \subsection{Transducers}\label{sec:ext:transducers}
 
