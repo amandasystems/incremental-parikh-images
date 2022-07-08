@@ -449,35 +449,40 @@ i.e. require that the length of the string is odd.
 \begin{figure}[p]
   \centering 
   \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{aca_or_bc}
+    \centering
+    \includegraphics[scale=\autscale]{aca_or_bc}
     \caption{An automaton recognising the regular expression
       $\FstRegex{}$.}\label{fig:aca-or-bc}
       \Description[An NFA recognising $\FstRegex{}$]{An NFA recognising $\FstRegex{}$. It has 4 states.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth} 
-    \includegraphics[width=\textwidth]{something_c_something}
+    \centering
+    \includegraphics[scale=\autscale]{something_c_something}
     \caption{An automaton recognising the regular expression
     $\SndRegex{}$.}\label{fig:something-c-something}
     \Description[An NFA recognising $\SndRegex{}$]{An NFA recognising $\FstRegex{}$. It has 2 states.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{aca_or_bc_simplified}
+    \centering
+    \includegraphics[scale=\autscale]{aca_or_bc_simplified}
     \caption{$\AcaOrBc{}$ with its symbolic transition counters after
     simplification of their equations.}\label{fig:example-simplify-1}
     \Description[The automaton $\AcaOrBc{}$ labelled with variables counting the number of times each transition is taken, after having simplified the equations.]{The starting state shows an initial flow of 1, with two outgoing transitions to $A$ ($1-l_c'$ on letter a, and $l_b' + l_c'$ on b respectively). $A$ has a flow of $l_c$, and its outgoing transition into the final state, $F$ is the same as the incoming one from $S$, the initial state. The $B$ transition has an outgoing transition labeled $c/ l_c'$ to the final state $F$, and one backwards transition $b / l_b'$ to the starting state.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-    \includegraphics[width=\textwidth]{something_c_something_length_simplified}
+    \centering
+    \includegraphics[scale=\autscale]{something_c_something_length_simplified}
     \caption{$\SomethingCSomething{}$ after using linear reasoning over lengths to replace a variable.}\label{fig:example-length-reduced}
     \Description[The automaton $\SomethingCSomething{}$ after reasoning over lengths.]{The same automaton as before for $\SomethingCSomething{}$, but with the transition from start to final annotated with a constant number 1, and the leftmost self-loop transition replaced with the equation $1 + l_c + 2l_b' -
     r_\Sigma'$.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-      \includegraphics[width=\textwidth]{aca_or_bc_length_split_1}
+    \centering
+      \includegraphics[scale=\autscale]{aca_or_bc_length_split_1}
       \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{S}{a}{A}$ is not
       used.}\label{fig:aca-or-bc-length-split-1}
       \Description[The automaton \AcaOrBc{} where we have removed the transition
@@ -486,26 +491,30 @@ i.e. require that the length of the string is odd.
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-      \includegraphics[width=\textwidth]{aca_or_bc_length_split_2}
+    \centering
+      \includegraphics[scale=\autscale]{aca_or_bc_length_split_2}
       \caption{$\AcaOrBc{}$ at the split where $\FromLabelTo{S}{a}{A}$ \emph{is} used.}\label{fig:aca-or-bc-length-split-2}
       \Description[$\AcaOrBc{}$ with the transition from $B$ to $F$ removed.]{$\AcaOrBc{}$ when we keep the transition from $S$ to $A$. This removes the transition between $B$ and $F$, but otherwise maintains the automaton.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-      \includegraphics[width=\textwidth]{length_split_product}
+    \centering
+      \includegraphics[scale=\autscale]{length_split_product}
       \caption{The product of $\AcaOrBc$ and $\SomethingCSomething$ after
       case splitting and removal of dead states.}\label{fig:length-split-product}
       \Description[$\AcaOrBc{}$ with the transition from $B$ to $F$ removed.]{$\AcaOrBc{}$ with the transition from $B$ to $F$ removed. There now remains only one path to an accepting state.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
-      \includegraphics[width=\textwidth]{aca_or_bc_simplified_3}
+    \centering
+      \includegraphics[scale=\autscale]{aca_or_bc_simplified_3}
       \caption{$\AcaOrBc{}$ after further constraint propagation.}\label{fig:example-simplify-3}
       \Description[$\AcaOrBc$ without the lower section.]{$\AcaOrBc$ with only its upper section left and the $a$ transitions now set to static 1.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.6\textwidth}
-        \includegraphics[width=\textwidth]{aca_or_bc_times_something_c_something}
+    \centering
+        \includegraphics[scale=\autscale]{aca_or_bc_times_something_c_something}
         \caption{$\AcaOrBc{} \times \SomethingCSomething{}$ under the constraint
         $\TransitionCount{a} > \TransitionCount{b}$.}\label{fig:final-example} \Description[The
         final product, still a boring stick automaton with only one loop for an
@@ -1698,7 +1707,8 @@ instance of $\Connected$. We then perform \Expand{} to get rid of the final
 $\Image$ instance, and are immediately able to $\Subsume$ the resulting
 $\Connected{}$ predicate. This, again, leaves us with a set of linear
 inequalities at the leaf that we can use to obtain a model of our final
-$\MonoidElement$ values (now a vector).
+$\MonoidElement$ values (now a vector). This time we can read out aca, or
+$\VectorLiteral{2, 0, 1}$.
 
 \begin{figure}
   \centering
