@@ -801,7 +801,7 @@ paper we focus only on regular languages.
 \label{sec:verma}
 
 Since Parikh images are semilinear, any Parikh image can be written as a set of linear
-equations. The following construction, here adapted to work on an NFA $\Automaton = \AutomatonTuple$, was presented in \cite{generate-parikh-image}:
+equations. The following construction for an NFA $\Automaton = \AutomatonTuple$ is based on the version for context-free grammars presented in \cite{generate-parikh-image}:
 \begin{equation}
 \begin{aligned}
 \ParikhMap(\Automaton) := 
@@ -824,7 +824,7 @@ equations. The following construction, here adapted to work on an NFA $\Automato
 } \\
 &\AndComp{\State \in \States}{
   \StateVar_{\State} > 0 \longrightarrow
-  \left(\FinalStateVar_{\State} = 1 \text{ if } \State \in \AcceptingStates \land \right) \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
+  \OrComp{\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions}{
     \StateVar_{\State} = \StateVar_{\State'} + 1 \land 
     \TransitionVar_{\Transition} \geq 1 \land
   \StateVar_{\State'} \geq 1
@@ -834,7 +834,7 @@ equations. The following construction, here adapted to work on an NFA $\Automato
 \label{eq:generate-parikh}
 \end{equation}
 
-All variables $\TransitionVar_i, \StateVar_i, \FinalStateVar_i$ are
+All variables $\TransitionVar_\Transition, \StateVar_\State, \FinalStateVar_\State$ are
 existentially quantified and the free variables $\LetterVar_\Letter$ make up the
 image. $\StateVar_\State$ represents the distance of state $\State$ from
 $\InitialState$ in a spanning tree, $\TransitionVar_\Transition$ how many times
