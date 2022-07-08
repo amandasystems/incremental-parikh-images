@@ -1199,12 +1199,12 @@ $\FinalStateVar_\State, \Filter(\Transition)$ for every $\State \in
 \AcceptingStates, \Transition \in \Transitions$:
 \[
 \begin{aligned}
-  & \FlowEq(\Automaton, \Filter) = \sum\limits_{\State \in \AcceptingStates} \FinalStateVar_\State = 1 \land \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)} = \Sink(\State) \land
+  \FlowEq(\Automaton, \Filter) &= \sum\limits_{\State \in \AcceptingStates} \FinalStateVar_\State = 1 \land \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)} = \Sink(\State) \land
   \AndComp{\State \in \AcceptingStates}{\FinalStateVar_\State \geq 0}\\
-  & \Sink(\State) = 0 \text{ if } \State \not\in \AcceptingStates, \FinalStateVar_\State \text{ otherwise.} \\
-  & \In(\State, \Filter) = \StartFlow(\State) + \sum_{\Transition \in \FromLabelTo{\State'}{}{\State}} \Filter(\Transition)\\
-  & \StartFlow(\State)  = 1 \text{ if } \State = \InitialState, \text{ otherwise $0$.} \\
-  & \Out(\State, \Filter) = \sum_{\Transition \in \FromLabelTo{\State}{}{\State'}} \Filter(\Transition)
+  \Sink(\State) & = 0 \text{ if } \State \not\in \AcceptingStates, \FinalStateVar_\State \text{ otherwise.} \\
+  \In(\State, \Filter) & = \StartFlow(\State) + \sum_{\Transition \in \FromLabelTo{\State'}{}{\State}} \Filter(\Transition)\\
+  \StartFlow(\State)  &= 1 \text{ if } \State = \InitialState, \text{ otherwise $0$.} \\
+  \Out(\State, \Filter) &= \sum_{\Transition \in \FromLabelTo{\State}{}{\State'}} \Filter(\Transition)
 \end{aligned}
 \]
 
@@ -1260,12 +1260,12 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
   \begin{minipage}[b]{0.3\linewidth}
     \begin{equation*}
       \begin{aligned}
-        & \Filter(\FromLabelTo{S}{a}{A}) & = \TransitionVar_1 \\
-        & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_2 \\
-        & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
-        & \Filter(\FromLabelTo{B}{b}{S}) & = \TransitionVar_4 \\
-        & \Filter(\FromLabelTo{A}{a}{F}) & = \TransitionVar_5 \\
-        & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
+        \Filter(\FromLabelTo{S}{a}{A}) & = \TransitionVar_1 \\
+        \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_2 \\
+        \Filter(\FromLabelTo{A}{c}{A}) & = \TransitionVar_3  \\
+        \Filter(\FromLabelTo{B}{b}{S}) & = \TransitionVar_4 \\
+        \Filter(\FromLabelTo{A}{a}{F}) & = \TransitionVar_5 \\
+        \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
       \end{aligned}
     \end{equation*}    
   \end{minipage}
@@ -1274,26 +1274,26 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
     \begin{equation*}
       \begin{aligned}
         % S
-        &  \TransitionVar_4 = \TransitionVar_5 + \TransitionVar_2 - 1 \\
+        \TransitionVar_4 &= \TransitionVar_5 + \TransitionVar_2 - 1 \\
         % A
-        & \TransitionVar_1 = \TransitionVar_5 \\
+        \TransitionVar_1 &= \TransitionVar_5 \\
         % B
-        & \TransitionVar_2 = \TransitionVar_4 + \TransitionVar_6 \\
+        \TransitionVar_2 &= \TransitionVar_4 + \TransitionVar_6 \\
         % F
-        & \TransitionVar_5 + \TransitionVar_6 = \FinalStateVar_1 \\
-        & \FinalStateVar_1 = 1 \\
+        \TransitionVar_5 + \TransitionVar_6 &= \FinalStateVar_1 \\
+        \FinalStateVar_1 &= 1 \\
       \end{aligned}  
     \end{equation*}    
   \end{minipage}
   \begin{minipage}[b]{0.3\linewidth}
     \begin{equation*}
       \begin{aligned}
-        & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
-        & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
-        & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
-        & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
+        \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
+        \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
+        \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
+        \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+        \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
+        \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
       \end{aligned}
     \end{equation*}    
   \end{minipage}
@@ -1688,9 +1688,9 @@ substitutions as follows. Note the expansion of the $\Sigma$ labels:
         % & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
         % & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
         % Other automaton
-        & \Filter(\FromLabelTo{S}{\Sigma}{S}) & = \VectorLiteral{\TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c}} \\
-        & \Filter(\FromLabelTo{S}{c}{F}) & = 1 \\
-        & \Filter(\FromLabelTo{F}{\Sigma}{F}) & = \VectorLiteral{\TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c}} \\
+        \Filter(\FromLabelTo{S}{\Sigma}{S}) & = \VectorLiteral{\TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c}} \\
+        \Filter(\FromLabelTo{S}{c}{F}) & = 1 \\
+        \Filter(\FromLabelTo{F}{\Sigma}{F}) & = \VectorLiteral{\TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c}} \\
       \end{aligned}
     \end{equation*}
     
