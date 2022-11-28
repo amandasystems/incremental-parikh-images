@@ -1256,7 +1256,7 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
 \begin{figure}[ht]
   We define $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$ as in the following two
   equations, and then apply \EquationReasoning{} (under the implicit assumption
-  that every RHS is $\geq 0$) to obtain the equivalent third definition :
+  that every RHS is $\geq 0$) to obtain the third definition:
   \begin{minipage}[b]{0.3\linewidth}
     \begin{equation*}
       \begin{aligned}
@@ -1305,25 +1305,18 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
   \centering
 \begin{prooftree}
   \hypo[]{
-    \begin{aligned}
-      1 - \TransitionVar_6 = 0 \land \\
-      \TransitionVar_6 = 1 \land \\
-      \TransitionVar_4 + 1 > 0 \land \\
-      \TransitionVar_3 = 0 \land \\
-      2 + \TransitionVar_4 > 0 \land \\
-      k = 1 + \TransitionVar_4 
-    \end{aligned}
+{    \begin{array}{lll}
+      1 - \TransitionVar_6 = 0 & \land \TransitionVar_6 = 1 & \land  \TransitionVar_4 + 1 > 0 \\
+      \land \TransitionVar_3 = 0 &\land  2 + \TransitionVar_4 > 0 & \land k = 1 + \TransitionVar_4 
+    \end{array}}
   }
   \infer1[\Subsume{}]{
-    \begin{aligned}
-      \Connected(\AcaOrBc{}, \Filter) \land \\
-      1 - \TransitionVar_6 = 0 \land \\
-      \TransitionVar_6 = 1 \land \\
-      \TransitionVar_4 + 1 > 0 \land \\
-      \TransitionVar_3 = 0 \land \\
-      2 + \TransitionVar_4 > 0 \land \\
+{    \begin{array}{lll}
+      \Connected(\AcaOrBc{}, \Filter) & \land 1 - \TransitionVar_6 = 0 \\
+      \land \TransitionVar_6 = 1 & \land \TransitionVar_4 + 1 > 0 \land \\
+      \land \TransitionVar_3 = 0 & \land 2 + \TransitionVar_4 > 0 \land \\
       k = 1 + \TransitionVar_4 
-    \end{aligned}
+    \end{array}}
   }
   \infer1[\Propagate]{
     \begin{aligned}
@@ -1345,13 +1338,13 @@ quantifiers and $x \geq 0$ for every variable to avoid clutter).
   }
   % BRANCH:  = 0'
   \hypo{
-    \begin{aligned}
-      \TransitionVar_3 > 0 \land \\
-      \TransitionVar_6 = 0 \land \\
-      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
-      1 - \TransitionVar_6 > 0 \land \\
+    {\begin{array}{lll}
+      \TransitionVar_3 > 0 & \land 
+      \TransitionVar_6 = 0 \\ \land
+      2\TransitionVar_6 + \TransitionVar_4 = 0 & \land
+      1 - \TransitionVar_6 > 0\\  \land 
       2k = 1 + \TransitionVar_3
-    \end{aligned}
+    \end{array}}
   }
   \infer1[\Subsume{}]{
     \begin{aligned}
