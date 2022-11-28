@@ -33,3 +33,5 @@ main.pdf
 /*.pdf
 choice.pdf
 no-choice.pdf
+experiments/.venv
+experiments/.ipynb_checkpoints

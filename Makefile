@@ -22,7 +22,7 @@ clean:
 # This looks insane, I know, but it was easier to do it this way rather than figuring out how the HELL one renames something something categorical multiindices in Pandas.
 .PHONY: copy-figures
 copy-figures:
-	cp -v ../catra/experiments/{*.pdf,*.tex} graphs/
+	cp -v experiments/{*.pdf,*.tex} graphs/
 	sed -I '' 's/Status\.//g' graphs/solved_pivot_table.tex
 	sed -I '' 's/MEMORY_OUT/\\textsc{Memory-Out}/g' graphs/solved_pivot_table.tex
 	sed -I '' 's/ERROR/\\textsc{Error}/g' graphs/solved_pivot_table.tex
