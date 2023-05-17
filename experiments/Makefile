@@ -10,7 +10,7 @@ clean:
 
 .PHONY: download-results
 download-results:
-	rsync --progress -a capheus:~/catra/${COMMIT}.capheus/ ${COMMIT}.capheus/
+	rsync --progress capheus:~/catra/${COMMIT}.experiments.log .
 
 
 .PHONY: notebook
