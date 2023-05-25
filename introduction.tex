@@ -142,6 +142,10 @@ us to \emph{remove} something, thereby potentialy obtaining an easier problem.
 
 \subsection{An intuition for our method}
 
+In this section we will introduce an intuition for how a string constraint problem in an automata-based solver like \OstrichPlus{} is translated to a Parikh automata intersection problem and solved efficiently using \Calculus{}. First, by a Parikh automaton we mean a standard Non-deterministic finite automaton (NFA) with a set of Parikh registers that are incremented (or decremented) at each transition. In the automata of \cref{fig:examples}, we will use the notation $a / \begin{bmatrix} x_+ \end{bmatrix}$ to mean that a transition reads an input character $a$ and increments register $x$ by one. We will omit any zero-valued increments and assume that all registers are scoped to their automaton.
+
+Furthermore, we use $\CountOf{c}(A)$ to refer to the number of letters $c$ in $A$, and allow this expression to be used both in the input language of \cref{ex:string-constraints} and in the langauge of constraints that we translate to. Where $A$ is apparent, we will omit it.
+
 \begin{example}\label{ex:string-constraints}
     Consider the following set of string constraints:
 \begin{constraints}
@@ -175,4 +179,5 @@ TODO: rewrite the input and log it through CATRA!
     \caption{The automaton $A'$, whose Parikh registers count both the number of letters and the start ($l$) and length ($r$) of the substring.}\label{fig:aut_a}
       %\Description[SHORT]{LONG}
   \end{subfigure}
-\end{figure}s
+  \caption{The collection of automata we use as running examples}\label{fig:examples}
+\end{figure}
