@@ -76,9 +76,21 @@
 
 \usepackage{mathtools} % Bonus
 
+\usepackage{enumitem}
+
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+
+\newlist{constraints}{enumerate}{3}
+\setlist[constraints,1]{%
+    label=\sffamily{(\roman*):},
+    ref=\normalfont{Constraint (\roman*)},
+    wide,itemsep=0pt,topsep=0pt
+}    
+%\crefname{constraintsi}{}{}
+%\Crefname{constraintsi}{}{}
 
 
 \lstset{

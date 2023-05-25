@@ -1,7 +1,11 @@
 \usepackage{amsmath}
 \DeclareMathOperator{\Image}{\textsc{Im}}
+\DeclareMathOperator{\Substring}{\mathtt{substring}}
 \newcommand{\autscale}[0]{0.6}
 \newcommand{\commit}[0]{cc64639}
+\newcommand{\RegexOr}[0]{\vert}
+\newcommand{\Regex}[1]{\mathtt{\slash#1\slash}}
+\newcommand{\Char}[1]{\texttt{#1}}
 \newcommand{\FstRegex}[0]{\mathtt{(bb)^\ast(ac^\ast{}a|bc)}}
 \newcommand{\SndRegex}[0]{\mathtt{.^\ast{}c.^\ast}}
 \newcommand{\SomethingCSomething}[0]{\Automaton_{\SndRegex}}

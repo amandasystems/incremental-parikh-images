@@ -1,0 +1,19 @@
+digraph Automaton {rankdir = LR;
+initial [shape=plaintext,label=""];
+initial -> S;
+C [shape=doublecircle,label="F_{A'}"];
+
+C -> C [label="a / \begin{bmatrix} a_+ \end{bmatrix}"]
+C -> C [label="b / \begin{bmatrix} b_+  \end{bmatrix}"]
+C -> C [label="c / \begin{bmatrix} c_+  \end{bmatrix}"]
+
+S [shape=circle,label="I_{A'}"];
+S -> S [label="a / \begin{bmatrix} a_+ \\ l_+ \\ r_+  \end{bmatrix}"]
+S -> S [label="b / \begin{bmatrix} b_+  \\ l_+ \\ r_+  \end{bmatrix}"]
+S -> S [label="c / \begin{bmatrix} c_+  \\ l_+ \\ r_+  \end{bmatrix}"]
+
+S -> C [label="c / \begin{bmatrix} c_+ \\ r_+  \end{bmatrix}"]
+
+S -> D [label="d / \begin{bmatrix} d_+ \\ r_+  \end{bmatrix}"]
+D -> C [label="d / \begin{bmatrix} d_+ \\ r_+  \end{bmatrix}"]
+}

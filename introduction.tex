@@ -1,4 +1,3 @@
-
 The Parikh image is a characterisation of formal languages in terms of
 their character counts. Given a language over an
 alphabet~$\{a_1, \ldots, a_k\}$, the Parikh image is a set of
@@ -27,13 +26,6 @@ Parikh images in the general case, to handle operations including
 \verb!str.substr!  and \verb!str.at!, which comes at an even higher
 price in terms of computational complexity~\cite{ostrich-plus}.
 
-\iffalse
-It appears naturally as part of \Fudge{many operations} in model
-checking and solving string constraints in automata-based solvers such
-as \Ostrich{} \cite{ostrich}, notably in representing constraints on
-string lengths. The enhanced \OstrichPlus{} solver~\cite{ostrich-plus}
-makes even more extensive use of Parikh images.
-\fi
 
 It is possible to compute an existential Presburger formula describing
 the Parikh image of any context-free language in linear
@@ -52,14 +44,6 @@ time. Just solving the Parikh image membership problem is NP-complete,
 as it corresponds to computing a satisfying assignment of the
 existential Presburger formula, and taxing for solvers as
 well~\cite{ostrich-plus}.
-
-\iffalse
-Later improvements have produced a construction taking at
-most linear time to produce~\cite{muscholl-linear}. However, the
-resulting existentially quantified clauses are costly to eliminate as
-the number of variables increases, in practice making many real-world
-problems intractable.
-\fi
 
 Secondly, in applications involving regular languages, it is typically
 necessary to consider the Parikh image not only of a single automaton,
@@ -106,11 +90,11 @@ string length constraints \cite{pyex}.
 
 In summary, we contribute:
 \begin{itemize}
-\item The \Calculus{} calculus to efficiently compute (a homomorphism on) the
-Parikh image of products of Parikh automata.
-\item Experiments illustrating the performance of \Calculus{} on real-world examples from string solving, including \NrBenchmarks{} instances in a standardised format made available for future study.
-\item The \Catra{} tool for solving such instances, containing an implementation of \Calculus{}, the over-approximation described in~\cite{approximate-parikh}, and an adapter for the~\Nuxmv{} model checker~\cite{nuxmv}.
-\item Suggestions for how to efficiently implement \Calculus{} in a modern automated theorem prover, including strategies for case splitting, clause learning, and constraint propagation for connectedness.
+    \item The \Calculus{} calculus to efficiently compute (a homomorphism on) the
+          Parikh image of products of Parikh automata.
+    \item Experiments illustrating the performance of \Calculus{} on real-world examples from string solving, including \NrBenchmarks{} instances in a standardised format made available for future study.
+    \item The \Catra{} tool for solving such instances, containing an implementation of \Calculus{}, the over-approximation described in~\cite{approximate-parikh}, and an adapter for the~\Nuxmv{} model checker~\cite{nuxmv}.
+    \item Suggestions for how to efficiently implement \Calculus{} in a modern automated theorem prover, including strategies for case splitting, clause learning, and constraint propagation for connectedness.
 \end{itemize}
 
 \subsection{Related Work}
@@ -136,7 +120,7 @@ state-of-the-art approach to handling Parikh image computation is to
 over-approximate the Parikh image of a product of $k$~automata
 $\ParikhMap(\Language(\Automaton_1) \cap \ldots \cap \Language(\Automaton_k))$ with the
 conjunction of the automata's parikh maps, $\bigwedge_{i=1}^{k}
-\ParikhMap(\Automaton_i)$. This approach works only for unsatisfiable instances,
+    \ParikhMap(\Automaton_i)$. This approach works only for unsatisfiable instances,
 and will require falling back to computing the product of the automata before
 using the standard approach for finding its image originally presented
 in~\cite{generate-parikh-image}.
@@ -155,3 +139,40 @@ rather than the number of their occurrences and allows for generalisations into
 infinite alphabets. All of these in some sense extend the Parikh map. By
 contrast, the main utility of the formulation introduced here is that it allows
 us to \emph{remove} something, thereby potentialy obtaining an easier problem.
+
+\subsection{An intuition for our method}
+
+\begin{example}\label{ex:string-constraints}
+    Consider the following set of string constraints:
+\begin{constraints}
+    \item\label{const:x-in-c-dd} $x \in \Regex{c\RegexOr{}dd}$
+    \item\label{const:y-in-b} $y \in \Language(B)$, the language accepted by automaton~$B$ of \cref{fig:aut_b}.
+    \item\label{const:x-substring} $x = \Substring(y, l, r)$
+    \item\label{const:more-a-than-b} $\CountOf{\Char{a}}(y) > \CountOf{\Char{b}}(y)$, that is $y$ contains more letters \Char{a} than letters \Char{b}.
+\end{constraints}
+\end{example}
+
+\cref{const:x-in-c-dd,const:y-in-b,const:x-substring} can be translated to the product of Parikh automata $B \times A'$, where $A'$ (\cref{fig:aut_a}) is the Parikh automata obtained by applying the encoding of $\Substring$ described in \cite{ostrich-plus}. Here follows an intuition for our method on $B \times A'$ under the global constraint \cref{const:more-a-than-b}. Note that the cost registers of \cref{fig:aut_b} are simply counting letters.
+
+Each transition is associated with a fresh variable detailing how many times it is used
+
+Counters are the sum of their increments times number of times the transition was used
+
+TODO: rewrite the input and log it through CATRA!
+
+\begin{figure}[h]
+    \centering 
+\begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{b}
+    \caption{The automaton $B$, where the Parikh registers count the number of occurrences of each letter.}\label{fig:aut_b}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{a}
+    \caption{The automaton $A'$, whose Parikh registers count both the number of letters and the start ($l$) and length ($r$) of the substring.}\label{fig:aut_a}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+\end{figure}s
