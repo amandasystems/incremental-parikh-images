@@ -1,0 +1,13 @@
+digraph Automaton {rankdir = LR;
+initial [shape=plaintext,label=""];
+initial -> Ia_AND_Ib;
+Fa_AND_A [shape=circle,label="F_{A'} \times A"];
+Fa_AND_A -> Fa_AND_Fb [label="a/ 1"]
+Fa_AND_A -> Fa_AND_A [label="c/ \\#c -l"]
+Fa_AND_Fb [shape=doublecircle,label="F_{A'} \times F_B"];
+Ia_AND_A [shape=circle,label="I_{A'} \times A"];
+Ia_AND_A -> Ia_AND_A [label="c/ l - 1"]
+Ia_AND_A -> Fa_AND_A [label="c/ 1"]
+Ia_AND_Ib [shape=circle,label="F_{A'} \times I_B"];
+Ia_AND_Ib -> Ia_AND_A [label="a/ 1"]
+}

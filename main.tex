@@ -2225,46 +2225,8 @@ to the expected Presburger formulae.
   \end{subfigure}
 \end{figure}
 \subsection{Example instance for \Catra{}}
-\begin{lstlisting}[caption={An example input file for \Catra{} for the problem introduced in \cref{sec:motivation}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
-  // So far we only support integer counters. Note that we have individual
-  // counters for each automaton to avoid surprises for product construction.
-  counter int l_a, l_b, l_c, r_c;
-
-  synchronised {
-  automaton aca_or_bc {
-    init S;
-  
-    // We use ASCII values here, this is for lowercase a
-    S -> A [97] { l_a += 1 };
-    S -> B [98] { l_b += 1 };
-  
-    B -> S  [98] { l_b += 1 };
-    B -> final [99] { l_c += 1 };
-  
-    A -> A [99] { l_c += 1 };
-    A -> final [97] { l_a += 1 };
-  
-    accepting final;
-  };
-  
-  automaton something_c_something {
-      init S;
-  
-      // Special short-hand value for the whole Unicode alphabet.
-      S -> S [any] ;
-      S -> F [99] { r_c += 1 };
-  
-      F -> F [any];
-  
-      accepting F;
-  };
-  };
-  
-  // Constrain the number of a:s to be larger than the number of c:s. Since the
-  // automata are synchronised on every transition and counters are guaranteed
-  // to be consistent these constraints are sufficient without also constraining
-  // r_c.
-  constraint l_a > l_c;
+\begin{lstlisting}[caption={An example input file for \Catra{} for \cref{ex:string-constraints} in \cref{sec:intuition}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
+\input{example.par}
 \end{lstlisting}
 
 % Text of appendix \ldots

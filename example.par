@@ -1,0 +1,60 @@
+// So far we only support integer counters. Note that we have individual
+// counters for each automaton to avoid surprises for product construction.
+counter int aa, ab, ac, ad, ba, bb, bc, bd, l, r, a, b, c, d;
+
+synchronised {
+automaton a_prime {
+  init Ia;
+
+  Ia -> Ia [#d] { ad += 1, l += 1, r += 1};
+  Ia -> Ia [#c] { ac += 1, l += 1, r += 1};
+  Ia -> Ia [#b] { ab += 1, l += 1, r += 1};
+  Ia -> Ia [#a] { aa += 1, l += 1, r += 1};
+
+  Ia -> D [#d] { ad += 1, r += 1};
+  Ia -> Fa [#c] { ac += 1, r += 1};
+
+  D -> Fa [#d] { ad += 1, r += 1};
+
+  Fa-> Fa  [#d] { ad += 1};
+  Fa -> Fa [#c] { ac += 1};
+  Fa -> Fa [#b] { ab += 1};
+  Fa -> Fa [#a] { aa += 1};
+
+  accepting Fa;
+};
+
+automaton B {
+    init Ib;
+    accepting Fb;
+
+    Ib -> A [#a] { ba += 1 };
+    Ib -> B [#b] { bb += 1 };
+
+    A -> A [#c] { bc += 1 };
+    A -> Fb [#a] { ba += 1 };
+
+    B -> Ib [#b] { bb += 1 };
+    B -> B [#c] { bc += 1 };
+    B -> Fb [#c] { bc += 1 };
+};
+};
+
+// B never increments d! We could have also added an increment with 0 to 
+// any transition, otherwise bd would have been left unconstrained. This is
+// a design decision to allow counting variables that are not part of any
+// automaton.
+constraint bd = 0;
+
+// Add non-constrained global counters for each letter and tie each
+// automaton's counts to those. We could of course have just e.g. replaced
+// a with either aa or bb here:
+constraint a = aa && a = ba;
+constraint b = ab && b = bb;
+constraint c = ac && c = bc;
+constraint d = ad && d = bd;
+
+// Note: no l, r since they only appear in one of the automata!
+
+// Constrain the number of a:s to be larger than the number of b:s.
+constraint a > b;

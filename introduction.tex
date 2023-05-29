@@ -140,11 +140,29 @@ infinite alphabets. All of these in some sense extend the Parikh map. By
 contrast, the main utility of the formulation introduced here is that it allows
 us to \emph{remove} something, thereby potentialy obtaining an easier problem.
 
-\subsection{An intuition for our method}
+\subsection{An Intuition for Our Approach}\label{sec:intuition}
 
-In this section we will introduce an intuition for how a string constraint problem in an automata-based solver like \OstrichPlus{} is translated to a Parikh automata intersection problem and solved efficiently using \Calculus{}. First, by a Parikh automaton we mean a standard Non-deterministic finite automaton (NFA) with a set of Parikh registers that are incremented (or decremented) at each transition. In the automata of \cref{fig:examples}, we will use the notation $a / \begin{bmatrix} x_+ \end{bmatrix}$ to mean that a transition reads an input character $a$ and increments register $x$ by one. We will omit any zero-valued increments and assume that all registers are scoped to their automaton.
+\begin{figure}[h]
+    \centering 
+  \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{a}
+    \caption{The automaton $A'$, whose Parikh registers count both the number of letters and the start ($l$) and length ($r$) of the substring matching $\Regex{c\RegexOr{}dd}$.}\label{fig:aut_a}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{b}
+    \caption{The automaton $B$, where the Parikh registers count the number of occurrences of each letter.}\label{fig:aut_b}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+  \caption{The collection of automata we use as running examples}\label{fig:examples}
+\end{figure}
 
-Furthermore, we use $\CountOf{c}(A)$ to refer to the number of letters $c$ in $A$, and allow this expression to be used both in the input language of \cref{ex:string-constraints} and in the langauge of constraints that we translate to. Where $A$ is apparent, we will omit it.
+
+In this section we will introduce an intuition for how a string constraint problem in an automata-based solver like \OstrichPlus{} is translated to a Parikh automata intersection problem and solved efficiently using \Calculus{}. First, by a Parikh automaton we mean a standard Non-deterministic finite automaton (NFA) with a set of Parikh registers that are incremented (or decremented) at each transition. In the automata of \cref{fig:examples}, we will use the notation $a / \begin{bmatrix} x_+ \end{bmatrix}$ to mean that a transition reads an input character $a$ and increments register $x$ by one. We will omit any zero-valued increments and assume that all registers are scoped to their automaton. The increments are in reality a vector (hence the notation), but as it is mostly sparse here, we instead use the symbolic notation $\begin{bmatrix} x_{1+} \end{bmatrix}$ rather than the more cumbersome $\begin{bmatrix} 0 \\ 1 \\ 0 \\  \vdots \\ 0 \end{bmatrix}$.
+
+Furthermore, we use $\CountOf{c}(A)$ to refer to the number of letters $c$ in $\Language(A)$, and allow this expression to be used both in linear constraints of the input language of \cref{ex:string-constraints} and in the langauge of constraints that we translate to. Where the automaton $A$ is apparent, we will omit it.
 
 \begin{example}\label{ex:string-constraints}
     Consider the following set of string constraints:
@@ -158,26 +176,39 @@ Furthermore, we use $\CountOf{c}(A)$ to refer to the number of letters $c$ in $A
 
 \cref{const:x-in-c-dd,const:y-in-b,const:x-substring} can be translated to the product of Parikh automata $B \times A'$, where $A'$ (\cref{fig:aut_a}) is the Parikh automata obtained by applying the encoding of $\Substring$ described in \cite{ostrich-plus}. Here follows an intuition for our method on $B \times A'$ under the global constraint \cref{const:more-a-than-b}. Note that the cost registers of \cref{fig:aut_b} are simply counting letters.
 
-Each transition is associated with a fresh variable detailing how many times it is used
+Our approach to the computation of the Parikh image (and therefore the solution to the intersection problem posed by \cref{ex:string-constraints}) consists of two applications of laziness; late computation of products of automata, and lazy enforcement of connectivity constraints. Both are in contrast to the eager approach to finding the Parikh image described in~\cite{generate-parikh-image}.
 
-Counters are the sum of their increments times number of times the transition was used
+Starting with an interactive theorem prover and the goal of solving the constraint $\CountOf{\Char{a}}(B \times A') > \CountOf{\Char{b}}(B \times A')$ we associate each transition of $A'$ and $B$ with a fresh integer variable, $\TransitionVar_\Transition$, identically to \cite{generate-parikh-image}. These variables represent how many times each transition is taken. Hence, the final counter value for each automaton is the element-wise sum:
+\begin{equation}
+\begin{bmatrix} \CountOf{\Char{a}} \\ \CountOf{\Char{b}} \\ \CountOf{\Char{c}} \\ \CountOf{\Char{d}} \end{bmatrix} = \sum_\Transition \TransitionVar_\Transition \cdot \IncrementVec_\Transition \text{ where $\IncrementVec_\Transition$ are the increments of transition $\Transition$}.
+\end{equation}
 
-TODO: rewrite the input and log it through CATRA!
+
+We start by adding linear constraints requiring transition variables to represent a flow through either automata by requiring that the number of incoming transitions is equal to the number of outgoing ones, and use the automated theorem prover to annotate each transition $\Transition$ with a symbolic representation of its associated integer variable:
+\begin{figure}[h]
+    \centering 
+  \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{a_annotated}
+    \caption{Note: unused self-loops at $I_{A'}$ and $F_{A'}$ have been pruned for readability.}\label{fig:aut_a_annotated}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{b_annotated}
+    \caption{}\label{fig:aut_b_annotated}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+  \caption{The starting automata, without their counter increments and with their transition variables in symbolic form.}\label{fig:propagated}
+\end{figure}
+
+Note that several transitions are already marked as unuseable (have a transition value of $0$). This includes any transition for the letter $\Char{d}$, as all counter increments for that variable in $B$ is zero and hence it must also be zero in the product of both automata. By removing these transitions to obtain new automata and computing their product, we obtain the following:
 
 \begin{figure}[h]
     \centering 
-\begin{subfigure}[b]{0.49\textwidth}
-    \centering
-    \includegraphics[scale=\autscale]{b}
-    \caption{The automaton $B$, where the Parikh registers count the number of occurrences of each letter.}\label{fig:aut_b}
+    \includegraphics[scale=\autscale]{ab}
+  \caption{An automaton encoding the constraint $\CountOf{\Char{a}}(B \times A') > \CountOf{\Char{b}}(B \times A')$.}\label{fig:product}
       %\Description[SHORT]{LONG}
-  \end{subfigure}
-
-  \begin{subfigure}[b]{0.49\textwidth}
-    \centering
-    \includegraphics[scale=\autscale]{a}
-    \caption{The automaton $A'$, whose Parikh registers count both the number of letters and the start ($l$) and length ($r$) of the substring.}\label{fig:aut_a}
-      %\Description[SHORT]{LONG}
-  \end{subfigure}
-  \caption{The collection of automata we use as running examples}\label{fig:examples}
 \end{figure}
+
+By putting off computing the product $B \times A'$ until after performing linear reasoning on the number of times each transition must be taken, we have constructed a much smaller product than we would have originally. Moreover, since this automaton is a stick, all runs through it can be described by the flow-preservation equations described above without the need for costly connectivity-enforcing constraints as in~\cite{generate-parikh-image}. This illustrates the advantage of our second laziness: deferred enforcement of connectivity constraints.
