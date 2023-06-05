@@ -4,11 +4,12 @@ initial -> Ia;
 D [shape=circle,label="D"];
 D -> Fa [label="d/ 0"]
 Fa [shape=doublecircle,label="F_{A'}"];
-Fa -> Fa [label="a/ x_1 + -l + 2"]
+Fa -> Fa [label="a/ x_1 + x_2 - x_4 - 1"]
 Fa -> Fa [label="c/ \\#c - x_1 - 1"]
+Fa -> Fa [label="b/ - 2x_1 + x_4 - 1"]
 Ia [shape=circle,label="I_{A'}"];
-Ia -> Ia [label="a/ l - x_1"]
-Ia -> Ia [label="c/ x_1"]
+Ia -> Ia [label="a/ 1 - x_1 - x_2"]
+Ia -> Ia [label="c/ x_2"]
 Ia -> Fa [label="c/ 1"]
 Ia -> D [label="d/ 0"]
 }

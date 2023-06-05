@@ -1,20 +1,20 @@
 // So far we only support integer counters. Note that we have individual
 // counters for each automaton to avoid surprises for product construction.
-counter int aa, ab, ac, ad, ba, bb, bc, bd, l, r, a, b, c, d;
+counter int aa, ab, ac, ad, ba, bb, bc, bd, i, n, a, b, c, d;
 
 synchronised {
 automaton a_prime {
   init Ia;
 
-  Ia -> Ia [#d] { ad += 1, l += 1, r += 1};
-  Ia -> Ia [#c] { ac += 1, l += 1, r += 1};
-  Ia -> Ia [#b] { ab += 1, l += 1, r += 1};
-  Ia -> Ia [#a] { aa += 1, l += 1, r += 1};
+  Ia -> Ia [#d] { ad += 1, i += 1};
+  Ia -> Ia [#c] { ac += 1, i += 1};
+  Ia -> Ia [#b] { ab += 1, i += 1};
+  Ia -> Ia [#a] { aa += 1, i += 1};
 
-  Ia -> D [#d] { ad += 1, r += 1};
-  Ia -> Fa [#c] { ac += 1, r += 1};
+  Ia -> D [#d] { ad += 1, n += 1};
+  Ia -> Fa [#c] { ac += 1, n += 1};
 
-  D -> Fa [#d] { ad += 1, r += 1};
+  D -> Fa [#d] { ad += 1, n += 1};
 
   Fa-> Fa  [#d] { ad += 1};
   Fa -> Fa [#c] { ac += 1};
@@ -54,7 +54,4 @@ constraint b = ab && b = bb;
 constraint c = ac && c = bc;
 constraint d = ad && d = bd;
 
-// Note: no l, r since they only appear in one of the automata!
-
-// Constrain the number of a:s to be larger than the number of b:s.
-constraint a > b;
+constraint n = i;
