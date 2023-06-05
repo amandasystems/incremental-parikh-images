@@ -207,6 +207,16 @@ matches any single character.
 \end{constraints}
 \end{example}
 
+Intuitively, we see that the constraints are satisfiable.
+\cref{const:more-a-than-b} implies that the starting offset must be either $1$
+or $2$, that is we need to fill out $y$ with either one or two symbols before
+the substring $x$ starts. The state $D$ is dead, as $B$ contains no transitions
+with label $\Char{d}$, and hence none of the transitions into $D$ can appear in
+the intersection of the languages. An example satisfying assignment is $y =
+\Char{acca}$, which gives $x = \Char{c}$, $i = 1$, $n = 1$, but others are
+possible.
+
+To solve \cref{ex:string-constraints} using \Calculus{},
 \cref{const:x-in-c-dd,const:y-in-b,const:x-substring} can be translated to the
 product of Parikh automata $B \times A'$, where $A'$ (\cref{fig:aut_a}) is the
 Parikh automata obtained by applying the encoding of $\Substring$ described in
@@ -234,7 +244,11 @@ $\TransitionVar_\Transition$, identically to \cite{generate-parikh-image}. These
 variables represent how many times each transition is taken. Hence, the final
 counter value for each automaton is the element-wise sum:
 \begin{equation}
-\begin{bmatrix} \CountOf{\Char{a}} \\ \CountOf{\Char{b}} \\ \CountOf{\Char{c}} \\ \CountOf{\Char{d}} \end{bmatrix} = \sum_\Transition \TransitionVar_\Transition \cdot \IncrementVec_\Transition \text{ where $\IncrementVec_\Transition$ are the increments of transition $\Transition$}.
+\begin{bmatrix} 
+  \CountOf{\Char{a}} \\ \CountOf{\Char{b}} 
+  \\ \CountOf{\Char{c}} \\ \CountOf{\Char{d}} 
+\end{bmatrix} = \sum_\Transition \TransitionVar_\Transition \cdot 
+  \IncrementVec_\Transition \text{ where $\IncrementVec_\Transition$ are the increments of transition $\Transition$}.
 \end{equation}
 
 \begin{figure}[h]
