@@ -1,57 +1,48 @@
-// So far we only support integer counters. Note that we have individual
-// counters for each automaton to avoid surprises for product construction.
-counter int aa, ab, ac, ad, ba, bb, bc, bd, i, n, a, b, c, d, x;
+counter int l_A, l_B, i, n;
 
 synchronised {
 automaton a_prime {
-  init Ia;
+  init I_A;
 
-  Ia -> Ia [#d] { ad += 1, i += 1};
-  Ia -> Ia [#c] { ac += 1, i += 1};
-  Ia -> Ia [#b] { ab += 1, i += 1};
-  Ia -> Ia [#a] { aa += 1, i += 1};
+  I_A -> I_A [any] { l_A += 1, i += 1};
 
-  Ia -> D [#d] { ad += 1, n += 1};
-  Ia -> Fa [#c] { ac += 1, n += 1};
 
-  D -> Fa [#d] { ad += 1, n += 1};
+  I_A -> D [#d] { l_A += 1, n += 1};
+  I_A -> F_A [#c] { l_A += 1, n += 1};
 
-  Fa-> Fa  [#d] { ad += 1};
-  Fa -> Fa [#c] { ac += 1};
-  Fa -> Fa [#b] { ab += 1};
-  Fa -> Fa [#a] { aa += 1};
+  D -> F_A [#d] { l_A += 1, n += 1};
 
-  accepting Fa;
+  F_A-> F_A  [any] { l_A += 1};
+
+  accepting F_A;
 };
 
 automaton B {
-    init Ib;
-    accepting Fb;
+    init I_B;
+    accepting F_B;
 
-    Ib -> A [#a] { ba += 1 };
-    Ib -> B [#b] { bb += 1 };
+    I_B -> A [#a] { l_B += 1 };
+    I_B -> B [#b] { l_B += 1 };
 
-    A -> A [#c] { bc += 1 };
-    A -> Fb [#a] { ba += 1 };
+    A -> A [#c] { l_B += 1 };
+    A -> F_B [#a] { l_B += 1 };
 
-    B -> Ib [#b] { bb += 1 };
-    B -> B [#c] { bc += 1 };
-    B -> Fb [#c] { bc += 1 };
+    B -> I_B [#b] { l_B += 1 };
+    B -> B [#c] { l_B += 1 };
+    B -> F_B [#c] { l_B += 1 };
 };
 };
 
-// B never increments d! We could have also added an increment with 0 to 
-// any transition, otherwise bd would have been left unconstrained. This is
-// a design decision to allow counting variables that are not part of any
-// automaton.
-constraint bd = 0;
+// This is implied
+constraint l_A = l_B;
 
-// Add non-constrained global counters for each letter and tie each
-// automaton's counts to those. We could of course have just e.g. replaced
-// a with either aa or bb here:
-constraint a = aa && a = ba;
-constraint b = ab && b = bb;
-constraint c = ac && c = bc;
-constraint d = ad && d = bd;
+// Weird constraint to make it non-trivially unsatisifiable.
+constraint n > i;
 
-constraint n = i; 
+// These just prune the search space to keep the example short!
+
+// Something after
+constraint l_B - i - n > 0;
+
+// Something before
+constraint i > 0;
