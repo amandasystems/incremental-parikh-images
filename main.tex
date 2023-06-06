@@ -1932,11 +1932,11 @@ to the expected Presburger formulae.
     \Description[A scatter plot showing individual instances as dots compared to \Calculus{} and \Nuxmv{}]{The plot shows flames of dots between the bottom and top, with a line of dots near the right-hand side corresponding to timeouts.}
   \end{subfigure}
 \end{figure}
-\subsection{Example instance for \Catra{}}
-\begin{lstlisting}[caption={An example input file for \Catra{} for \cref{ex:string-constraints} in \cref{sec:intuition}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]
-\input{example.par}
-\end{lstlisting}
 
-% Text of appendix \ldots
+\subsection{Example instance for \Catra{}}
+\lstinputlisting[caption={An example input file for \Catra{} for \cref{ex:string-constraints} in \cref{sec:intuition}, illustrating every major syntax element. From beginning to end: synchronised (product) automata using the keyword \texttt{synchronised} (automata A and B), labels (except those with ranges), register increments, and constraints on the final values of their counters.}, label=lst:input-example]{example.par}
+
+\subsection{SMT-LIB encoding of the string constraint example}
+\lstinputlisting[caption={An SMT-LIB encoding of \cref{ex:string-constraints}.}, label=lst:string-constraints]{example.smt2}
 
 \end{document}

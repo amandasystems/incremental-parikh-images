@@ -220,13 +220,9 @@ To solve \cref{ex:string-constraints} using \Calculus{},
 \cref{const:x-in-c-dd,const:y-in-b,const:x-substring} can be translated to the
 product of Parikh automata $B \times A'$, where $A'$ (\cref{fig:aut_a}) is the
 Parikh automata obtained by applying the encoding of $\Substring$ described in
-\cite{ostrich-plus}. That description can then be used to obtain values for
-$\CountOf{\Char{a}}(y)$ and $\CountOf{\Char{b}}(y)$. Here follows an intuition
-for our method on $B \times A'$ under the global constraint
-\cref{const:more-a-than-b}. Note that the cost registers of \cref{fig:aut_b} are
-simply counting letters, while the extra registers $l, r$ in $A'$ also keeps
-track of the matched substring. However, these registers can be mostly
-disregarded here, since we have no constraints on their values.
+\cite{ostrich-plus}. That description can then be used to obtain values for the
+subsstring offsets $i, n$. Here follows an intuition for our method on $B \times
+A'$ under the global constraint on the substring \cref{const:more-a-than-b}.
 
 Our approach to the computation of the Parikh image (and therefore the solution
 to the intersection problem posed by \cref{ex:string-constraints}) consists of
@@ -234,8 +230,8 @@ two applications of laziness; late computation of products of automata, and lazy
 enforcement of connectivity constraints. Both are in contrast to the eager
 approach to finding the Parikh image described in~\cite{generate-parikh-image},
 that would have started by computing the product $A' \times B$, translated it to
-a Presburger formulae with $\CountOf{\Char{a}}$ etc as free variables, and then
-plugged in the constraint \cref{const:more-a-than-b}.
+a Presburger formula with $i, n$ etc as free variables, and then plugged in the
+constraint \cref{const:more-a-than-b}.
 
 Starting with an interactive theorem prover and the goal of solving the
 constraint $\CountOf{\Char{a}}(B \times A') > \CountOf{\Char{b}}(B \times A')$
@@ -287,15 +283,23 @@ reachability constraints.
 
 Performing symbolic reasoning on these equations and plugging the corresponding
 symbolic representation of the constraints on each corresponding integer
-variable back as an annotation on its transition, we get obtain the two automata
-in \cref{fig:propagated}.
+variable back as an annotation on its transition, we obtain the two automata in
+\cref{fig:propagated}.
+
+% FIXME B-loopen inte nollad här! Uppdatera!
 
 Several transitions are already marked as unuseable (have a transition variable
 value of $0$). This includes any transition for the letter $\Char{d}$, as
 $\CountOf{\Char{d}}(B) = \sum_{\Transition} 0 = 0$, since the register for
-$\Char{d}$ is zero for all transitions in $B$. By removing such transitions to
-obtain new automata and computing their product, we obtain the product automaton
-of \cref{fig:product}.
+$\Char{d}$ is zero for all transitions in $B$.
+
+Note that the self-loop on state $B$ is nonzero due to the above mentioned
+self-balancing. However, a reachability computation will conclude that the state
+is unreachable, and allow us to conclude that all its outgoing transitions must
+be zero.
+
+After removing all transitions concluded to be unuseable to produce new,
+equivalent automata, we compute the product in \cref{fig:product}.
 
 \begin{figure}[h]
     \centering 
@@ -311,8 +315,5 @@ prune the terms, we have computed a smaller product than we would have with a
 na\"ive approach. Moreover, since this automaton contains only one loop along
 one main path, all runs through it can be described by the flow-preservation
 equations described above without the need for costly connectivity-enforcing
-constraints as in~\cite{generate-parikh-image}. This means that we can now fully
-represent all possible solutions to \cref{ex:string-constraints} by the linear
-equation $\CountOf{\Char{a}} = 2 \land \CountOf{\Char{c}} > 0 \land
-\CountOf{\Char{b}} = 0 \land \CountOf{\Char{d}} = 0$, derived from applying the
-same flow encoding as before.
+constraints as in~\cite{generate-parikh-image}. We can now obtain a generalised
+solution to our constraints by inspection.

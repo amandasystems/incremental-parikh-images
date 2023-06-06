@@ -1,6 +1,6 @@
 // So far we only support integer counters. Note that we have individual
 // counters for each automaton to avoid surprises for product construction.
-counter int aa, ab, ac, ad, ba, bb, bc, bd, i, n, a, b, c, d;
+counter int aa, ab, ac, ad, ba, bb, bc, bd, i, n, a, b, c, d, x;
 
 synchronised {
 automaton a_prime {
@@ -54,4 +54,4 @@ constraint b = ab && b = bb;
 constraint c = ac && c = bc;
 constraint d = ad && d = bd;
 
-constraint n = i;
+constraint n = i; 

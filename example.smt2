@@ -9,10 +9,22 @@
 ; x = c | dd
 (assert (str.in_re x (re.union (str.to_re "c") (str.to_re "dd"))))
 
-; y = l b vad nu det är
+; y = (b(b|cc*b))*(bcc*|ac*a)
+(assert (str.in_re y (re.++ 
+(re.* (re.++ (str.to_re "b")
+            (re.union (str.to_re "b")
+                      (re.++ (str.to_re "c")
+                            (re.++
+                              (re.* (str.to_re "c"))
+                              (str.to_re "b"))))))
+(re.union (re.++ (str.to_re "bc") (re.* (str.to_re "c"))) 
+          (re.++ (str.to_re "a") (re.++ (re.* (str.to_re "c")) (str.to_re "a"))))
+)))
 
 (assert (= x (str.substr y i n)))
-(assert (= (* 2 i) n))
+(assert (=  i n))
+
+(assert (= 10 (str.len y)))
 
 (check-sat)
 (get-model)
