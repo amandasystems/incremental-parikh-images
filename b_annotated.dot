@@ -1,15 +1,15 @@
 digraph Automaton {rankdir = LR;
 initial [shape=plaintext,label=""];
-initial -> Ib;
+initial -> I_B;
 A [shape=circle,label="A"];
-A -> Fb [label="a/ 1"]
-A -> A [label="c/ \\#c"]
+A -> F_B [label="a/x_2"]
+A -> A [label="c/l_A -x_1 -2x_2 -2x_3"]
 B [shape=circle,label="B"];
-B -> Ib [label="b/ 0"]
-B -> B [label="c/ 0"]
-B -> Fb [label="c/ 0"]
-Fb [shape=doublecircle,label="F_B"];
-Ib [shape=circle,label="I_B"];
-Ib -> A [label="a/ 1"]
-Ib -> B [label="b/ 0"]
+B -> I_B [label="b/x_2 + x_3  - 1"]
+B -> B [label="c/x_1"]
+B -> F_B [label="c/1 -x_2"]
+F_B [shape=doublecircle,label="F_B"];
+I_B [shape=circle,label="I_B"];
+I_B -> A [label="a/x_2"]
+I_B -> B [label="b/x_3"]
 }
