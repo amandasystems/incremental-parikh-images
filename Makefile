@@ -1,5 +1,5 @@
 
-FIGURES=$(shell grep includegraphics main.tex introduction.tex | grep -v '\\commit' | sed -e 's/.*{\([^\}]*\)}/\1.pdf/' | tr -s '\n' ' ')
+FIGURES=$(shell grep includegraphics main.tex introduction.tex example.tex | grep -v '\\commit' | sed -e 's/.*{\([^\}]*\)}/\1.pdf/' | tr -s '\n' ' ')
 
 %.tex: %.dot
 	dot2tex -tmath --encoding utf8 --autosize --crop -ftikz $< > $@

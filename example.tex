@@ -102,28 +102,6 @@ element-wise sum:
   \IncrementVec_\Transition \text{ where $\IncrementVec_\Transition$ are the increments of transition $\Transition$}.
 \end{equation}
 
-\begin{figure}[h]
-    \centering 
-  \begin{subfigure}[b]{0.5\textwidth}
-    \centering
-    \includegraphics[scale=\autscale]{a_annotated}
-    \caption{ $A'$ with its associated transition variables in symbolic form.
-    Note: unused ($0$) self-loops at $I_{A'}$ and $F_{A'}$ have been pruned for
-    readability.}\label{fig:aut_a_annotated}
-      %\Description[SHORT]{LONG}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.5\textwidth}
-    \centering
-    \includegraphics[scale=\autscale]{b_annotated}
-    \caption{$B$ with its associated transition variables in symbolic forms.
-    Note that state $B$ is now completely dead.}\label{fig:aut_b_annotated}
-      %\Description[SHORT]{LONG}
-  \end{subfigure}
-  \caption{The starting automata, without their counter increments and with
-  their transition variables in symbolic form.}\label{fig:propagated}
-\end{figure}
-
-
 We proceed by adding linear constraints requiring transition variables to
 represent a flow through their automaton by adding linear constraints stating
 that the number of incoming transitions is equal to the number of outgoing ones.
@@ -136,41 +114,84 @@ cancels itself out. This means that for automata where a loop can become
 unreachable, additional constraints would be required to ensure reachability.
 However, being lazy, we put off that work until later.
 
-Performing symbolic reasoning on these equations and plugging the corresponding
-symbolic representation of the constraints on each corresponding integer
-variable back as an annotation on its transition, we obtain the two automata in
-\cref{fig:propagated}.
+\begin{figure}[h]
+  \centering 
+  \includegraphics[scale=\autscale]{a_1}
+  \caption{ $A'$ with its associated transition variables in symbolic form after
+  minimal elminiation of variables using linear algebra. Note the incoming flow
+  of $1$ in the starting state and its balancing of the outgoing transitions!
+  }\label{fig:a_1}
+\end{figure}
 
-Several transitions are already marked as unuseable (have a transition variable
-value of $0$) or always present (have a transition variable with a constant
-value greater than zero) by just applying standard linear equation solving to
-the flow equations described above. Note that this includes
-\cref{const:more-inside-than-before,const:something-before-and-after}, which are
-related to the transition variables through the sums described in
-\cref{eq:counter-sums}. This means that we effectively can prune $A'$ of its
-upper path when continuing the proof, as it is incongruent with the flow
-equations and \cref{ex:string-constraints}. Note that the per-automata length
-counting registers have been assigned the same solver variable $l_A$. Since they
-have to be equal, either one can be used in both automata.
 
-Notably, one such conclusion is that $i > 0$ from
-\cref{const:something-before-and-after}. From flow preservation we have that the
-$F_{A'}$ to $F_{A'}$ transition is represented by $l_A - n - i$.
-\footnote{Intuitively, the total length is made up of what is before, inside and
-after the substring.} This in turn through \cref{const:more-inside-than-before}
-forces $n \geq 2$, which in turn (through flow-preservation) forces a path from
-$I_{A'}$ to $F_{A'}$ through $D$, rather than the single-transition path from
-$I_{A'}$ to $F_{A'}$. This immediately implies that the problem is
+As an example, we start with reasoning about $A'$. Performing symbolic reasoning
+on these equations and plugging the corresponding symbolic representation of the
+constraints on each corresponding integer variable back as an annotation on its
+transition, we obtain the automaton in \cref{fig:a_1}. After slightly more
+linear algebra to remove variables through equality elimination, we have
+\cref{fig:a_2}, whose transitions are only described in terms of the free
+variables we care about representing the length of the automaton ($l_A$), the
+start of the substring ($i$), and the length of the substring ($n$).
+
+\begin{figure}[h]
+  \centering 
+  \includegraphics[scale=\autscale]{a_2}
+  \caption{ $A'$ after even more linear algebra, with most transitions expressed
+  in terms of $n$. Intuitively, this version captures the fact that $n$ is given
+  by distributing the incoming flow of $1$ across the two outgoing transitions
+  from $I_{A'}$, the initial state.}
+  \label{fig:a_2}
+\end{figure}
+
+Having obtained this representation, we conclude that $1 < n \leq 2$ from
+\cref{const:something-before-and-after,const:something-before-and-after}. The
+upper bound is obtained by the following reasoning. Since all transition
+variables are nonnegative integers (a transition cannot be used a negative
+amount of times), $n \leq 2$ from the $I_A$ to $F_A$ transition. Therefore, it
+follows that $n=2$, which implies that the $I_A$ to $F_A$ transition can never
+be used under these constraints and that we must use the two $\Char{d}$-labelled
+transitions, both now taken $n-1 =1$ times. This immediately implies that the problem is
 unsatisfiable, since we know this transition has no correspondance in automaton
-$B$. 
+$B$.
 
-However, \Calculus{} does not at this point, and we press on with concluding
-that none of the loops of $A'$ at this stage can become disconnected since
-they are at the initial and final states, both of which are trivially reachable
-for any assignments of the non-constant transition variables. This means that
-all valid counter assignments of $A'$ are described by \cref{eq:counter-sums}
-and the flow equations alone without the need for expensive connectivity
-constraints.
+We repeat similar methods to arrive at the automata in \cref{fig:propagated}.
+
+\begin{figure}[h]
+    \centering 
+  \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{a_annotated}
+    \caption{ $A'$ with its associated transition variables in symbolic
+    form.}\label{fig:aut_a_annotated}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[scale=\autscale]{b_annotated}
+    \caption{$B$ with its associated transition variables in symbolic forms.
+    Note the large number of implicitly existence-quantified bound variables on
+    transitions, suggesting that this automaton has a more complex structure
+    with relation to its (free) target variable representing the string length
+    than $A'$. The variables used here are fresh, and do not correspond to the
+    ones previously used.}\label{fig:aut_b_annotated}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+  \caption{The automata after applying linear algebra and equality elimination
+  to prune them.}\label{fig:propagated}
+\end{figure}
+
+
+Note that the per-automata length counting registers have been assigned the same
+solver variable $l_A$. Since they have to be equal, either one can be used in
+both automata through similar applications of equality elimination rules.
+
+At this point we know we have an unsatisfiable solution, \Calculus{} does not.
+We press on with concluding that none of the loops of $A'$ at this stage can
+become disconnected since they are at the initial and final states, both of
+which are trivially reachable for any assignments of the non-constant transition
+variables. This means that all valid counter assignments of $A'$ are described
+by \cref{eq:counter-sums} and the flow equations alone without the need for
+expensive connectivity constraints.
 
 After concluding this, we have a choice of two paths through automaton $B$; the
 upper through state $A$ or the lower through state $B$. We case split on a

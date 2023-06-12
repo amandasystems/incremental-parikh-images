@@ -1,0 +1,12 @@
+digraph Automaton {rankdir = LR;
+initial [shape=plaintext,label=""];
+initial -> I_A [label=1];
+D [shape=circle,label="D"];
+D -> F_A [label="d/n - 1"]
+F_A [shape=doublecircle,label="F_A"];
+F_A -> F_A [label="\Sigma/l_A  - i - n"]
+I_A [shape=circle,label="I_A"];
+I_A -> F_A [label="c/ 2 - n"]
+I_A -> D [label="d/ n - 1"]
+I_A -> I_A [label="\Sigma/i"]
+}
