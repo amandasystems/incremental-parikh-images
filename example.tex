@@ -1,4 +1,57 @@
-\begin{figure}[h]
+In this section we will introduce an intuition for how a string constraint
+problem in an automata-based solver like \OstrichPlus{} is translated to a
+Parikh automata intersection problem and solved using \Calculus{}.
+
+We use PCRE regular expression notation here and throughout the paper, writing
+them $\Regex{\texttt{like this}}$. This means that $\RegexOr{}$ is alternation,
+$\mathtt{*}$ the Kleene star, and $\mathtt{.}$, matches any single character.
+For the length of a string $s$, we write $\Length{s}$.
+
+\begin{example}\label{ex:string-constraints} Consider the following set of
+    string constraints:
+\begin{constraints}
+    \item\label{const:s1-in-c-dd} $s_1 \in \Language(\Regex{c\RegexOr{}dd})$.
+    \item\label{const:s2-in-b} $s_2 \in \Language(B)$, the language accepted by
+    automaton~$B$ of \cref{fig:aut_b}.
+    \item\label{const:s1-substring} $s_1 = \Substring(s_2, i, n)$, that is $s_1$ is an
+    $n$-length substring of $s_2$ starting at offset $i$.
+    \item\label{const:more-inside-than-before} $n > i$, that is what comes
+    before $s_1$ in $s_2$ is shorter than $s_1$.
+    \item\label{const:something-before-and-after} $i > 0 \land \Length{s_2} -i -n > 0$, that
+    is there is at least one character in $s_2$ after $s_1$.
+\end{constraints}
+\end{example}
+
+To solve these constraints, we will first perform translation into Parikh
+automata, then break down how the constraints will be handled by \Calculus{}.
+
+\subsection{Translating the constraints into a Parikh automata intersection problem}
+
+By a Parikh automaton we mean a standard non-deterministic finite automaton
+(NFA) with a set of integer registers (Parikh registers) that are incremented
+(or decremented) at each transition.
+
+To solve \cref{ex:string-constraints} using \Calculus{} in a theorem proving
+context, \cref{const:s1-in-c-dd,const:s2-in-b,const:s1-substring} can be
+translated to the product of Parikh automata $B \times A'$, where $A'$
+(\cref{fig:aut_a}) is the Parikh automata obtained by applying the encoding of
+$\Substring$ described in \cite{ostrich-plus}. That description can then be used
+to obtain values for the subsstring offsets $i, n$. The corresponding automata
+can be found in \cref{fig:examples}.
+
+In the automata of \cref{fig:examples}, we will use the notation $a /
+\begin{bmatrix} x_+ \end{bmatrix}$ to mean that a transition reads an input
+character $a$ and increments register $x$ by one. We will omit zero-valued
+increments and assume that all registers are scoped to their automaton. The
+increments are usually represented as a vector (hence the brackets), but as it
+is mostly sparse here, we use the symbolic notation $\begin{bmatrix} x_{1+}
+\end{bmatrix}$ rather than the more cumbersome $\left[ 0, 1,  0 , \ldots, 0
+\right]$.
+
+Note that the labels of transitions can be ranges of characters with $\Sigma$
+representing any character in the alphabet.
+
+\begin{figure}[ht]
     \centering 
   \begin{subfigure}[b]{0.5\textwidth}
     \centering
@@ -18,54 +71,8 @@
       %\Description[SHORT]{LONG}
   \end{subfigure}
   \caption{The collection of automata we use as running
-  examples}\label{fig:examples}
+  examples, both derived from \cref{ex:string-constraints}.}\label{fig:examples}
 \end{figure}
-
-
-In this section we will introduce an intuition for how a string constraint
-problem in an automata-based solver like \OstrichPlus{} is translated to a
-Parikh automata intersection problem and solved using \Calculus{}. First, by a
-Parikh automaton we mean a standard non-deterministic finite automaton (NFA)
-with a set of integer registers (Parikh registers) that are incremented (or
-decremented) at each transition. In the automata of \cref{fig:examples}, we will
-use the notation $a / \begin{bmatrix} x_+ \end{bmatrix}$ to mean that a
-transition reads an input character $a$ and increments register $x$ by one. We
-will omit zero-valued increments and assume that all registers are scoped to
-their automaton. The increments are usually represented as a vector (hence the
-brackets), but as it is mostly sparse here, we use the symbolic notation
-$\begin{bmatrix} x_{1+} \end{bmatrix}$ rather than the more cumbersome $\left[
-0, 1,  0 , \ldots, 0 \right]$.
-
-Note that the labels of transitions can be ranges of characters with $\Sigma$
-representing any character in the alphabet.
-
-We use PCRE regular expression notation here and throughout the paper, writing
-them $\Regex{\texttt{like this}}$. This means that $\RegexOr{}$ is alternation,
-$\mathtt{*}$ the Kleene star, and $\mathtt{.}$, matches any single character.
-
-For the length of a string $s$, we write $\Length{s}$.
-
-\begin{example}\label{ex:string-constraints} Consider the following set of
-    string constraints:
-\begin{constraints}
-    \item\label{const:s1-in-c-dd} $s_1 \in \Language(\Regex{c\RegexOr{}dd})$.
-    \item\label{const:s2-in-b} $s_2 \in \Language(B)$, the language accepted by
-    automaton~$B$ of \cref{fig:aut_b}.
-    \item\label{const:s1-substring} $s_1 = \Substring(s_2, i, n)$, that is $s_1$ is an
-    $n$-length substring of $s_2$ starting at offset $i$.
-    \item\label{const:more-inside-than-before} $n > i$, that is what comes
-    before $s_1$ in $s_2$ is shorter than $s_1$.
-    \item\label{const:something-before-and-after} $i > 0 \land \Length{s_2} -i -n > 0$, that
-    is there is at least one character in $s_2$ after $s_1$.
-\end{constraints}
-\end{example}
-
-To solve \cref{ex:string-constraints} using \Calculus{} in a theorem proving
-context, \cref{const:s1-in-c-dd,const:s2-in-b,const:s1-substring} can be
-translated to the product of Parikh automata $B \times A'$, where $A'$
-(\cref{fig:aut_a}) is the Parikh automata obtained by applying the encoding of
-$\Substring$ described in \cite{ostrich-plus}. That description can then be used
-to obtain values for the subsstring offsets $i, n$.
 
 Intuitively, \cref{ex:string-constraints} are unsatisfiable. By inspecting the
 automata, we realise that the path using $\Char{dd}$ in $A'$ is unusable since
@@ -76,23 +83,38 @@ preceding character. Therefore, already
 \cref{const:s1-in-c-dd,const:s1-in-c-dd,const:s1-substring,const:more-inside-than-before}
 together are unsatisfiable.
 
+We will now proceed to show how we prove this using the three principles of
+\Calculus{}: problem-aware case splitting (sometimes called branching), lazy
+enforcement of connectivity constraints (essentially consisting of a constraint
+programmgin-style propagator), and lazy computation of products of automata.
 
-Our approach to the computation of the Parikh image (and therefore the solution
-to the intersection problem posed by \cref{ex:string-constraints}) consists of
-two applications of laziness; late computation of products of automata, and lazy
-enforcement of connectivity constraints. Both are in contrast to the eager
-approach to finding the Parikh image described in~\cite{generate-parikh-image},
-that would have started by computing the product $A' \times B$, translated it to
-a Presburger formula with $i, n$ etc as free variables, and then plugged in
-\cref{const:more-inside-than-before,const:something-before-and-after}.
+Both lazinesses are in contrast to the eager approach to finding the Parikh
+image described in~\cite{generate-parikh-image}, that would have started by
+computing the product $A' \times B$, translated it to a Presburger formula with
+$i, n$ etc as free variables, and then plugged in
+\cref{const:more-inside-than-before,const:something-before-and-after} to the
+resulting set of linear inequalitites.
 
-Starting with an interactive theorem prover and the goal of solving the Parikh
-automata intersection problem, we associate each transition $\Transition$ of
-$A'$ and $B$ with a fresh nonnegative integer variable from,
-$\TransitionVar_\Transition$, identically to \cite{generate-parikh-image}. These
-variables represent how many times each transition is taken. Hence, the final
-counter value for counters $r_1, \ldots, r_k$ of each automaton is the
-element-wise sum:
+\subsection{Solving the Parikh automata intersection problem using \Calculus{}}
+
+The approach consists of four steps: first we approximately describe each
+automaton as a transition-counting flow from the initial state to its accepting
+states where we relate its transitions to integer variables and register values
+to their transitions. Then we will use the linear algebra part of the theorem
+prover to discover that some paths through one of the automata are incompatible
+by \cref{const:more-inside-than-before,const:something-before-and-after}. This
+will allow us to discover an unreachable state, which allows further
+elimination. Finally, we will use case splitting to further subdivide the
+problem into bite-sized products of automata, both of which are empty, thus
+concluding that \cref{ex:string-constraints} is unsatisfiable.
+
+\subsubsection{Eliminating paths through automata using flow analysis}
+
+We associate each transition $\Transition$ of $A'$ and $B$ with a fresh
+nonnegative integer variable from, $\TransitionVar_\Transition$, identically to
+\cite{generate-parikh-image}. These variables represent how many times each
+transition is taken. Hence, the final counter value for counters $r_1, \ldots,
+r_k$ of each automaton is the element-wise sum:
 \begin{equation}\label{eq:counter-sums}
 \begin{bmatrix} 
   r_1 \\
@@ -123,7 +145,7 @@ However, being lazy, we put off that work until later.
   }\label{fig:a_1}
 \end{figure}
 
-
+\subsubsection{Using linear algebra to eliminate flow}
 As an example, we start with reasoning about $A'$. Performing symbolic reasoning
 on these equations and plugging the corresponding symbolic representation of the
 constraints on each corresponding integer variable back as an annotation on its
@@ -185,6 +207,7 @@ Note that the per-automata length counting registers have been assigned the same
 solver variable $l_A$. Since they have to be equal, either one can be used in
 both automata through similar applications of equality elimination rules.
 
+\subsubsection{Propagation of connectivity constraints}
 At this point we know we have an unsatisfiable solution, \Calculus{} does not.
 We press on with concluding that none of the loops of $A'$ at this stage can
 become disconnected since they are at the initial and final states, both of
@@ -193,6 +216,7 @@ variables. This means that all valid counter assignments of $A'$ are described
 by \cref{eq:counter-sums} and the flow equations alone without the need for
 expensive connectivity constraints.
 
+\subsubsection{Case Splitting}
 After concluding this, we have a choice of two paths through automaton $B$; the
 upper through state $A$ or the lower through state $B$. We case split on a
 problem-aware basis by selecting a transition variable that would disconnect
@@ -201,7 +225,8 @@ form $I_B$ to state $B$. We divide it into the cases used ($> 0$) or unused ($ =
 0$) since those are the threshold values of the calculus, preferring the latter
 option on the first-fail principle.
 
-At this point we have two small, stick-like automata after discounting all
+\subsubsection{COMPUTING PRODUCTS}
+Now we have two small, stick-like automata after discounting all
 transitions with a corresponding transition variable that is zero, and can try
 to compute their product. Doing so, we will immediately notice that the
 $\Char{d}$-labelled transition of automaton $A'$ has no correspondence in $B$,
