@@ -1,34 +1,35 @@
-The Parikh image is a characterisation of formal languages in terms of their
-character counts. Given a language over an alphabet~$\{a_1, \ldots, a_k\}$, the
-Parikh image is a set of $k$-dimensional vectors that contains some
-vector~$\VectorLiteral{m_1, m_2, \ldots, m_k}$ if and only if the formal
-language contains a word in which each $a_i$ occurs $m_i$ times. It is a
-classical result that the Parikh image of every context-free language (and,
-thus, also of every regular language) is a semilinear set~\cite{parikh-theorem},
-i.e., Presburger-definable.
+Extending automated theorem provers ("SMT solvers") with support for rich string
+constraints is important for program analysis, in particular to detect
+cross-site scripting vulnerabilities and other string manipulation bugs.
 
-Parikh images play a central role in many automata-based algorithms, for
-instance and notably in today's string solvers, which often have to process
-constraints that combine regular language membership with word length. To decide
-whether a simple formula like $x \in \Language_1 \wedge y \in \Language_2 \wedge
-|x| > |y|$, with string variables~$x, y$ and regular languages~$\Language_1,
-\Language_2$, is satisfiable, it is necessary to reason about the sets of word
-lengths induced by $\Language_1, \Language_2$, which are special cases of the
-Parikh image.  This required combined reasoning about strings and string length
-has long been identified as a major bottleneck in string solvers
+To decide whether a formula like $x \in \Language_1 \wedge y \in \Language_2
+\wedge |x| > |y|$, with string variables~$x, y$ and regular
+languages~$\Language_1, \Language_2$, is satisfiable, it is necessary to reason
+about the sets of word lengths induced by $\Language_1, \Language_2$, which are
+special cases of the Parikh image. This required combined reasoning about
+strings and string length has long been identified as a major bottleneck in
+string solvers
 \cite{DBLP:conf/cav/AbdullaACHRRS15,length-aware-solver,approximate-parikh,DBLP:journals/corr/BerzishZG17}.
 Other string solvers make use of Parikh automata~\cite{parikh-automata}, and
 thus Parikh images in the general case, to handle operations including
 \verb!str.substr!  and \verb!str.at!, which comes at an even higher price in
 terms of computational complexity~\cite{ostrich-plus}.
 
+The Parikh image, more broadly, is a characterisation of formal languages in
+terms of their character counts. Given a language over an alphabet~$\{a_1,
+\ldots, a_k\}$, the Parikh image is a set of $k$-dimensional vectors that
+contains some vector~$\VectorLiteral{m_1, m_2, \ldots, m_k}$ if and only if the
+formal language contains a word in which each $a_i$ occurs $m_i$ times. It is a
+classical result that the Parikh image of every context-free language (and,
+thus, also of every regular language) is a semilinear set~\cite{parikh-theorem},
+i.e., Presburger-definable.
 
 It is possible to compute an existential Presburger formula describing the
 Parikh image of any context-free language in linear
 time~\cite{generate-parikh-image}; for the special case of regular languages,
 this result was also stated in \cite{muscholl-linear}. While theoretically
 elegant, this construction has several disadvantages, often making it
-unpractical for integration into algorithms. Firstly, the constructed Presburger
+impractical for integration into algorithms. Firstly, the constructed Presburger
 formula contains a linear number of existential quantifiers in the size of the
 considered grammar, as well as complex Boolean structure, which is needed to
 express the connectedness of sets of productions considered in the construction.
