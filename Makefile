@@ -1,5 +1,6 @@
 
-FIGURES=$(shell grep includegraphics main.tex introduction.tex example.tex | grep -v '\\commit' | sed -e 's/.*{\([^\}]*\)}/\1.pdf/' | tr -s '\n' ' ')
+TEXFILES=$(shell grep 'input{'  main.tex | sed -e 's/.*{\([^\}]*.tex\)}/\1/' | tr -s '\n' ' ')
+FIGURES=$(shell grep includegraphics main.tex ${TEXFILES} | grep -v '\\commit' | sed -e 's/.*{\([^\}]*\)}/\1.pdf/' | tr -s '\n' ' ')
 
 %.tex: %.dot
 	dot2tex -tmath --encoding utf8 --autosize --crop -ftikz $< > $@
@@ -11,7 +12,7 @@ FIGURES=$(shell grep includegraphics main.tex introduction.tex example.tex | gre
 	dot2tex -tmath --encoding utf8 --autosize -ftikz --figonly $< -o $@
 
 .PHONY: FORCE 
-main.pdf: FORCE main.tex ${FIGURES}
+main.pdf: FORCE main.tex ${FIGURES} ${TEXFILES}
 	./bin/latexrun main.tex
 
 .PHONY: clean
