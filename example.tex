@@ -51,21 +51,24 @@ is mostly sparse here, we use the symbolic notation $\begin{bmatrix} x_{1+}
 Note that the labels of transitions can be ranges of characters with $\Sigma$
 representing any character in the alphabet.
 
+\newcommand{\autscale}[0]{0.45}
+
 \begin{figure}[ht]
     \centering 
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{\autscale\textwidth}
     \centering
-    \includegraphics[scale=\autscale]{a}
+    \includegraphics[width=\textwidth]{a}
     \caption{The automaton $A'$, whose Parikh registers count the length of the
     string accepted by the automaton (register $l_A$), the start offset of the
     substring ($i$) and length ($n$) of the substring matching
     $\Regex{c\RegexOr{}dd}$. Note the symbolic transitions in the starting and
     accepting states matching any symbol in the alphabet!}\label{fig:aut_a}
       %\Description[SHORT]{LONG}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.5\textwidth}
+  \end{subfigure}%
+  \hfill%
+  \begin{subfigure}[b]{\autscale\textwidth}
     \centering
-    \includegraphics[scale=\autscale]{b}
+    \includegraphics[width=\textwidth]{b}
     \caption{The automaton $B$, where the Parikh registers count the length of
     the string in register $l_B$.}\label{fig:aut_b}
       %\Description[SHORT]{LONG}
@@ -138,7 +141,7 @@ However, being lazy, we put off that work until later.
 
 \begin{figure}[h]
   \centering 
-  \includegraphics[scale=\autscale]{a_1}
+  \includegraphics[width=0.6\textwidth]{a_1}
   \caption{ $A'$ with its associated transition variables in symbolic form after
   minimal elminiation of variables using linear algebra. Note the incoming flow
   of $1$ in the starting state and its balancing of the outgoing transitions!
@@ -157,7 +160,7 @@ start of the substring ($i$), and the length of the substring ($n$).
 
 \begin{figure}[h]
   \centering 
-  \includegraphics[scale=\autscale]{a_2}
+  \includegraphics[width=0.6\textwidth]{a_2}
   \caption{ $A'$ after even more linear algebra, with most transitions expressed
   in terms of $n$. Intuitively, this version captures the fact that $n$ is given
   by distributing the incoming flow of $1$ across the two outgoing transitions
@@ -180,16 +183,16 @@ We repeat similar methods to arrive at the automata in \cref{fig:propagated}.
 
 \begin{figure}[h]
     \centering 
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{\autscale\textwidth}
     \centering
-    \includegraphics[scale=\autscale]{a_annotated}
+    \includegraphics[width=\textwidth]{a_annotated}
     \caption{ $A'$ with its associated transition variables in symbolic
     form.}\label{fig:aut_a_annotated}
       %\Description[SHORT]{LONG}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.5\textwidth}
+  \end{subfigure}\hfill%
+  \begin{subfigure}[b]{\autscale\textwidth}
     \centering
-    \includegraphics[scale=\autscale]{b_annotated}
+    \includegraphics[width=\textwidth]{b_annotated}
     \caption{$B$ with its associated transition variables in symbolic forms.
     Note the large number of implicitly existence-quantified bound variables on
     transitions, suggesting that this automaton has a more complex structure
