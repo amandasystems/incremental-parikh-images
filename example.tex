@@ -24,20 +24,24 @@ For the length of a string $s$, we write $\Length{s}$.
 
 To solve these constraints, we will first perform translation into Parikh
 automata, then break down how the constraints will be handled by \Calculus{}.
+This example will recur in a more formal fashion in \cref{sec:generalised},
+which can be read in parallel if (even) more detail is desired.
 
 \subsection{Translating the constraints into a Parikh automata intersection problem}
 
 By a Parikh automaton we mean a standard non-deterministic finite automaton
 (NFA) with a set of integer registers (Parikh registers) that are incremented
-(or decremented) at each transition.
+(or decremented) at each transition. A formal definition can be found in
+\cref{def:parikh-automata}.
 
 To solve \cref{ex:string-constraints} using \Calculus{} in a theorem proving
 context, \cref{const:s1-in-c-dd,const:s2-in-b,const:s1-substring} can be
 translated to the product of Parikh automata $B \times A'$, where $A'$
 (\cref{fig:aut_a}) is the Parikh automata obtained by applying the encoding of
-$\Substring$ described in \cite{ostrich-plus}. That description can then be used
-to obtain values for the substring offsets $i, n$. The corresponding automata
-can be found in \cref{fig:examples}.
+$\Substring$ described in \cite{ostrich-plus} to
+$\Language(\Regex{c\RegexOr{}dd})$. That description can then be used to obtain
+values for the substring offsets $i, n$. The corresponding automata can be found
+in \cref{fig:examples}.
 
 In the automata of \cref{fig:examples}, we will use the notation $a /
 \begin{bmatrix} x_+ \end{bmatrix}$ to mean that a transition reads an input
@@ -51,7 +55,7 @@ is mostly sparse here, we use the symbolic notation $\begin{bmatrix} x_{1+}
 Note that the labels of transitions can be ranges of characters with $\Sigma$
 representing any character in the alphabet.
 
-\newcommand{\autscale}[0]{0.45}
+\newcommand{\autscale}[0]{0.48}
 
 \begin{figure}[ht]
     \centering 

@@ -38,32 +38,29 @@ the complete image~$L(\Language_1)$. This encoding can be seen applied to automa
 \cref{ex:string-constraints} (see \cref{fig:aut_b}).
 \end{example}
 
-\subsection{Integer Datatype Constraints on Strings}\label{sec:parikh-automata}
+\subsection{Integer Constraints on Strings}\label{sec:parikh-automata}
 
-Parikh images are also applicable for deciding more general classes of
-string constraints~\cite{ostrich-plus}. Consider, for instance, a
-constraint involving the substring operation of \cref{const:s1-substring}:
-\begin{equation}\label{eq:substring}
-    s_1 = \Substring(s_2, i, n)
-\end{equation}
+Parikh images are also applicable for deciding more general classes of string
+constraints~\cite{ostrich-plus}. Consider the substring constraint
+\cref{const:s1-substring} of \cref{ex:string-constraints}: $ s_1 =
+\Substring(s_2, i, n)$, that is $s_1$ is an $n$-length substring of $s_2$
+starting at offset $i$ (in some variants , $n$ is $i + |n|$, i.e. the ending
+index). That constraint belongs to an expressive fragment of string logic that
+cannot be decided by most state-of-the-art string solvers.
 
-That is $s_1$ is an $n$-length substring of $s_2$ starting at offset $i$ (in
-some variants , $n$ is $i + |n|$, i.e. the ending index). That constraint
-belongs to an expressive fragment of string logic that cannot be decided by most
-state-of-the-art string solvers.
-
-We can model \cref{eq:substring} using the notion of a \emph{Parikh
-  automaton}~\cite{parikh-automata,expressiveness}. A Parikh automaton
-is a standard automaton is extended such that transitions are labelled both with characters
-from the alphabet~$\Alphabet$, and with offset vectors defining the
-increments of a finite number of counters. This means that Parikh
-automata recognise words over an extended
-alphabet~$\Alphabet \times D$, where $D \subseteq \Naturals^d$ is a
-finite set of increment vectors (notation as
-in~\cite{expressiveness}). We use the symbols~$\pi_\Alphabet, \pi_D$
-to denote projections to the first and the second component of a
-composite letter~$(a, \Vector{v})$, respectively, and extend those
-projections to words:
+In \cref{sec:intuition} we hand-wavily modelled \cref{const:s1-substring} (and
+  the other constraints) using \emph{Parikh
+  automata}~\cite{parikh-automata,expressiveness}. A Parikh automaton is a
+  standard NFA extended such that transitions are additionally labelled both
+  with offset vectors defining the increments of a finite number of counters.
+  This means that Parikh automata recognise words over an extended
+  alphabet~$\Alphabet \times D$, where $D \subseteq \Naturals^d$ is a finite set
+  of increment vectors (notation as in~\cite{expressiveness}) and $\Alphabet$ is
+  the alphabet of the original NFA.
+  
+  We use the symbols~$\pi_\Alphabet, \pi_D$ to denote projections to the first
+  and the second component of a composite letter~$(a, \Vector{v})$,
+  respectively, and extend those projections to words:
 \begin{equation*}
   \pi_\Alphabet((a_1, \Vector{v}_1) \RepeatSum{\Concat} (a_k, \Vector{v}_k))
   ~=~ a_1 \RepeatSum{\Concat} a_k,
@@ -83,52 +80,43 @@ projections to words:
   $\pi_\Alphabet(w') = w$ and $\pi_D(w') \in C$.
 \end{definition}
 
+Applied to \cref{const:s1-substring}, the decision procedure in
+\cite{ostrich-plus} will construct a pre-image of $s_1$ under the substring
+operation, and check whether this pre-image is consistent with the constraint~$x
+\in \Language_1$, corresponding to the full product seen in
+\cref{ex:string-constraints}. Because the substring operation depends on the
+values of the integer variables~$i, n$, a Parikh automaton of dimension~$2$,
+shown in \cref{fig:aut_a}, models the pre-image. Intuitively, this construction
+accumulates any symbol (for the prefix of the substring operation), incrementing
+$i$ to mark the start of the substring, followed by the automaton representing
+the substring itself, modified to add a counter to increment $n$ at each
+transition, followed by a state that performs no increments and only accepts any
+suffix after the matched substring.
 
-    Applied to \eqref{eq:substring}, the decision procedure in
-\cite{ostrich-plus} will construct a pre-image of $\Language_2$ under
-the substring operation~$\cdot[n:m]$, and check whether this pre-image
-is consistent with the constraint~$x \in \Language_1$. Because the
-substring operation depends on the values of the integer
-variables~$n, m$, a Parikh automaton of dimension~$2$ is a suitable
-formalism to describe the pre-image, resulting
-in the automaton in Fig.~\ref{fig:parikh-automata} (right). The first
-component of the increment vectors is used to count the number of
-letters eliminated in the beginning of the string (value~$n$), while
-the second component records the beginning of the eliminated suffix
-(value~$m$).
-
-Denoting the language described by Fig.~\ref{fig:parikh-automata}
-(right) as $\Language_{pre}$, we can then replace \eqref{eq:substring}
-with an equi-satisfiable formula that no longer contains any explicit
-substring operation:
+% @Philipp: I am quite unsure about which intersection we are looking for here,
+% please verify I'm not wrong!
+Denoting the language described by \cref{fig:aut_a} as $\Language_{pre}$, we can
+then replace $s_1 = \Substring(s_2, i, n)$ and $s_2 \in
+\Language(B)$ (of \cref{const:s1-in-c-dd}) with an
+equi-satisfiable formula that no longer contains any explicit substring
+operation:
 %
 \begin{equation}
   \label{eq:parikh-constraint}
   p \in \Language_{pre} \wedge~
-  \pi_\Alphabet(p) \in \Language_1
+  \pi_\Alphabet(p) \in \Language(B)
   \wedge~~ \pi_D(p) =
   \begin{bmatrix}
-    n \\ m
+    i \\ n
   \end{bmatrix}~~
-  \wedge 0 \leq n \leq m \leq |p|
+  \wedge 0 \leq i \leq i + n \leq |p|
 \end{equation}
 %
-To check the satisfiability of \eqref{eq:parikh-constraint}, we need a
+To check the satisfiability of \cref{eq:parikh-constraint}, we need a
 decision procedure that can process intersections of regular languages
-(in this case, of $\Language_{pre}$ and $\Language_1$, synchronising
+(in this case, of $\Language_{pre}$ and $\Language(B)$, synchronising
 on $\Alphabet$), while imposing the side
 condition~$0 \leq n \leq m \leq |p|$ on the increment sum. In
 \cite{ostrich-plus}, this decision procedure turned out to be main
 bottleneck of the string solver, which was one of the motivations to
 develop the lazy algorithm proposed in this paper.
-
-\iffalse
-\begin{figure}[t]
-  \centering
-      \includegraphics[width=0.5\linewidth]{parikh_automaton}
-      \caption{The automaton part of a Parikh automaton for $\AcaOrBc{}$ with
-      $\Alphabet = \Set{\text{a, b, c}}, d = 3$. The semilinear set/Presburger
-      formula containing the constraints on the final register values cannot be
-      visualised.}\label{fig:parikh-automaton}
-    \end{figure}
-\fi
