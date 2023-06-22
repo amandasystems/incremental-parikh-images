@@ -208,12 +208,11 @@ solver variable $l_A$. Since they have to be equal, either one can be used in
 both automata through similar applications of equality elimination rules.
 
 \subsubsection{Propagation of connectivity constraints}
-At this point we know we have an unsatisfiable solution, \Calculus{} does not.
-We press on with concluding that none of the loops of $A'$ at this stage can
-become disconnected since they are at the initial and final states, both of
-which are trivially reachable for any assignments of the non-constant transition
-variables. This means that all valid counter assignments of $A'$ are described
-by \cref{eq:counter-sums} and the flow equations alone without the need for
+At this point we can conclude that none of the loops of $A'$ can become
+disconnected since they are at the initial and final states, both of which are
+reachable for any future assignments of the transition variables. This means
+that all valid counter assignments of $A'$ are described by
+\cref{eq:counter-sums} and the flow equations alone without the need for
 expensive connectivity constraints.
 
 \subsubsection{Case Splitting}
@@ -225,7 +224,7 @@ form $I_B$ to state $B$. We divide it into the cases used ($> 0$) or unused ($ =
 0$) since those are the threshold values of the calculus, preferring the latter
 option on the first-fail principle.
 
-\subsubsection{COMPUTING PRODUCTS}
+\subsubsection{Computing products}
 Now we have two small, stick-like automata after discounting all
 transitions with a corresponding transition variable that is zero, and can try
 to compute their product. Doing so, we will immediately notice that the
