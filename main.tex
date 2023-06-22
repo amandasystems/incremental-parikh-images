@@ -276,159 +276,7 @@
 \input{example.tex}
 
 \section{Preliminaries}\label{sec:preliminaries}
-
-\subsection{Monoids}
-
-A monoid $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ is an algebraic structure
-consisting of the non-empty carrier set of elements, $X$, an associative binary operation
-$X \times X \rightarrow X$ denoted as $\MonoidOp$, that is where for all $a, b,
-c \in X$, $(a \MonoidOp b) \MonoidOp c = a \MonoidOp (b \MonoidOp c)$. Finally,
-$\Monoid$ must have an identity element $0_{\Monoid} \in X$ such that
-$0_{\Monoid} \MonoidOp a = a \MonoidOp 0_{\Monoid} =   a$ for every $a \in X$.
-We sometimes use integer multiplication to represent repeated application of
-$\MonoidOp$, e.g. $3a = a \MonoidOp a \MonoidOp a$, for $a \in X$. $\Monoid$ is
-called \textit{commutative} if $\MonoidOp$ also commutes, that is if $a
-\MonoidOp b = b \MonoidOp a$ for all $a, b \in X$. 
-
-Finally, a \textit{homomorphism} is a structure-preserving map between two monoids
-$\Monoid_1, \Monoid_2$, that is a map $\Map : S_1 \rightarrow S_2$ such that $\Map(a
-\MonoidOp_1 b) = \Map(a) \MonoidOp_2 \Map(b)$, where $S_1, S_2$ are the carrier
-sets of $\Monoid_1$ and $\Monoid_2$ respectively, and $\MonoidOp_1, \MonoidOp_2$
-their binary operations.
-
-\subsection{Languages, Finite-state Automata and their Products}
-
-We define an alphabet as a finite set of symbols $\Alphabet$ with words $\Strings$, and
-the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
-Note that $\Strings = \Tuple{\Alphabet;\Concat{};\epsilon}$, is a
-non-commutative monoid, referred to as the free monoid. The string length
-function, $\Length{s}$ is an example of a homomorphism between $\Strings$
-and~$\mathbb{Z}$.
-
-An automaton~$\Automaton$ with alphabet~$\Alphabet$ is
-$\AutomatonTuple$ where $\Transitions \subseteq \States \times \Alphabet \times
-\States$, $\States$ is its states, $\InitialState$ its
-initial state, and $\AcceptingStates$ is its set of accepting states.  We
-write a transition $\Transition = \Tuple{\State, \Label, \State'} \in
-\Transitions$ as $\Transition = \FromLabelTo{\State}{\Label}{\State'}$.
-Similarly, we use the notation $\FromLabelTo{\State}{}{}$ to refer to the set of
-transitions starting in $\State$, and $\FromLabelTo{}{}{\State}$ to refer to the
-set of transitions coming into $\State$, whenever the automaton is clear from
-the context.
-
-We will let variables $\Transition, \Transition', \Transition_1, \ldots,
-\Transition_n$ etc describe transitions, $\State, \ldots, \State_n$ states, and
-$\Automaton, \ldots, \Automaton_n$ automata, and use subscript indexing
-($\Transitions_\Automaton$) to refer to the transitions, states, etc of a given
-automaton.
-
-By a \emph{product} of two automata $\Automaton_1, \Automaton_2$, written
-$\Automaton_1 \times \Automaton_2$, we mean an automaton constructed to run
-$\Automaton_1$ and $\Automaton_2$ in parallel on an input and only accept the
-input if both automata would do so.
-
-We refer to the resulting product states as tuples, $\Tuple{\State, \State'}$,
-which represent the state of the product automaton where $\Automaton_1$ would be
-in $\State$ and $\Automaton_2$ would be in $\State'$. Note that since we use
-ordered tuples the product is technically (but w.l.o.g) not commutative; the
-left-hand-side must come from the left-hand term. The sole purpose of this
-matching is to allow us to speak with precision about the origins of components
-in a product.
-
-\subsection{The Parikh Map and its Image}
-Formally, the \textit{Parikh map} over an alphabet $\Alphabet=
-\left\{a_1, \ldots, a_k \right\}$ is defined as in \cite{kozen}:
-$$
-\begin{aligned}
-& \ParikhMap: \MapFromTo{\Strings}{\natural^k} \\
-& \ParikhMap(s) = \VectorLiteral{\#a_1(s), \#a_2(s), \ldots, \#a_k(s)}
-\end{aligned}
-$$
-
-That is, $\ParikhMap(s)$ is a vector of the number of occurrences of each
-character in the language for a given string $s$. For example, for  $\Alphabet =
-\Set{a, b}$, we would have $\ParikhMap(abb) = \VectorLiteral{1, 2}$.
-
-We define the image of this map, the \textit{Parikh image}, of some subset of
-the language $\Language \subseteq \Strings$ as:
-\[
-\ParikhMap(\Language) = \Set{\ParikhMap(x) \SuchThat x \in \Language}
-\]
-
-Thus, we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1,
-1\right], \left[1, 2\right]\right\}$. We also sometimes use the standard
-notation $\#l(w)$ to talk about an individual letter $l$ in a word $w$. For
-example, for the Parikh vector above, we would have $\CountOf{a} = 1$. You have
-already seen this in \cref{sec:introduction:parikh}.
-
-Parikh's theorem states that any context-free language has a letter-equivalent
-regular language (c.f.~\cite{construction} for a construction of such automata
-from context-free grammars and~\cite{bounds} for bounds on its size). However,
-there are languages that are not context-free that also have semilinear images
-under~$\ParikhMap$ (e.g. $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) =
-\ParikhMap((abc)^*) = \CountOf{a} = \CountOf{b} = \CountOf{c} \land \CountOf{a}
-\geq 0$). This means they can be represented as a quantifier-free Presburger
-formula.
-
-Note that while Parikh's theorem applies to context-free languages, in this
-paper we focus only on regular languages.
-
-\subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
-\label{sec:verma}
-
-Since Parikh images are semilinear, any Parikh image can be written as a set of linear
-equations. The following construction for an NFA $\Automaton = \AutomatonTuple$ is based on the version for context-free grammars presented in \cite{generate-parikh-image}:
-\begin{equation}
-\begin{aligned}
-\ParikhMap(\Automaton) := 
-& \AndComp{\Letter \in \Alphabet}{\LetterVar_{\Letter} = \sum_{\Transition = \FromLabelTo{}{\Letter}{} \in \Transitions} \TransitionVar_{\Transition}
-}\\
-& \AndComp{\State \in \AcceptingStates}{\FinalStateVar_{\State} > 0 \longrightarrow  \StateVar_{\State} > 0}\\
-& \AndComp{\State \in \States}{
-  \left(\FinalStateVar_{\State} \text{ if } \State \in \AcceptingStates \text{ otherwise } 0 \right) +
-  \sum_{\Transition \in \FromLabelTo{\State}{}{}} \Filter(\Transition) - \sum_{\Transition \in \FromLabelTo{}{}{\State}} \Filter(\Transition)
-= \begin{cases}
-    1 \text{  if $\State = \InitialState$} \\
-    0 \text{ otherwise}
-  \end{cases}
-}\\
-& \AndComp{\Transition = \FromLabelTo{\State'}{}{\State} \in \Transitions}{
-  \TransitionVar_{\Transition} > 0 \longrightarrow \StateVar_{\State} > 0
-} \\
-& \AndComp{\State \in F}{
-  \StateVar_{\State} > 0 \longrightarrow \FinalStateVar_{\State} = 1
-} \\
-&\AndComp{\State \in \States}{
-  \StateVar_{\State} > 0 \longrightarrow
-  \OrComp{\Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions}{
-    \StateVar_{\State} = \StateVar_{\State'} + 1 \land 
-    \TransitionVar_{\Transition} \geq 1 \land
-  \StateVar_{\State'} \geq 1
-    }
-}
-\end{aligned}
-\label{eq:generate-parikh}
-\end{equation}
-
-All variables $\TransitionVar_\Transition, \StateVar_\State, \FinalStateVar_\State$ are
-existentially quantified and the free variables $\LetterVar_\Letter$ make up the
-image. $\StateVar_\State$ represents the distance of state $\State$ from
-$\InitialState$ in a spanning tree, $\TransitionVar_\Transition$ how many times
-a transition $\Transition$ is used, and $\FinalStateVar_\State$ whether a given
-accepting state $\State \in \AcceptingStates$ is the actually used final state.
-
-In this paper we refer to this model as the baseline approach, though we also
-apply optimisations as described in \cref{sec:implementing-baseline}. The
-calculus introduced in this paper, by contrast, lazily enforces the
-connectedness constraint of this encoding (the final three clauses) while also
-interleaving the computation of products of automata and propagating information
-between the steps to reduce the amount of work that needs to be done.
-  
-\subsection{Theorem Proving}
-
-We assume basic familiarity with first-order logic, Presburger
-arithmetic, and the classical sequent calculus. For reference, see
-e.g. \cite{Fitting96a}.
+\input{preliminaries.tex}
 
 \section{Projections on Parikh Images}\label{sec:generalised}
 
@@ -595,8 +443,13 @@ develop the lazy algorithm proposed in this paper.
 \section{A Calculus for Projections on Parikh Images}\label{sec:calculus}
 
 We start by defining our calculus, \Calculus{}, for one automaton, and only
-extend it to products of automata in \cref{sec:multiple}. Assume an NFA
-$\Automaton = \AutomatonTuple$ with $\NrTransitions$ transitions $\Transitions =
+extend it to products of automata in \cref{sec:multiple}. We assume basic
+familiarity with first-order logic, Presburger arithmetic, and the classical
+sequent calculus. For reference, see e.g. \cite{Fitting96a}.
+
+
+First, assume an NFA $\Automaton = \AutomatonTuple$ with $\NrTransitions$
+transitions $\Transitions =
 \Set{\EllipsisSequence{\Transition}{\NrTransitions}}$. For convenience, we then
 introduce the following supporting notations:
 

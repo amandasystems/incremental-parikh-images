@@ -1,0 +1,116 @@
+\subsection{Monoids}
+A monoid $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ is an algebraic structure
+consisting of the non-empty carrier set of elements, $X$, an associative binary operation
+$X \times X \rightarrow X$ denoted as $\MonoidOp$, that is where for all $a, b,
+c \in X$, $(a \MonoidOp b) \MonoidOp c = a \MonoidOp (b \MonoidOp c)$. Finally,
+$\Monoid$ must have an identity element $0_{\Monoid} \in X$ such that
+$0_{\Monoid} \MonoidOp a = a \MonoidOp 0_{\Monoid} =   a$ for every $a \in X$.
+We sometimes use integer multiplication to represent repeated application of
+$\MonoidOp$, e.g. $3a = a \MonoidOp a \MonoidOp a$, for $a \in X$. $\Monoid$ is
+called \textit{commutative} if $\MonoidOp$ also commutes, that is if $a
+\MonoidOp b = b \MonoidOp a$ for all $a, b \in X$. 
+
+Finally, a \textit{homomorphism} is a structure-preserving map between two monoids
+$\Monoid_1, \Monoid_2$, that is a map $\Map : S_1 \rightarrow S_2$ such that $\Map(a
+\MonoidOp_1 b) = \Map(a) \MonoidOp_2 \Map(b)$, where $S_1, S_2$ are the carrier
+sets of $\Monoid_1$ and $\Monoid_2$ respectively, and $\MonoidOp_1, \MonoidOp_2$
+their binary operations.
+
+\subsection{Languages, Finite-state Automata and their Products}
+
+We define an alphabet as a finite set of symbols $\Alphabet$ with words $\Strings$, and
+the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
+Note that $\Strings = \Tuple{\Alphabet;\Concat{};\epsilon}$, is a
+non-commutative monoid, referred to as the free monoid. The string length
+function, $\Length{s}$ is an example of a homomorphism between $\Strings$
+and~$\mathbb{Z}$.
+
+An automaton~$\Automaton$ with alphabet~$\Alphabet$ is
+$\AutomatonTuple$ where $\Transitions \subseteq \States \times \Alphabet \times
+\States$, $\States$ is its states, $\InitialState$ its
+initial state, and $\AcceptingStates$ is its set of accepting states.  We
+write a transition $\Transition = \Tuple{\State, \Label, \State'} \in
+\Transitions$ as $\Transition = \FromLabelTo{\State}{\Label}{\State'}$.
+Similarly, we use the notation $\FromLabelTo{\State}{}{}$ to refer to the set of
+transitions starting in $\State$, and $\FromLabelTo{}{}{\State}$ to refer to the
+set of transitions coming into $\State$, whenever the automaton is clear from
+the context.
+
+We will let variables $\Transition, \Transition', \Transition_1, \ldots,
+\Transition_n$ etc describe transitions, $\State, \ldots, \State_n$ states, and
+$\Automaton, \ldots, \Automaton_n$ automata, and use subscript indexing
+($\Transitions_\Automaton$) to refer to the transitions, states, etc of a given
+automaton.
+
+By a \emph{product} of two automata $\Automaton_1, \Automaton_2$, written
+$\Automaton_1 \times \Automaton_2$, we mean an automaton constructed to run
+$\Automaton_1$ and $\Automaton_2$ in parallel on an input and only accept the
+input if both automata would do so.
+
+We refer to the resulting product states as tuples, $\Tuple{\State, \State'}$,
+which represent the state of the product automaton where $\Automaton_1$ would be
+in $\State$ and $\Automaton_2$ would be in $\State'$. Note that since we use
+ordered tuples the product is technically (but w.l.o.g) not commutative; the
+left-hand-side must come from the left-hand term. The sole purpose of this
+matching is to allow us to speak with precision about the origins of components
+in a product.
+
+\subsection{The Parikh Map and its Image}
+Formally, the \textit{Parikh map} over an alphabet $\Alphabet=
+\left\{a_1, \ldots, a_k \right\}$ is defined as in \cite{kozen}:
+$$
+\begin{aligned}
+& \ParikhMap: \MapFromTo{\Strings}{\natural^k} \\
+& \ParikhMap(s) = \VectorLiteral{\#a_1(s), \#a_2(s), \ldots, \#a_k(s)}
+\end{aligned}
+$$
+
+That is, $\ParikhMap(s)$ is a vector of the number of occurrences of each
+character in the language for a given string $s$. For example, for  $\Alphabet =
+\Set{a, b}$, we would have $\ParikhMap(abb) = \VectorLiteral{1, 2}$.
+
+We define the image of this map, the \textit{Parikh image}, of some subset of
+the language $\Language \subseteq \Strings$ as:
+\[
+\ParikhMap(\Language) = \Set{\ParikhMap(x) \SuchThat x \in \Language}
+\]
+
+Thus, we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1,
+1\right], \left[1, 2\right]\right\}$. We also sometimes use the standard
+notation $\#l(w)$ to talk about an individual letter $l$ in a word $w$. For
+example, for the Parikh vector above, we would have $\CountOf{a} = 1$. You have
+already seen this in \cref{sec:introduction:parikh}.
+
+Parikh's theorem states that any context-free language has a letter-equivalent
+regular language (c.f.~\cite{construction} for a construction of such automata
+from context-free grammars and~\cite{bounds} for bounds on its size). However,
+there are languages that are not context-free that also have semilinear images
+under~$\ParikhMap$ (e.g. $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) =
+\ParikhMap((abc)^*) = \CountOf{a} = \CountOf{b} = \CountOf{c} \land \CountOf{a}
+\geq 0$). This means they can be represented as a quantifier-free Presburger
+formula.
+
+Note that while Parikh's theorem applies to context-free languages, in this
+paper we focus only on regular languages.
+
+\subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
+\label{sec:verma}
+
+Since Parikh images are semilinear, any Parikh image can be written as a set of
+linear equations. The version for context-free grammars presented in
+\cite{generate-parikh-image} can be straightforwardly adapted for use with a
+product of regular languages or Parikh automta. For an intuition, the approach
+consists of first computing the product, then assigning each state and
+transition an existentially quantified non-negative integer variable, then
+describing all paths through the automaton through two sets of equations: one
+that preserves the incoming flow across the variables of a state's incoming
+transitions is equal to the flow across its outgoing transitions, and one set of
+constraints that enforces coherence in the presence of loops by ordering states
+by distance in a spanning tree rooted in the initial state.
+
+We refer to this model as the baseline approach, though we also apply
+optimisations as described in \cref{sec:implementing-baseline}. The calculus
+introduced in this paper, by contrast, lazily enforces the connectedness
+constraint while also interleaving the computation of products of automata and
+propagating information between the steps to reduce the amount of work that
+needs to be done.
