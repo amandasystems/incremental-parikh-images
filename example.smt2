@@ -1,4 +1,6 @@
 (set-option :produce-models true)
+(set-option :produce-unsat-cores true)
+
 (set-logic ALL)
 
 (declare-fun x () String)
@@ -22,9 +24,14 @@
 )))
 
 (assert (= x (str.substr y i n)))
-(assert (=  i n))
 
-(assert (= 10 (str.len y)))
+
+(assert (>  n i))
+
+; (assert (> (- (str.len y) (+ i n)) 0))
+
+; (assert (> i 0))
 
 (check-sat)
 (get-model)
+;(get-unsat-core)

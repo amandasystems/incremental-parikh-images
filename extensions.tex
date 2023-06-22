@@ -1,0 +1,128 @@
+
+This section describes a number of possible extensions to the calculus. Note
+that some are partially or fully implemented in \Catra{} already. In particular,
+we have some level of support for symbolic transitions over Unicode alphabets to
+keep practical automata under a reasonable size, though we do not allow a full Boolean algebra over symbols as described e.g. in~\cite{symbolic-automata}.
+
+\subsection{Backjumping and Learning No-Goods}\label{sec:ext:backjumping}
+
+\Calculus{} can be accelerated for some instances by adding rules for
+backjumping. In particular, key connectedness constraints for an automaton can
+be learnt. In that case, when discovering that a transition $\Transition$ of an
+automaton $\Automaton$ under a certain transition variable $\Filter$ has become
+unreachable, we can learn the clause $\Connected(\Automaton, \Filter) \land
+\sum_{\Transition' \in C} \Filter(\Transition') = 0 \implies \Transition = 0$ where
+$\Dominates(C, \Automaton, \Transition)$ for some minimal $C$. Note that this
+captures both forward (unrachable from the initial state) and
+backward (does not reach an accepting state) unreachability. Bidirectional cut
+learning is implemented in \Catra, and has provided a slight improvement in
+performance on some instances.
+
+The other source of clauses to learn is the \Materialise{} rule. Whenever an
+attempt to materialise a product of two ($\Filter$-filtered) automata
+$\Automaton_1 \times \Automaton_2$ produces an empty product, we can determine
+the cause of the failure with respect to the automata and their respective
+transition variables, and learn no-good combinations that can never be part of a
+model. In order to be able to do this, we need a few semantic predicates to
+record the state of the calculation, as well as a system of disambiguating
+automata, since it is possible to arrive at the same automaton by multiple
+combinations of decisions and products. In \Catra{}, we use a number of
+additional predicates to record the status of the materialisation of products,
+to separate instances of our main predicate, and to register the mapping between
+automata and their respective transition $\Filter$ terms, described in
+\cref{sec:implementation}. However, at this point only rudimentary no-good
+learning is implemented.
+
+\subsection{Symbolic Automata}\label{sec:ext:symbolic}
+
+Extending \Calculus{} to support fully symbolic automata is possible within the
+framework, depending on your choice of $\Map$. The difficulty consists in
+handling the mapping of the homomorphism $\Map$ over symbolic labels, assuming
+it maps to finitely many monoid elements. This is not always straightforward, as
+seen in the example of \cref{sec:multiple:example}. This complexity is inherent
+in computing the full Parikh image, and stems from the fact that we need to
+differentiate between the possible interpretations of the $\Sigma$ transitions
+without knowing ahead of times which ones will actually be materialied in the
+product. If, on the other hand, if our $\Map$ had been length-counting, which
+does not differentiate between values, it would have required no adaptation at
+all. With a somewhat liberal interpretation of what we are allowed to map to
+(e.g. fresh terms), it is possible to use $\Map$ to represent choice operations
+like the ones in a range label. In \Catra{}, we frontload this problem by
+requiring the user to encode their input as a Parikh automaton. For an example of how automata can be encoded, see \cref{sec:parikh-automata}.
+
+\subsection{Transducers}\label{sec:ext:transducers}
+
+Another interesting application is applying \Calculus{} to automata with
+multiple tracks, e.g. transducers. One application of such a calculus would be
+to represent replace operations and other functions on regular languages, and to
+be able to answer questions like "does this operation change the length of the
+string". The difficulty in implementing it for transducers is first to perform
+the mapping on the labels, which for both the length and Parikh cases is
+straightforward; just do the same thing in two dimensions. The more complicated
+operation is defining the product of transducers. In some cases it would
+probably be desirable to perform synchronisation (e.g. requiring overlapping
+transitions) on only some transitions, for example the first track.
+
+Implementing such a calculus is straightforward in \Calculus, since the
+definition of products was left out of the definition. All that would be needed
+is an appropriate update of the definitions of products. Simiarly, \Catra was
+written with modularity in mind, and it should be straightforward to extend both
+the input grammar and automata implementations to accommodate multi-track
+automata with arbitrary synchronisation.
+
+\subsection{Finding the Presburger representation of a homomorphic image}\label{sec:finding-the-image}
+
+To find the Presburger form of the homomorphic image efficiently, we adapt the
+quantifier elimination approach of~\cite{qe} to our problem domain. The core
+method is the same: we incrementally use \Calculus{} to find models,
+\Generalise{} the models we find into a quantifier-free Presburger formula with
+the $\MonoidElement$ as the only free variable (algorithm~\ref{alg:generalise}), add the
+negated formula as a constraint, and continue enumerating models until none
+remain. The disjunction of the generalised models we enumerated is now our
+image.
+
+\begin{algorithm}
+  \caption{$\Generalise{}(\Automaton, \Filter, a)$ will generalise a final product $\Automaton$ and a model $a$ under the homomorphism $\Map$.}\label{alg:generalise}
+  \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
+  \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
+  \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
+
+  $\Automaton' \gets \Tuple{\Automaton_\States, \Automaton_{\InitialState}, \Automaton_\AcceptingStates, \Set{\Transition \in \Automaton_\Transitions \SuchThat a(\Filter(\Transition)) \neq 0}}$
+
+  \KwRet{\EliminateQuantifiers{$\Map(\ParikhMap(\Automaton'))$}}
+  \end{algorithm}
+
+
+  \begin{algorithm}
+    \DontPrintSemicolon
+    \caption{$\FindImage{}(\Automaton_1 \times \ldots \times \Automaton_k, \Map)$ will find the Presburger form for the product $\Automaton_1 \times \ldots \times \Automaton_k$ modulo a homomorphism $\Map$ where the only free variable is/are the one(s) representing the monoid element of $\Map$.}\label{alg:find-image}
+    \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
+    \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
+    \SetKwFunction{NewTheoremProver}{newTheoremProver}
+    \SetKwFunction{EliminateQuantifiers}{eliminateQuantifiers}
+    \SetKwFunction{FreshVariable}{freshVariable}
+    \SetKwFunction{Assert}{assert}
+    \SetKwFunction{GetModel}{getModel}
+    \SetKwData{ImageVar}{image}
+  
+$p \gets \NewTheoremProver{}$\;
+$\Filter(\Transition) := \FreshVariable{p}$ for every $\Transition \in \Transitions_{\Automaton}$\;
+$\MonoidElement \gets$ \FreshVariable{$p$}\;
+\Assert{$p, \exists \MonoidElement, \Filter(\Transition) \text{ for every } \Transition \in \Transitions_\Automaton \HoldsThat \ImagePredicate{\Automaton}{\Map}{\Filter}{\MonoidElement} \land \AndComp{\Transition \in \Transitions}{\Filter(\Transition) \geq 0}$}\;
+$\ImageVar \gets \bot$\;
+\While{$p$ has more models}{
+  $\Tuple{\Automaton, a} \gets \GetModel(p)$\;
+  $G \gets \Generalise{}(\Automaton, \Filter, a)$\;
+  $\ImageVar \gets G \lor \Image$\;
+  \Assert{$p, \lnot G$}\;
+  }
+    \KwRet{\ImageVar}
+    \end{algorithm}
+
+    The \GetModel{} function is nonstandard in that it returns both the model
+    and its associated automaton. Since algorithm~\ref{alg:find-image} is
+    essentially a form of quantifier elimination and therefore an internal affair
+    to the theorem prover, this should be considered fair game.
+    
+    A preliminary implementation of this approach is available as part
+    of~\Catra, but has been neither optimised nor fully tested.
