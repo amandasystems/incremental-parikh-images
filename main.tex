@@ -702,8 +702,7 @@ term by term, checking satisfiability at each step. We use a priority queue to
 select automata for each step, and order it by the number of transitions as a
 heuristic for the size of the automata. We use this heuristic to avoid computing
 large (and therefore slow) products until we have to, banking our hopes on
-computing an empty intermittent product early. The pseudocode for our
-implementation can be seen in \cref{alg:baseline}.
+computing an empty intermittent product early.
 
 \begin{algorithm}
   \caption{How we implement the baseline approach}\label{alg:baseline}

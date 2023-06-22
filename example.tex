@@ -143,7 +143,7 @@ cancels itself out. This means that for automata where a loop can become
 unreachable, additional constraints would be required to ensure reachability.
 However, being lazy, we put off that work until later.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering 
   \includegraphics[width=0.6\textwidth]{a_1}
   \caption{ $A'$ with its associated transition variables in symbolic form after
@@ -162,7 +162,7 @@ linear algebra to remove variables through equality elimination, we have
 variables we care about representing the length of the automaton ($l_A$), the
 start of the substring ($i$), and the length of the substring ($n$).
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering 
   \includegraphics[width=0.6\textwidth]{a_2}
   \caption{ $A'$ after even more linear algebra, with most transitions expressed
@@ -185,7 +185,7 @@ $B$.
 
 We repeat similar methods to arrive at the automata in \cref{fig:propagated}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering 
   \begin{subfigure}[b]{\autscale\textwidth}
     \centering
