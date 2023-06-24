@@ -215,7 +215,7 @@ Note that the per-automata length counting registers have been assigned the same
 solver variable $l_A$. Since they have to be equal, either one can be used in
 both automata through similar applications of equality elimination rules.
 
-\subsubsection{Propagation of connectivity constraints}\label{sec:intuition:prop}
+\subsubsection{Subsumption of connectivity constraints}\label{sec:intuition:subsume}
 At this point we can conclude that none of the loops of $A'$ can become
 disconnected since they are at the initial and final states, both of which are
 reachable for any future assignments of the transition variables. This means
@@ -223,7 +223,7 @@ that all valid counter assignments of $A'$ are described by
 \cref{eq:counter-sums} and the flow equations alone without the need for
 expensive connectivity constraints.
 
-\subsubsection{Case Splitting}\label{sec:intuition:split}
+\subsubsection{Case Splitting and propagation of connectivity constraints}\label{sec:intuition:split}
 After concluding this, we have a choice of two paths through automaton $B$; the
 upper through state $A$ or the lower through state $B$. We case split on a
 problem-aware basis by selecting a transition variable that would disconnect
@@ -231,6 +231,11 @@ some strongly connected component of automaton $B$, in this case the transition
 form $I_B$ to state $B$. We divide it into the cases used ($> 0$) or unused ($ =
 0$) since those are the threshold values of the calculus, preferring the latter
 option on the first-fail principle.
+
+Having performed the split, we can conclude that the path from $I_B$ to state
+$B$ is now unreachable without passing through a zero-times-used transition.
+This means that the self-loop from state $B$ is also unusable, and thus must
+also be used zero times.
 
 \subsubsection{Computing products}\label{sec:intuition:materialise}
 Now we have two small, stick-like automata after discounting all

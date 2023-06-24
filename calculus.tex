@@ -228,155 +228,118 @@ completeness, but shortens the examples considerably.
 \subsection{An Example}
 Here we will return to $A'$ from \cref{sec:intuition} and performs the steps of
 \cref{sec:intuition:algebra,sec:intuition:prop,sec:intuition:split} with the
-formal calculus we just established.
+formal calculus we just established, but exclude \cref{const:s2-in-b} and
+therefore the entire automaton $B$ since we introduce support for products of
+automata in \cref{sec:multiple}. Note that this example then becomes
+satisfiable, as $s_1 = \Char{dd}, i = 1, s_2 = \Char{adda}, l_A = 4$ is a
+satisfying assignment to
+\cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring}.
 
 Starting with~$A'$, $\Map$ extracts the increments of a transition (see
 \cref{fig:a_1}), $h(\FromLabelTo{q_1}{c / i}{q_2}) = \Vec{v}$ for the increment
 vector $\Vec{v}$, concretely $h(\FromLabelTo{I_A}{\Sigma / \left[ l_{A+}, i_+
 \right]}{I_A}) = \left[ l_{A+}, i_+ \right]$. We use the same compact notation
 here as in \cref{sec:intuition} to represent what is essentially a sparse vector
-of $1$ and $0$ coefficients. Initially, we let $\Filter$ map to fresh variables
-to obtain:
-\begin{equation*}
+of $1$ and $0$ coefficients, i.e. = $\left[ l_{A+}, i_+ \right] = \left[1, 1,
+0\right]$. Initially, we let $\Filter$ map to fresh variables to obtain:
+\begin{equation}
     \begin{aligned}
       \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) & = \TransitionVar_1    & 
-                \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) & = \TransitionVar_2 \\
+                \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) & = \TransitionVar_2 &       \FlowEq(A', \Filter) & = \begin{aligned}
+                    1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 + \TransitionVar_1\\
+                    \TransitionVar_4 &= \TransitionVar_1 \\
+                    \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &\geq \cancel{\TransitionVar_2}  \\
+                  \end{aligned} \\
       \Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) & =  \TransitionVar_3 & 
-                \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) & = \TransitionVar_4 \\
+                \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) & = \TransitionVar_4 &\\
       \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) & = \TransitionVar_5 & 
-      \FlowEq(A', \Filter) & = \begin{aligned}
-        1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 \\
-        \TransitionVar_4 &= \TransitionVar_1 \\
-        \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &\geq \cancel{\TransitionVar_2}  \\
-      \end{aligned} \\
     \end{aligned}
-\end{equation*}
+\end{equation}\label{eq:single-filter}
 
-% RUN EXPAND GET:
-$i = \TransitionVar_5, l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k, n = \TransitionVar_4 + \TransitionVar_1$
+Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
+  to end up with fixed values for several of the transition variables
+  $\TransitionVar_k$, and eventually we use \cref{const:more-inside-than-before}
+  and \cref{const:something-before-and-after} to conclude that the transition
+  directly from state $I_{A}$ to $F_{A}$ is incompatible with the constraint.
 
-  If we apply reasoning by equivalence as in \cref{sec:a_1}, we end up with the
-  following definitions, corresponding to \cref{fig:a_1} at the end of
-  \cref{sec:a_1}:
-  \begin{equation*}
-    \begin{aligned} % Post-propagation
-      \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) = \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) & = \TransitionVar_1\\
-      \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) & = l_A  - i - n\\
-      \Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) & =  1 - \TransitionVar_1\\
-      \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) & = i\\
-    \end{aligned}
-  \end{equation*}
+  Then, following \cref{sec:intuition:subsume}, we remove the $\Connected{}$
+   predicate using \Subsume{} since no transition can can become disconnected
+   (and in fact never could for $A'$, since all looping transitions are attached
+   to the initial and single accepting state and therefore always must be
+   reachable from any accepting path). After this, the rest of the reasoning can
+   be continued without any part of our calculus, since all values of the
+   existentially quantified transition variables
+   $\TransitionVar_1,\ldots,\TransitionVar_5$ compatible with
+   \cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring,const:something-before-and-after}
+   are represented by the flow equations introduced by $\Expand{}$. The
+   derivation is shown in \cref{fig:derivation:single}.
 
 \begin{figure}
   \centering
 \begin{prooftree}
-  \hypo[]{
-{    \begin{array}{lll}
-      1 - \TransitionVar_6 = 0 & \land \TransitionVar_6 = 1 & \land  \TransitionVar_4 + 1 > 0 \\
-      \land \TransitionVar_3 = 0 &\land  2 + \TransitionVar_4 > 0 & \land k = 1 + \TransitionVar_4 
-    \end{array}}
-  }
-  \infer1[\Subsume{}]{
-{    \begin{array}{lll}
-      \Connected(\AcaOrBc{}, \Filter) & \land 1 - \TransitionVar_6 = 0 \\
-      \land \TransitionVar_6 = 1 & \land \TransitionVar_4 + 1 > 0 \land \\
-      \land \TransitionVar_3 = 0 & \land 2 + \TransitionVar_4 > 0 \land \\
-      k = 1 + \TransitionVar_4 
-    \end{array}}
-  }
-  \infer1[\Propagate]{
+  \hypo[]{{\text{Regular solving finishes the proof}}}
+  \infer1[]{
     \begin{aligned}
-      \Connected(\AcaOrBc{}, \Filter) \land \\
-      1 - \TransitionVar_6 = 0 \land \\
-      \TransitionVar_6 = 1 \land \\
-      \TransitionVar_4 + 1 > 0 \land \\
-      \TransitionVar_3 \geq 0 \land \\
-      2 + \TransitionVar_4 \geq 0 \land \\
-      2k = 2 + 2\TransitionVar_4 + \TransitionVar_3
+    \TransitionVar_1 = 1 \land 
+    i = \TransitionVar_5 \land 
+    n = 2 \land \\
+    2 \geq i \land l_A - i - 2 > 0 
+    \land \TransitionVar_4 = 1 
+    \land \TransitionVar_2 = l_A - i - 2 
+    \land \TransitionVar_3 = 0 \\
+    \end{aligned}}
+  \infer1[\Subsume: \cref{sec:intuition:subsume}]{
+    \begin{aligned}
+    \Connected(A', \Filter) \land 
+    \TransitionVar_1 = 1 \land 
+    i = \TransitionVar_5 \land 
+    n = 2 \land 
+    2 \geq i \land l_A - i - 2 > 0  \\
+    \land \TransitionVar_4 = 1 
+    \land \TransitionVar_2 = l_A - i - 2 
+    \land \TransitionVar_3 = 0 \\
     \end{aligned}
   }
-  \infer1[\EquationReasoning{}]{
+  \infer1[\EquationReasoning{}: $\TransitionVar_1 = 1$ \cref{sec:a_1}]{
     \begin{aligned}
-      \Connected(\AcaOrBc{}, \Filter) \land \\
-      1 - \TransitionVar_6 = 0 \land \\
-      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6
+    \Connected(A', \Filter) \land \\
+    i = \TransitionVar_5 \land 
+    n = 2\TransitionVar_1 \land n \geq i \land l_A - i - n > 0 
+    \land \TransitionVar_4 = \TransitionVar_1 \\
+    \land \TransitionVar_2 = l_A - i - n 
+    \land \TransitionVar_3 = 1 - \TransitionVar_1 
     \end{aligned}
   }
-  % BRANCH:  = 0'
-  \hypo{
-    {\begin{array}{lll}
-      \TransitionVar_3 > 0 & \land 
-      \TransitionVar_6 = 0 \\ \land
-      2\TransitionVar_6 + \TransitionVar_4 = 0 & \land
-      1 - \TransitionVar_6 > 0\\  \land 
-      2k = 1 + \TransitionVar_3
-    \end{array}}
-  }
-  \infer1[\Subsume{}]{
+  \infer1[\EquationReasoning{}: $=$-elimination]{
     \begin{aligned}
-      \Connected(\AcaOrBc{}, \Filter) \land \\
-      \TransitionVar_3 > = 0 \land \\
-      \TransitionVar_6 = 0 \land \\
-      2\TransitionVar_6 + \TransitionVar_4 = 0 \land \\
-      1 - \TransitionVar_6 > 0 \land \\
-      2k = 1 + \TransitionVar_3
+    \Connected(A', \Filter) \land \\
+    i = \TransitionVar_5 \land 
+    n = \TransitionVar_4 + \TransitionVar_1 \land n \geq i \land l_A - i - n > 0 \\
+    \land \TransitionVar_4 = \TransitionVar_1 
+    \land \TransitionVar_2 = l_A - i - n 
+    \land \TransitionVar_3 = 1 - \TransitionVar_1 
     \end{aligned}
   }
-  \infer1[\EquationReasoning{}]{
+  \infer1[\EquationReasoning{}: expand sum]{
     \begin{aligned}
-      \Connected(\AcaOrBc{}, \Filter) \land \\
-      \TransitionVar_6 = 0 \land \\
-      1 - \TransitionVar_6 > 0 \land \\
-      2\TransitionVar_6 + \TransitionVar_4 = 0\\
-      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3
+        i = \TransitionVar_5, l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k \land n = \TransitionVar_4 + \TransitionVar_1 \land n \geq i \land l_A - i - n > 0
+    \land \Connected(A', \Filter)
     \end{aligned}
   }
-  \infer1[\Propagate{}]{
-    \begin{aligned}
-      \Connected(\AcaOrBc{}, \Filter) \land \\
-      \TransitionVar_6 = 0 \land \\
-      1 - \TransitionVar_6 > 0 \land \\
-      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3
-    \end{aligned}
+  \infer1[\EquationReasoning{}: expand sum]{
+    \Connected(A', \Filter) \land
+    \left[l_A, i, n\right] =
+    \sum\limits_{\Transition \in \Transitions_{A'} } \Map(\Transition) \cdot \Filter(\Transition)
   }
-  \infer1[\EquationReasoning{}]{
-    \begin{aligned}
-      \Connected(\AcaOrBc{}, \Filter) \land \\
-      1 - \TransitionVar_6 > 0 \land \\
-      2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6
-    \end{aligned} % BRANCH: > 0
-  } % SPLIT
-  \infer2[\Split{} $1 - \TransitionVar_6$]{ \Connected(\AcaOrBc{}, \Filter) \land 2k = 1 + 2\TransitionVar_4 + \TransitionVar_3 + \TransitionVar_6 }
-  \infer1[\EquationReasoning{}]{
-    \Connected(\AcaOrBc{}, \Filter) \land
-    2k + 1 =
-    \sum\limits_{\Transition \in \Transitions} (\Transition \mapsto 1)(\Label) \cdot \Filter(\Transition)
-  }
-  \infer1[\Expand{}]{\Image{}_{\AcaOrBc{}, \Transition \mapsto 1}(\Filter, 2k + 1)}
+  \infer1[\Expand{}]{\Image{}_{A', \Map}(\Filter, \left[l_A, i, n\right]) \land n \geq i \land l_A - i - n > 0}
 \end{prooftree}
-\caption{A derivation for \Calculus{} computing odd lengths in $\AcaOrBc{}$.}\label{fig:derivation:single}
+\caption{A derivation tree for an application of
+\cref{const:s1-in-c-dd,const:s1-substring,const:something-before-and-after,const:more-inside-than-before}
+from \cref{ex:string-constraints}, corresponding to handling the Parikh
+automaton $A'$ of \cref{fig:aut_a}. Note that the flow equations of
+\cref{eq:single-filter} are left out of the tree in order to keep it
+manageable.}\label{fig:derivation:single}
 \end{figure}
-
-In \cref{fig:derivation:single}, we see how we start by expanding the predicate
-using the (simplified) flow equations. We can also see how interleaving
-reasoning on the corresponding linear equations helps the deduction. In both
-branches the reasoning is similar: we conclude that when choosing either path at
-the starting state we must avoid the other one, perform propagation based on
-that fact, use some algebraic reasoning to derive the expected forms of the
-upper and lower bounds to propagate the now disconnected transitions, and
-finally subsume, removing the $\Connected{}$ predicate when we are unable to use
-either of the rules, leaving only a set of linear equations. To obtain a solution from the
-proof, one would need to perform standard model generation on the remaining
-constraints to obtain values for the sought variable $\MonoidElement$. The full
-Parikh image is the disjunction of the constraints left at the two
-leaves after quantifier elimination.
-
-Following the values of $\Filter$, we can read out the path corresponding to our solution in the product, and with that a word. In our case, for the right branch we have $\Filter(\FromLabelTo{S}{b}{B}) = 0,
-\Filter(\FromLabelTo{A}{c}{A})  > 0,
-\Filter(\FromLabelTo{B}{b}{S}) = 0,
-\Filter(\FromLabelTo{S}{a}{A}) = 1 ,
-\Filter(\FromLabelTo{A}{a}{F}) = 1 ,
-\Filter(\FromLabelTo{B}{c}{F}) = 0$. We can read out a word along it: aca, accca, etc, and the corresponding constraint: $\exists k : \TransitionVar_3 = 2k -1 \land \TransitionVar_3 > 0 \land k \geq 0$.
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
