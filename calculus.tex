@@ -74,45 +74,44 @@ definitions:
   for all $t \in \Transitions$, and $\MonoidElement = \Map(\WordOf(\Path))$.
 \end{definition}
 
-\begin{definition}
-  $\Connected(\Automaton, \Filter)$ for some automaton $\Automaton =
-  \AutomatonTuple$ holds when for every $\Transition =
-  \FromLabelTo{\State}{}{\State'} \in \Transitions$, $\Filter(\Transition) > 0
-  \implies \exists \Path \in \Paths(\Automaton)$ $\Filter(\Transition_i) > 0$
-  for $\Transition_i \in p$, and $\State \in \StatesOf(p)$, or in words that
-  there exists some $\Filter$-selected valid path that reaches $\Transition$'s
-  starting state, $\State$. Intuitively, it represents the condition that
-  $\Automaton$ is connected with respect to the selection function $\Filter$ for
-  every transition. It is redundant to $\Image$ by design.
+\begin{definition}\label{def:connected} $\Connected(\Automaton, \Filter)$ for
+  some automaton $\Automaton = \AutomatonTuple$ holds when for every
+  $\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions$,
+  $\Filter(\Transition) > 0 \implies \exists \Path \in \Paths(\Automaton)$
+  $\Filter(\Transition_i) > 0$ for $\Transition_i \in p$, and $\State \in
+  \StatesOf(p)$, or in words that there exists some $\Filter$-selected valid
+  path that reaches $\Transition$'s starting state, $\State$. It represents the
+  condition that $\Automaton$ is connected with respect to the selection
+  function $\Filter$ for every transition. It is redundant to $\Image$ by
+  design.
 \end{definition}
 
 We present the rules of \Calculus{} for one automaton in
 \cref{tbl:rules:single}. The rules operate on sets of formulas, and
 can be interpreted as rules of a one-sided sequent calculus, in
 which all formulas are located in the antecedent~\cite{Fitting96a}.
-Each of the rules should be read and
-applied bottom-up, and relates
+
+Each rule should be read and applied bottom-up, and relates
 premises~$\SomeClause_1, \ldots, \SomeClause_k$ with some
 conclusion~$\SomeClause$. When constructing a proof, we start from some
-root~$\SomeClause$, and then apply proof rules to the goals of the proof
-until a goal can be closed, or no more rule is applicable.
+root~$\SomeClause$, and then apply proof rules to the goals of the proof until a
+goal can be closed, or no more rule is applicable.
 
 A proof in which all proof goals could be closed shows that the formulas
 in the root~$\SomeClause$ of the proof are inconsistent, and do not
 have any solutions. A proof goal that could not be closed, but to which no
 more rules are applicable, gives rise to  a solution of the formulas in the
 root~$\SomeClause$. Such an open proof goal will only contain formulas
-in Presburger arithmetic, so that a solution can be computed using
+in Presburger arithmetic allowing a solution to be computed using
 standard algorithms~\cite{Fitting96a}.
 
-We use the convention of splitting the
-formulas into linear (in)equalities ($\SomeInequalities$)
-and other formulas ($\SomeClause$), and assume that predicates
-$\Image$ and $\Connected$ only occur positively.
- Since
-our rules operate by adding and matching linear (in)equalities in a proof goal,
-we use the shorthand of listing the matched inequalities as antecedents
-e.g., in \Propagate{}).
+We use the convention of splitting the formulas into linear (in)equalities
+($\SomeInequalities$) and other formulas ($\SomeClause$), and assume that
+predicates $\Image$ and $\Connected$ only occur positively. Since our rules
+operate by adding and matching linear (in)equalities in a proof goal, we use the
+shorthand of listing the matched inequalities as antecedents e.g., in
+\Propagate{}).
+
 The filtering function~$\Filter$ is evaluated symbolically, and can in practice
 be read as a function from transitions to $\Naturals$-valued terms
 (e.g.~\texttt{t} or~\texttt{t+1}). In our implementation \Catra{}, described in
@@ -227,60 +226,46 @@ on linear inequalities. This rule is not necessary for correctness or
 completeness, but shortens the examples considerably.
 
 \subsection{An Example}
+Here we will return to $A'$ from \cref{sec:intuition} and performs the steps of
+\cref{sec:intuition:algebra,sec:intuition:prop,sec:intuition:split} with the
+formal calculus we just established.
 
-Starting with~$\AcaOrBc{}$, where $\Map$ is the length function, in effect
-$\Transition \mapsto 1$ for transitions, and the constraints that the length is
-odd using the same trick as in \cref{sec:motivation}, we have the
-definitions in \cref{fig:example:single:equivalences} (omitting existential
-quantifiers and $x \geq 0$ for every variable to avoid clutter).
+Starting with~$A'$, $\Map$ extracts the increments of a transition (see
+\cref{fig:a_1}), $h(\FromLabelTo{q_1}{c / i}{q_2}) = \Vec{v}$ for the increment
+vector $\Vec{v}$, concretely $h(\FromLabelTo{I_A}{\Sigma / \left[ l_{A+}, i_+
+\right]}{I_A}) = \left[ l_{A+}, i_+ \right]$. We use the same compact notation
+here as in \cref{sec:intuition} to represent what is essentially a sparse vector
+of $1$ and $0$ coefficients. Initially, we let $\Filter$ map to fresh variables
+to obtain:
+\begin{equation*}
+    \begin{aligned}
+      \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) & = \TransitionVar_1    & 
+                \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) & = \TransitionVar_2 \\
+      \Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) & =  \TransitionVar_3 & 
+                \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) & = \TransitionVar_4 \\
+      \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) & = \TransitionVar_5 & 
+      \FlowEq(A', \Filter) & = \begin{aligned}
+        1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 \\
+        \TransitionVar_4 &= \TransitionVar_1 \\
+        \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &\geq \cancel{\TransitionVar_2}  \\
+      \end{aligned} \\
+    \end{aligned}
+\end{equation*}
 
-\begin{figure}[ht]
-  We define $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$ as in the following two
-  equations, and then apply \EquationReasoning{} (under the implicit assumption
-  that every RHS is $\geq 0$) to obtain the third definition:
-  \begin{minipage}[b]{0.3\linewidth}
-    \begin{equation*}
-      \begin{aligned}
-        \Filter(\FromLabelTo{S}{a}{A}) & = \TransitionVar_1 \\
-        \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_2 \\
-        \Filter(\FromLabelTo{A}{c}{A}) & = \TransitionVar_3  \\
-        \Filter(\FromLabelTo{B}{b}{S}) & = \TransitionVar_4 \\
-        \Filter(\FromLabelTo{A}{a}{F}) & = \TransitionVar_5 \\
-        \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
-      \end{aligned}
-    \end{equation*}    
-  \end{minipage}
-  \hspace{0.5cm}
-  \begin{minipage}[b]{0.3\linewidth}
-    \begin{equation*}
-      \begin{aligned}
-        % S
-        \TransitionVar_4 &= \TransitionVar_5 + \TransitionVar_2 - 1 \\
-        % A
-        \TransitionVar_1 &= \TransitionVar_5 \\
-        % B
-        \TransitionVar_2 &= \TransitionVar_4 + \TransitionVar_6 \\
-        % F
-        \TransitionVar_5 + \TransitionVar_6 &= \FinalStateVar_1 \\
-        \FinalStateVar_1 &= 1 \\
-      \end{aligned}  
-    \end{equation*}    
-  \end{minipage}
-  \begin{minipage}[b]{0.3\linewidth}
-    \begin{equation*}
-      \begin{aligned}
-        \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
-        \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
-        \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
-        \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
-        \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
-        \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
-      \end{aligned}
-    \end{equation*}    
-  \end{minipage}
-  \caption{Equivalences defining $\Filter$ and $\FlowEq(\AcaOrBc{}, \Filter)$
-  respectively.}\label{fig:example:single:equivalences}
-  \end{figure}
+% RUN EXPAND GET:
+$i = \TransitionVar_5, l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k, n = \TransitionVar_4 + \TransitionVar_1$
+
+  If we apply reasoning by equivalence as in \cref{sec:a_1}, we end up with the
+  following definitions, corresponding to \cref{fig:a_1} at the end of
+  \cref{sec:a_1}:
+  \begin{equation*}
+    \begin{aligned} % Post-propagation
+      \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) = \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) & = \TransitionVar_1\\
+      \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) & = l_A  - i - n\\
+      \Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) & =  1 - \TransitionVar_1\\
+      \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) & = i\\
+    \end{aligned}
+  \end{equation*}
 
 \begin{figure}
   \centering

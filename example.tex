@@ -116,7 +116,7 @@ elimination. Finally, we will use case splitting to further subdivide the
 problem into bite-sized products of automata, both of which are empty, thus
 concluding that \cref{ex:string-constraints} is unsatisfiable.
 
-\subsubsection{Eliminating paths through automata using flow analysis}
+\subsubsection{Eliminating paths through automata using flow analysis}\label{sec:a_1}
 
 We associate each transition $\Transition$ of $A'$ and $B$ with a fresh
 nonnegative integer variable from, $\TransitionVar_\Transition$, identically to
@@ -153,7 +153,7 @@ However, being lazy, we put off that work until later.
   }\label{fig:a_1}
 \end{figure}
 
-\subsubsection{Using linear algebra to eliminate flow}
+\subsubsection{Using linear algebra to eliminate flow}\label{sec:intuition:algebra}
 As an example, we start with reasoning about $A'$. Performing symbolic reasoning
 on these equations and plugging the corresponding symbolic representation of the
 constraints on each corresponding integer variable back as an annotation on its
@@ -215,7 +215,7 @@ Note that the per-automata length counting registers have been assigned the same
 solver variable $l_A$. Since they have to be equal, either one can be used in
 both automata through similar applications of equality elimination rules.
 
-\subsubsection{Propagation of connectivity constraints}
+\subsubsection{Propagation of connectivity constraints}\label{sec:intuition:prop}
 At this point we can conclude that none of the loops of $A'$ can become
 disconnected since they are at the initial and final states, both of which are
 reachable for any future assignments of the transition variables. This means
@@ -223,7 +223,7 @@ that all valid counter assignments of $A'$ are described by
 \cref{eq:counter-sums} and the flow equations alone without the need for
 expensive connectivity constraints.
 
-\subsubsection{Case Splitting}
+\subsubsection{Case Splitting}\label{sec:intuition:split}
 After concluding this, we have a choice of two paths through automaton $B$; the
 upper through state $A$ or the lower through state $B$. We case split on a
 problem-aware basis by selecting a transition variable that would disconnect
@@ -232,7 +232,7 @@ form $I_B$ to state $B$. We divide it into the cases used ($> 0$) or unused ($ =
 0$) since those are the threshold values of the calculus, preferring the latter
 option on the first-fail principle.
 
-\subsubsection{Computing products}
+\subsubsection{Computing products}\label{sec:intuition:materialise}
 Now we have two small, stick-like automata after discounting all
 transitions with a corresponding transition variable that is zero, and can try
 to compute their product. Doing so, we will immediately notice that the
