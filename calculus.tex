@@ -274,17 +274,15 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
    are represented by the flow equations introduced by $\Expand{}$. The
    derivation is shown in \cref{fig:derivation:single}.
 
-\begin{figure}
+\begin{figure}[ht]
   \centering
 \begin{prooftree}
   \hypo[]{{\text{Regular solving finishes the proof}}}
   \infer1[]{
     \begin{aligned}
-    \TransitionVar_1 = 1 \land 
     i = \TransitionVar_5 \land 
     n = 2 \land \\
     2 \geq i \land l_A - i - 2 > 0 
-    \land \TransitionVar_4 = 1 
     \land \TransitionVar_2 = l_A - i - 2 
     \land \TransitionVar_3 = 0 \\
     \end{aligned}}
@@ -295,7 +293,6 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     i = \TransitionVar_5 \land 
     n = 2 \land 
     2 \geq i \land l_A - i - 2 > 0  \\
-    \land \TransitionVar_4 = 1 
     \land \TransitionVar_2 = l_A - i - 2 
     \land \TransitionVar_3 = 0 \\
     \end{aligned}
@@ -305,29 +302,37 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     \Connected(A', \Filter) \land \\
     i = \TransitionVar_5 \land 
     n = 2\TransitionVar_1 \land n \geq i \land l_A - i - n > 0 
-    \land \TransitionVar_4 = \TransitionVar_1 \\
     \land \TransitionVar_2 = l_A - i - n 
     \land \TransitionVar_3 = 1 - \TransitionVar_1 
     \end{aligned}
   }
   \infer1[\EquationReasoning{}: $=$-elimination]{
     \begin{aligned}
-    \Connected(A', \Filter) \land \\
-    i = \TransitionVar_5 \land 
-    n = \TransitionVar_4 + \TransitionVar_1 \land n \geq i \land l_A - i - n > 0 \\
+    \Connected(A', \Filter)  
+    \land i = \TransitionVar_5 
+    \land n = \TransitionVar_4 + \TransitionVar_1 
+    \land n \geq i 
+    \land l_A - i - n > 0 \\
     \land \TransitionVar_4 = \TransitionVar_1 
     \land \TransitionVar_2 = l_A - i - n 
-    \land \TransitionVar_3 = 1 - \TransitionVar_1 
+    \land \TransitionVar_3 = 1 - \TransitionVar_1
+    \land 1 = \TransitionVar_3 + \TransitionVar_1 
+    \land \TransitionVar_4 = \TransitionVar_1 
     \end{aligned}
   }
-  \infer1[\EquationReasoning{}: expand sum]{
+  \infer1[\EquationReasoning{}: expand $\Sigma, \FlowEq$]{
     \begin{aligned}
-        i = \TransitionVar_5, l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k \land n = \TransitionVar_4 + \TransitionVar_1 \land n \geq i \land l_A - i - n > 0
-    \land \Connected(A', \Filter)
+    i = \TransitionVar_5 
+    \land l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k 
+    \land n \geq i \land l_A - i - n > 0
+    \land n = \TransitionVar_4 + \TransitionVar_1\\
+    \land \Connected(A', \Filter) 
+    \land \FlowEq(A', \Filter)
     \end{aligned}
   }
   \infer1[\EquationReasoning{}: expand sum]{
     \Connected(A', \Filter) \land
+    \FlowEq(A', \Filter) \land
     \left[l_A, i, n\right] =
     \sum\limits_{\Transition \in \Transitions_{A'} } \Map(\Transition) \cdot \Filter(\Transition)
   }
@@ -336,10 +341,15 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
 \caption{A derivation tree for an application of
 \cref{const:s1-in-c-dd,const:s1-substring,const:something-before-and-after,const:more-inside-than-before}
 from \cref{ex:string-constraints}, corresponding to handling the Parikh
-automaton $A'$ of \cref{fig:aut_a}. Note that the flow equations of
-\cref{eq:single-filter} are left out of the tree in order to keep it
-manageable.}\label{fig:derivation:single}
+automaton $A'$ of \cref{fig:aut_a}. Note the liberal use of removal of equal
+variables (e.g. if $x = y$ appears as a statement, we substitute $y$ for $x$
+everywhere and drop $\ldots \land x=y \land \ldots$) to keep the size of the
+equations managable.}\label{fig:derivation:single}
 \end{figure}
+
+To obtain the automaton corresponding to the final model, one can evaluate
+$\Filter(\Transition) = k$ for each transition $\Transition$ and construct a
+path with each such transition taken $k$ times.
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
