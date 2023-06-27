@@ -1,0 +1,352 @@
+
+We now generalise our calculus to natively work with intersections of
+regular languages, or equivalently products of automata. For this
+extension, we change the main predicate~$\Image$ to be indexed by a
+vector of automata~$\Tuple{\Automaton_1, \ldots, \Automaton_k}$.  For
+simplicity, we assume that the sets of states of the $k$ automata (and
+therefore also the transition sets) are pairwise disjoint. 
+\begin{definition}\label{def:multiple}
+  Suppose $\Automaton_1, \ldots, \Automaton_k$ are automata,
+  $\Map : \Alphabet^* \to \Monoid$ is a map to a commutative monoid
+  $\Monoid$,
+  $\Filter: \bigcup_{i=1}^k \Transitions_{\Automaton_i} \to \Naturals$
+  is a transition selection function, and
+  $\MonoidElement \in \Monoid$. The predicate
+  $\ImagePredicate{\Tuple{\Automaton_1, \ldots,
+      \Automaton_k}}{\Map}{\Filter}{\MonoidElement}$ is true exactly
+  when there are accepting paths~$\Path_1, \ldots, \Path_k$ of the
+  respective automata, such that for each $i \in \{1, \ldots, k\}$ and
+  $\Transition \in \Transitions_{\Automaton_i}$ it holds that
+  \begin{itemize}
+  \item the multiplicity of $\Transition$ on $\Path_i$ is consistent with
+    $\Filter$, that is,
+    $\Filter(\Transition) = \TransitionCount(\Transition, \Path_i)$,
+  \item the automata all accept the same
+    word~$\WordOf(\Path_i) = \WordOf(\Path_1)$, and
+  \item the accepted word is mapped to
+    $\MonoidElement = \Map(\WordOf(\Path_i)) =
+    \Map(\WordOf(\Path_1))$.
+  \end{itemize}
+\end{definition}
+
+  \begin{table}[t]
+    \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
+      Name & \text{Rule} & Side conditions\\
+      \midrule
+    
+      % EXPAND
+      \ExpandM & 
+      \inferrule
+      {
+       {\begin{array}{c}
+           \left\{
+           \FlowEq(\Automaton_i, \Filter),~~
+           \Connected(\Automaton_i, \Filter),~~
+           \MonoidElement = \sum_{\Transition \in \Transitions_{\Automaton_i}} \Filter(\Transition) \cdot \Map(\Transition)
+           \right\}_{i=1}^k,
+           \\[4ex]
+          \ImagePredicate{\Tuple{\Automaton_1, \ldots, \Automaton_k}}{\Map}{\Filter}{\MonoidElement}, ~
+          \SomeInequalities, \SomeClause
+        \end{array}}
+        }
+      {\ImagePredicate{\Tuple{\Automaton_1, \ldots, \Automaton_k}}{\Map}{\Filter}{\MonoidElement}, \SomeInequalities, \SomeClause} & 
+      None \\[5ex]
+      \Materialise &
+      \inferrule
+      {{
+         \begin{array}{c}
+           \FlowEq(\Automaton', \Filter'),~
+           \Connected(\Automaton', \Filter'),~
+           \BindingSum(\Automaton_i, \Automaton_j, \Filter')
+           \\\ImagePredicate{
+                     \Tuple{\Automaton_1, \Automaton_{i-1}, \Automaton_{i+1}, \ldots,
+                     \Automaton_{j-1}, \Automaton_{j+1}, \ldots, \Automaton_k,
+                     \Automaton'},~ \SomeInequalities, \SomeClause
+           }{\Map}{\Filter'}{\MonoidElement}
+           \end{array}}
+           }
+      {\ImagePredicate{\Tuple{\Automaton_1, \ldots, \Automaton_i, \ldots, \Automaton_j, \ldots, \Automaton_k}}{\Map}{\Filter}{\MonoidElement},~ \SomeInequalities, \SomeClause} &
+      $\begin{array}{@{}l@{}}
+         \Filter' = \Extend(\Automaton_i, \Automaton_j,\Filter),\\
+         1 \leq i < j \leq k, \\
+      \Automaton' = \Automaton_i \times \Automaton_j,\\
+      \end{array}$ \\
+      \bottomrule
+      \end{tabular}
+      \caption{Additional derivation rules for products of arbitrarily many automata.}\label{tbl:rules:multi}
+    \end{table}
+
+    For the calculus (\cref{tbl:rules:multi}), we first extend
+    $\Expand$ to generate flow equations and instances of $\Connected$
+    for each automaton, resulting in a new rule $\ExpandM$.  Unlike
+    \Expand{}, \ExpandM{} does not remove the $\Image$~predicate,
+    since it is needed to keep track of the currently considered
+    partial products.
+
+The rule~$\Materialise$ introduces the product of two individual
+automata~$\Automaton_i, \Automaton_j$; this step eliminates
+$\Automaton_i, \Automaton_j$ as index of the $\Image$ predicate, and
+instead adds the product~$\Automaton_i \times \Automaton_j$, while
+also introducing the flow equations and the $\Connected$ predicate.
+
+The rule~$\Materialise$ also has to connect the newly introduced
+product~$\Automaton_i \times \Automaton_j$ to the previous automata
+$\Automaton_i, \Automaton_j$. This is done by extending the
+selection function~$\Filter$ to $\Filter'$, mapping the transitions of the product
+to fresh variables~$x_{\Transition}$:
+\begin{equation*}
+  \Extend(\Automaton_i, \Automaton_j,\sigma)(t)
+  ~~=~~
+  \begin{cases}
+    x_{\Transition} & t \in \Transitions_{\Automaton_i \times \Automaton_j}
+    \\
+    \Filter(t) & \text{otherwise}
+  \end{cases}
+\end{equation*}
+
+The multiplicity of transitions in the product then has to be related
+to the multiplicities in the individual automata, modelled using the
+$\BindingSum$ predicate. The predicate expresses that the multiplicity
+of a transition~$\Transition \in \Transitions_{\Automaton_i}$ in
+$\Automaton_i$ has to coincide with the sum of the multiplicities of
+transitions in $\Automaton_i \times \Automaton_j$ derived from $t$,
+and similarly for $\Automaton_j$:
+%
+  $$
+  \BindingSum(\Automaton_i, \Automaton_j, \Filter') ~~=~~
+  \begin{aligned}
+  & \Set{ 
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State_R}}} \Filter'(\Transition')
+  \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_i} } \cup\mbox{} \\ 
+  & \Set{
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State_L, \State'}}} \Filter'(\Transition') \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_j}
+  }
+  \end{aligned}
+$$
+
+\iffalse
+Note that this definition implies that $\Filter(\Transition) =
+\Filter(\Transition')$ whenever two transitions $\Transition \in
+\Transitions_{\Automaton_1}, \Transition' \in \Transitions_{\Automaton_2}$
+produces a product transition $\Transition'' \in \Transitions_{\Automaton_1
+\times \Automaton_2}$. This corresponds to our intuition that the terms of the
+product must agree on the value they accept. As before, we implicitly map
+$\Filter$ to fresh terms for each transition in the product.
+\fi
+
+For instances of precisely one automaton, neither rule applies and we
+perform the calculus as before.
+
+\subsection{An Example}\label{sec:multiple:example}
+
+We return again to our example in \cref{sec:introduction:parikh}, where we
+compute the whole Parikh image of the product of $\AcaOrBc{}$ and
+$\SomethingCSomething$ under the constraint that there are more instances of
+letters a than b. This time our monoid $\Monoid$ is 3-dimensional vectors with
+element-wise addition, and $\Map$ that maps each transition to the corresponding
+increment vector, e.g $\Map(\FromLabelTo{S}{a}{A}) = \VectorLiteral{1,0,0}$.
+
+
+In the interest of space, we refer back to
+\cref{fig:example:single:equivalences} for the definitions of $\Filter$ for
+$\AcaOrBc$ and only define $\Filter$ for $\SomethingCSomething{}$ after
+substitutions as follows. Note the expansion of the $\Sigma$ labels:
+    \begin{equation*}
+      \begin{aligned}
+        % & \Filter(\FromLabelTo{S}{a}{A}) & = 1 - \TransitionVar_6 \\
+        % & \Filter(\FromLabelTo{S}{b}{B}) & = \TransitionVar_4 + \TransitionVar_6 \\
+        % & \Filter(\FromLabelTo{A}{c}{A})  & = \TransitionVar_3  \\
+        % & \Filter(\FromLabelTo{B}{b}{S}) & = 2\TransitionVar_6 + \TransitionVar_4 \\
+        % & \Filter(\FromLabelTo{A}{a}{F}) & = 1 - \TransitionVar_6 \\
+        % & \Filter(\FromLabelTo{B}{c}{F}) & = \TransitionVar_6 \\
+        % Other automaton
+        \Filter(\FromLabelTo{S}{\Sigma}{S}) & = \VectorLiteral{\TransitionVar_{7a}, \TransitionVar_{7b}, \TransitionVar_{7c}} \\
+        \Filter(\FromLabelTo{S}{c}{F}) & = 1 \\
+        \Filter(\FromLabelTo{F}{\Sigma}{F}) & = \VectorLiteral{\TransitionVar_{9a}, \TransitionVar_{9b}, \TransitionVar_{9c}} \\
+      \end{aligned}
+    \end{equation*}
+    
+In the derivation tree of \cref{fig:derivation:multi} we start as before, but
+with the product version of the $\Image$ predicate. The only possible rule here
+is $\ExpandM$, which we use to add the corresponding constraints on each
+automata of the product as we would have had in the single-automaton version. We
+perform algebraic reasoning on those equations, along with the constraint on
+$\MonoidElement$ to determine bounds on transition variables that will enable us
+to \Subsume{} and remove one of the $\Connected{}$ predicates. When we have
+finished doing so, we use \Materialise{} to compute the product of the now
+filtered automata. Further algebraic reasoning allows us to remove the final
+instance of $\Connected$. We then perform \Expand{} to get rid of the final
+$\Image$ instance, and are immediately able to $\Subsume$ the resulting
+$\Connected{}$ predicate. This, again, leaves us with a set of linear
+inequalities at the leaf that we can use to obtain a model of our final
+$\MonoidElement$ values (now a vector). This time we can read out aca, or
+$\VectorLiteral{2, 0, 1}$.
+
+\begin{figure}
+  \centering
+\begin{prooftree}
+  \hypo{
+    {\begin{array}{lll}
+      1 = \TransitionVar_{10} & \land \TransitionVar_3 = \TransitionVar_{11} & \land 1 = \TransitionVar{12} \\ 
+      \land 1 = \TransitionVar_{11} &  & \land 2 > 0
+    \end{array}}  
+  }
+  \infer1[\Subsume{}, \Expand{}, \Subsume{}]{
+    {\begin{array}{ll}
+      2 > 0 \land 1 = \TransitionVar_{10} & \land \TransitionVar_3 = \TransitionVar_{11} \\
+      \land 1 = \TransitionVar_{12} & \land 1 = \TransitionVar_{11} \\
+      \land \Image{}_{\Automaton', \Map}(\Filter, \VectorLiteral{2, 0, 1}) & \land \Connected(\SomethingCSomething{}, \Filter) \\
+    \end{array}}  
+  }
+  \infer1[\EquationReasoning{}]{
+  {  \begin{array}{ll}
+      1 = \TransitionVar_{10} \land \TransitionVar_3 = \TransitionVar_{11} & 
+      \land 1 = \TransitionVar_{12} \land 1 = \TransitionVar_{11} \\
+      \land \Image{}_{\Automaton', \Map}(\Filter, 
+      \VectorLiteral{
+        \TransitionVar_{7a} + \TransitionVar_{9a},
+        0,
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land 
+        \TransitionVar_6 + \TransitionVar_4 = 0 \\
+        \land 1 - \TransitionVar_6 > 0 \land \TransitionVar_6 = 0 &
+        \land \TransitionVar_4 = 0 \land  \TransitionVar_3 > 0 \\
+        \land 2\TransitionVar_6 + \TransitionVar_4 = 0 & \land 
+          \VectorLiteral{
+        \TransitionVar_{7a} + \TransitionVar_{9a},
+        0,
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1} 
+        = \VectorLiteral{
+          2,
+          0,
+          \TransitionVar_3} \\ \land 
+      \Connected(\SomethingCSomething{}, \Filter) &
+      \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
+    \end{array} } 
+  }
+  \infer1[\Materialise]{
+    {\begin{array}{ll}
+      \TransitionVar_6 + \TransitionVar_4 = 0 \land 1 - \TransitionVar_6 > 0 &
+      \land \TransitionVar_6 = 0  \land \TransitionVar_4 = 0 \\
+      \land \TransitionVar_3 > 0 & \land 2\TransitionVar_6 + \TransitionVar_4 = 0 \\
+      \land 
+      \VectorLiteral{
+        \TransitionVar_{7a} + \TransitionVar_{9a},
+        0,
+        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
+        = \VectorLiteral{
+          2,
+          0,
+          \TransitionVar_3} & \land
+      \Connected(\SomethingCSomething{}, \Filter) \\
+      \land 
+      \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
+      \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
+    \end{array}}
+  }
+  \infer1[\Subsume{}]{
+  {\begin{array}{ll}
+    \TransitionVar_6 + \TransitionVar_4 = 0 \land 
+    1 - \TransitionVar_6 > 0 &
+    \land
+    \TransitionVar_6 = 0 \land 
+    \TransitionVar_4 = 0 \\
+    \land
+    \TransitionVar_3 > 0 & \land
+    2\TransitionVar_6 + \TransitionVar_4 = 0 \\ 
+    \land
+    \VectorLiteral{
+      \TransitionVar_{7a} + \TransitionVar_{9a},
+      0,
+      \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
+      = \VectorLiteral{
+        2,
+        0,
+        \TransitionVar_3} & \land 
+    \Connected(\AcaOrBc{}, \Filter) \\
+    \land 
+    \Connected(\SomethingCSomething{}, \Filter) \\
+    \land 
+    \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
+    \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
+  \end{array}}
+  }
+  \infer1[\EquationReasoning]{
+    \begin{aligned}
+      \VectorLiteral{a, b, c} = \VectorLiteral{
+          2 - 2\TransitionVar_6,
+          2\TransitionVar_4 + 3\TransitionVar_6,
+          \TransitionVar_3 + \TransitionVar_6
+        } \land
+        \\
+        \VectorLiteral{a, b, c} = \VectorLiteral{
+            \TransitionVar_{7a} + \TransitionVar_{9a},
+            \TransitionVar_{7b} + \TransitionVar_{9b},
+            \TransitionVar_{7c} + \TransitionVar_{9c} + 1
+          } \land \\
+      \Connected(\AcaOrBc{}, \Filter) \land 
+      \Connected(\SomethingCSomething{}, \Filter) \land \\
+      \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
+      \VectorLiteral{a, b, c}) \land a > b
+    \end{aligned}
+  }
+  \infer1[\ExpandM]{\Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, \VectorLiteral{a, b, c}) \land a > b}
+\end{prooftree}
+\caption{A derivation for \Calculus{} on the Parikh image of strings with more a's than b's in the product of $\AcaOrBc{}$ and $\SomethingCSomething{}$.}\label{fig:derivation:multi}
+\end{figure}
+
+\subsection{Correctness of \Calculus{} for Products of Automata}
+
+Since \cref{tbl:rules:multi} only extends the existing rules of
+\cref{tbl:rules:single}, we focus on the differences compared
+to the calculus for a single automaton.
+
+%\subsubsection{\Calculus{} for products of automata terminates}
+\begin{lemma}\label{lma:multi-terminates}
+  Suppose $\SomeClause{}$ is a set of formulas in which the product
+  version of $\Image$ only occurs positively. There is no
+  infinite sequence of proofs~$P_0, P_1, P_2, \ldots$ in which $P_0$
+  has $\SomeClause{}$ as root, and each $P_{i+1}$ is derived from
+  $P_i$ by applying one of the rules in \cref{tbl:rules:multi}.
+\end{lemma}
+
+\begin{proof}
+  The rule \Materialise{} can similarly only be used finitely many times, as
+  each application reduces the number of automata in the product of $\Image$ by
+  one automaton, until only one remains and \cref{lma:single-terminates} for
+  single-automaton instances applies.
+  
+  This implies that also the rule~\ExpandM{} can only be applied
+  finitely often since its side condition only allows applying it once
+  per instance of an $\Image$ predicate containing a product, and only finitely
+  many instances of $\Image$ can be introduced on each branch.
+\end{proof}
+
+%\subsubsection{The rules in \cref{tbl:rules:multi} are solution-preserving}
+
+Since our calculus now includes a rule introducing new variables, the
+\Materialise{} rule, we have to slightly generalise the notion of
+solution-preservation:
+%
+\begin{lemma}\label{lma:multi-correct}
+  Consider an application of one of the rules in
+  \cref{tbl:rules:multi}, with
+  premises~$\SomeClause_1, \ldots, \SomeClause_k$ and
+  conclusion~$\SomeClause$. An assignment~$\beta$ (over the symbols in
+  $\SomeClause$) satisfies the conclusion~$\SomeClause$ if and only if
+  there is an extension~$\beta' of \beta$ satisfying one of the
+  premises~$\SomeClause_i$.
+\end{lemma}
+
+\begin{proof}
+  We have to consider the two new rules in \cref{tbl:rules:multi}. The
+  result is immediate for \ExpandM{}, since this rule does not remove the
+  $\Image$ predicate from a proof goal, and the newly introduced formulas
+  are all implied by the $\Image$ predicate.
+
+  For \Materialise{}, observe that the existence of an accepting path
+  in $\Automaton_i \times \Automaton_j$ is equivalent to the existence
+  of individual paths in $\Automaton_i, \Automaton_j$ accepting the
+  same word. The path in the product will satisfy the flow equations
+  and connectedness, and it will be related to the individual paths as
+  stipulated by the \BindingSum{} predicate.
+\end{proof}
