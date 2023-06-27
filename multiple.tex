@@ -139,17 +139,17 @@ perform the calculus as before.
 
 \subsection{An Example}\label{sec:multiple:example}
 
-We return again to our example in \cref{sec:intuition} and start by performing
-the steps of \cref{sec:single:example} shown in \cref{fig:derivation:single},
-since the steps to propagate \cref{ex:string-constraints} across the automaton
-$A'$ still applies for the product. We also reuse the definition of $\Map$ as
-the simple projection to extract the counter increments, so in this case,
-$\Map(\Transition) = \left[l_{B+}\right]$ for every transition~$\Transition$
-since we are only counting the length.
+We return again to our example in \cref{sec:intuition}.We also reuse the
+definition of $\Map$ as the simple projection to extract the counter increments,
+so in this case, $\Map(\Transition) = \left[l_{B+}\right]$ for every
+transition~$\Transition$ since we are only counting the length. The reader is
+strongly advised to review \cref{fig:aut_a_annotated,fig:aut_b_annotated} from
+\cref{sec:intuition} while going through this example! In particular, note that
+the transition variables of the figures correspond to the ones used here.
 
-We reuse the transition variable associations of our previous
-\cref{sec:single:example}, from \cref{eq:single-filter}, but add the definitions
-for $B$ shown in \cref{eq:multi-filter}:
+The transition variables of \cref{sec:single:example} recur
+\cref{eq:single-filter}, but we add the definitions for $B$ shown in
+\cref{eq:multi-filter}:
 \begin{equation}\label{eq:multi-filter}
     \begin{aligned}
         \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) = \TransitionVar_6\\
@@ -160,43 +160,52 @@ for $B$ shown in \cref{eq:multi-filter}:
         \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A})= \TransitionVar_{11}\\
         \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B})= \TransitionVar_{12}\\
         \FlowEq(B, \Filter) =  \begin{aligned}
-            1 + \TransitionVar_{12}   &= \TransitionVar_{11} + \TransitionVar_{12}\\
+            1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12}\\
             \land \TransitionVar_{11} &= \TransitionVar_6\\
             \land \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}
         \end{aligned}
     \end{aligned}
 \end{equation}
-    
-In the derivation tree of \cref{fig:derivation:multi} we start as before, but
-with the product version of the $\Image$ predicate. The only possible rule here
-is $\ExpandM$, which we use to add the corresponding constraints on each
-automata of the product as we would have had in the single-automaton version. 
 
-We perform algebraic reasoning on those equations, along with the constraint on
-$\MonoidElement$ to determine bounds on transition variables that will enable us
-to \Subsume{} and remove one of the $\Connected{}$ predicates. When we have
-finished doing so, we use \Materialise{} to compute the product of the now
-filtered automata. Further algebraic reasoning allows us to remove the final
-instance of $\Connected$. We then perform \Expand{} to get rid of the final
-$\Image$ instance, and are immediately able to $\Subsume$ the resulting
-$\Connected{}$ predicate. This, again, leaves us with a set of linear
-inequalities at the leaf that we can use to obtain a model of our final
-$\MonoidElement$ values (now a vector). This time we can read out aca, or
-$\VectorLiteral{2, 0, 1}$.
+
+The only possible rule at the start is $\ExpandM$, which we use to add the
+corresponding constraints on each automata of the product as we would have had
+in the single-automaton version. 
+
+We then continue by repeating the steps of the steps of
+\cref{sec:single:example} shown in \cref{fig:derivation:single}, since the steps
+to propagate \cref{ex:string-constraints} across the automaton $A'$ still apply
+for the product. Note that this fixes the values of all transitions but one as
+constants.
+
+\Fudge{description here!}
 
 \begin{figure}
   \centering
 \begin{prooftree}
-  % LEFT TREE  ->
-  \hypo{l}% here x_12 is zero
-  % RIGHT TREE ->
-  \hypo{r} % here x_12 is one
-  \infer2[\Split{} $\TransitionVar_{12} = 0$]{\text{FINAL STEP OF STUMP}}
-  \infer1[\EquationReasoning: probably something good]{
+  {% % LEFT TREE: here x_12 is zero
+  \hypo{PROOF CLOSED}
+  \infer1[\Propagate]{WHAT HAPPENS WHEN X_12 IS ZERO}
+  }% END LEFT TREE
+  {% RIGHT TREE % here x_12 is one
+  \hypo{r} 
+  }% END RIGHT TREE
+  \infer2[\Split{} $\TransitionVar_{12} = 0$]{
+  \begin{aligned}
+    \TransitionVar_7 = l_A - \TransitionVar_9 - 2\TransitionVar_{11}-2\TransitionVar_{12}\\
+    \land \TransitionVar_2 = l_A - 3\\
+    \land \TransitionVar_{8} = \TransitionVar_{11} + \TransitionVar_{12} - 1\\
+    \land \TransitionVar_6 = \TransitionVar_{11}\\
+    \land \TransitionVar_{10} = 1 - \TransitionVar_{11}\\
+    \land \Connected(B, \Filter) \\
+    \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
+  \end{aligned}
+  }
+  \infer1[Expand $\sum$, \EquationReasoning] {
     \begin{aligned}
       l_A = \sum_{k = 6}^{k = 12} \TransitionVar_k\\
       \land \TransitionVar_2 = l_A - 3\\
-      \land 1 + \TransitionVar_{12}   = \TransitionVar_{11} + \TransitionVar_{12}\\
+      \land 1 + \TransitionVar_{8}   = \TransitionVar_{11} + \TransitionVar_{12}\\
       \land \TransitionVar_{11} = \TransitionVar_6\\
       \land \TransitionVar_{12} = \TransitionVar_8 + \TransitionVar_{10}\\
       \land \Connected(B, \Filter) \\
