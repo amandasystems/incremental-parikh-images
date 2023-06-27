@@ -110,7 +110,7 @@ We use the convention of splitting the formulas into linear (in)equalities
 predicates $\Image$ and $\Connected$ only occur positively. Since our rules
 operate by adding and matching linear (in)equalities in a proof goal, we use the
 shorthand of listing the matched inequalities as antecedents e.g., in
-\Propagate{}).
+\Propagate{}.
 
 The filtering function~$\Filter$ is evaluated symbolically, and can in practice
 be read as a function from transitions to $\Naturals$-valued terms
@@ -225,7 +225,7 @@ rule \EquationReasoning{} that allows us to perform standard algebraic reasoning
 on linear inequalities. This rule is not necessary for correctness or
 completeness, but shortens the examples considerably.
 
-\subsection{An Example}
+\subsection{An Example}\label{sec:single:example}
 Here we will return to $A'$ from \cref{sec:intuition} and performs the steps of
 \cref{sec:intuition:algebra,sec:intuition:prop,sec:intuition:split} with the
 formal calculus we just established, but exclude \cref{const:s2-in-b} and
@@ -242,7 +242,7 @@ vector $\Vec{v}$, concretely $h(\FromLabelTo{I_A}{\Sigma / \left[ l_{A+}, i_+
 here as in \cref{sec:intuition} to represent what is essentially a sparse vector
 of $1$ and $0$ coefficients, i.e. = $\left[ l_{A+}, i_+ \right] = \left[1, 1,
 0\right]$. Initially, we let $\Filter$ map to fresh variables to obtain:
-\begin{equation}
+\begin{equation}\label{eq:single-filter}
     \begin{aligned}
       \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) & = \TransitionVar_1    & 
                 \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) & = \TransitionVar_2 &       \FlowEq(A', \Filter) & = \begin{aligned}
@@ -254,7 +254,7 @@ of $1$ and $0$ coefficients, i.e. = $\left[ l_{A+}, i_+ \right] = \left[1, 1,
                 \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) & = \TransitionVar_4 &\\
       \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) & = \TransitionVar_5 & 
     \end{aligned}
-\end{equation}\label{eq:single-filter}
+\end{equation}
 
 Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
   to end up with fixed values for several of the transition variables
