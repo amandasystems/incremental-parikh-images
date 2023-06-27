@@ -154,12 +154,16 @@ for $B$ shown in \cref{eq:multi-filter}:
     \begin{aligned}
         \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) = \TransitionVar_6\\
         \Filter(\FromLabelTo{A}{c / l_{B+}}{A} ) = \TransitionVar_7\\
-        \Filter(\FromLabelTo{B}{b / l_{B+}}{S})= \TransitionVar_8 \\
+        \Filter(\FromLabelTo{B}{b / l_{B+}}{I_B})= \TransitionVar_8 \\
         \Filter(\FromLabelTo{B}{c / l_{B+}}{B})= \TransitionVar_9\\
         \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B})= \TransitionVar_{10}\\
         \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A})= \TransitionVar_{11}\\
         \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B})= \TransitionVar_{12}\\
-        \FlowEq(B, \Filter) =  % FIXME FLOWS FOR B \\
+        \FlowEq(B, \Filter) =  \begin{aligned}
+            1 + \TransitionVar_{12}   &= \TransitionVar_{11} + \TransitionVar_{12}\\
+            \land \TransitionVar_{11} &= \TransitionVar_6\\
+            \land \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}
+        \end{aligned}
     \end{aligned}
 \end{equation}
     
@@ -183,113 +187,56 @@ $\VectorLiteral{2, 0, 1}$.
 \begin{figure}
   \centering
 \begin{prooftree}
-  \hypo{
-    {\begin{array}{lll}
-      1 = \TransitionVar_{10} & \land \TransitionVar_3 = \TransitionVar_{11} & \land 1 = \TransitionVar{12} \\ 
-      \land 1 = \TransitionVar_{11} &  & \land 2 > 0
-    \end{array}}  
-  }
-  \infer1[\Subsume{}, \Expand{}, \Subsume{}]{
-    {\begin{array}{ll}
-      2 > 0 \land 1 = \TransitionVar_{10} & \land \TransitionVar_3 = \TransitionVar_{11} \\
-      \land 1 = \TransitionVar_{12} & \land 1 = \TransitionVar_{11} \\
-      \land \Image{}_{\Automaton', \Map}(\Filter, \VectorLiteral{2, 0, 1}) & \land \Connected(\SomethingCSomething{}, \Filter) \\
-    \end{array}}  
-  }
-  \infer1[\EquationReasoning{}]{
-  {  \begin{array}{ll}
-      1 = \TransitionVar_{10} \land \TransitionVar_3 = \TransitionVar_{11} & 
-      \land 1 = \TransitionVar_{12} \land 1 = \TransitionVar_{11} \\
-      \land \Image{}_{\Automaton', \Map}(\Filter, 
-      \VectorLiteral{
-        \TransitionVar_{7a} + \TransitionVar_{9a},
-        0,
-        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land 
-        \TransitionVar_6 + \TransitionVar_4 = 0 \\
-        \land 1 - \TransitionVar_6 > 0 \land \TransitionVar_6 = 0 &
-        \land \TransitionVar_4 = 0 \land  \TransitionVar_3 > 0 \\
-        \land 2\TransitionVar_6 + \TransitionVar_4 = 0 & \land 
-          \VectorLiteral{
-        \TransitionVar_{7a} + \TransitionVar_{9a},
-        0,
-        \TransitionVar_{7c} + \TransitionVar_{9c} + 1} 
-        = \VectorLiteral{
-          2,
-          0,
-          \TransitionVar_3} \\ \land 
-      \Connected(\SomethingCSomething{}, \Filter) &
-      \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-    \end{array} } 
-  }
-  \infer1[\Materialise]{
-    {\begin{array}{ll}
-      \TransitionVar_6 + \TransitionVar_4 = 0 \land 1 - \TransitionVar_6 > 0 &
-      \land \TransitionVar_6 = 0  \land \TransitionVar_4 = 0 \\
-      \land \TransitionVar_3 > 0 & \land 2\TransitionVar_6 + \TransitionVar_4 = 0 \\
-      \land 
-      \VectorLiteral{
-        \TransitionVar_{7a} + \TransitionVar_{9a},
-        0,
-        \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
-        = \VectorLiteral{
-          2,
-          0,
-          \TransitionVar_3} & \land
-      \Connected(\SomethingCSomething{}, \Filter) \\
-      \land 
-      \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
-      \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-    \end{array}}
-  }
-  \infer1[\Subsume{}]{
-  {\begin{array}{ll}
-    \TransitionVar_6 + \TransitionVar_4 = 0 \land 
-    1 - \TransitionVar_6 > 0 &
-    \land
-    \TransitionVar_6 = 0 \land 
-    \TransitionVar_4 = 0 \\
-    \land
-    \TransitionVar_3 > 0 & \land
-    2\TransitionVar_6 + \TransitionVar_4 = 0 \\ 
-    \land
-    \VectorLiteral{
-      \TransitionVar_{7a} + \TransitionVar_{9a},
-      0,
-      \TransitionVar_{7c} + \TransitionVar_{9c} + 1}
-      = \VectorLiteral{
-        2,
-        0,
-        \TransitionVar_3} & \land 
-    \Connected(\AcaOrBc{}, \Filter) \\
-    \land 
-    \Connected(\SomethingCSomething{}, \Filter) \\
-    \land 
-    \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
-    \VectorLiteral{\TransitionVar_{7a} + \TransitionVar_{9a}, 0, \TransitionVar_{7c} + \TransitionVar_{9c} + 1}) & \land \TransitionVar_{7a} + \TransitionVar_{9a} > 0
-  \end{array}}
-  }
-  \infer1[\EquationReasoning]{
+  % LEFT TREE  ->
+  \hypo{l}% here x_12 is zero
+  % RIGHT TREE ->
+  \hypo{r} % here x_12 is one
+  \infer2[\Split{} $\TransitionVar_{12} = 0$]{\text{FINAL STEP OF STUMP}}
+  \infer1[\EquationReasoning: probably something good]{
     \begin{aligned}
-      \VectorLiteral{a, b, c} = \VectorLiteral{
-          2 - 2\TransitionVar_6,
-          2\TransitionVar_4 + 3\TransitionVar_6,
-          \TransitionVar_3 + \TransitionVar_6
-        } \land
-        \\
-        \VectorLiteral{a, b, c} = \VectorLiteral{
-            \TransitionVar_{7a} + \TransitionVar_{9a},
-            \TransitionVar_{7b} + \TransitionVar_{9b},
-            \TransitionVar_{7c} + \TransitionVar_{9c} + 1
-          } \land \\
-      \Connected(\AcaOrBc{}, \Filter) \land 
-      \Connected(\SomethingCSomething{}, \Filter) \land \\
-      \Image{}_{\Tuple{\AcaOrBc{},\SomethingCSomething{}}, \Map}(\Filter, 
-      \VectorLiteral{a, b, c}) \land a > b
+      l_A = \sum_{k = 6}^{k = 12} \TransitionVar_k\\
+      \land \TransitionVar_2 = l_A - 3\\
+      \land 1 + \TransitionVar_{12}   = \TransitionVar_{11} + \TransitionVar_{12}\\
+      \land \TransitionVar_{11} = \TransitionVar_6\\
+      \land \TransitionVar_{12} = \TransitionVar_8 + \TransitionVar_{10}\\
+      \land \Connected(B, \Filter) \\
+      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
     \end{aligned}
   }
-  \infer1[\ExpandM]{\Image{}_{\Tuple{A', B}, \Map}(\Filter, \VectorLiteral{l_A, i, n, l_B})}
+  \infer1[\EquationReasoning: expand $\FlowEq$]{
+    \begin{aligned}
+      l_A = \sum_{k = 6}^{k = 12} \TransitionVar_k\\
+      \land \TransitionVar_2 = l_A - 3\\
+      \land \FlowEq(B, \Filter) \\
+      \land \Connected(B, \Filter) \\
+      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
+    \end{aligned}
+  }
+  \infer1[Repeat \cref{fig:derivation:single}, $l_A = l_B$.]{
+    \begin{aligned}
+      l_B = \sum_{k = 6}^{k = 12} \TransitionVar_k\\
+      \land i = \TransitionVar_5\\
+      \land l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k\\
+      \land n = \TransitionVar_4 + \TransitionVar_1\\  
+      \land \FlowEq(B, \Filter) \\
+      \land \Connected(A', \Filter) \\
+      \land \Connected(B, \Filter) \\
+      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, i, n, l_B}) 
+      \land l_A = l_B\\
+      \land l_A - i - n > 0\\
+      \land 0 < i < n
+    \end{aligned}
+  }
+  \infer1[\ExpandM]{
+    \Image{}_{\Tuple{A', B}, \Map}(\Filter, \VectorLiteral{l_A, i, n, l_B})
+    \land l_A = l_B % Implied constraint
+    \land l_A - i - n > 0
+    \land 0 < i < n
+    }
 \end{prooftree}
-\caption{A derivation for \Calculus{} on the Parikh image of strings with more a's than b's in the product of $\AcaOrBc{}$ and $\SomethingCSomething{}$.}\label{fig:derivation:multi}
+\caption{A derivation for \Calculus{} on the Parikh image strings for the
+constraints of \cref{ex:string-constraints}. Note the constant propagation
+for~$n$!}\label{fig:derivation:multi}
 \end{figure}
 
 \subsection{Correctness of \Calculus{} for Products of Automata}

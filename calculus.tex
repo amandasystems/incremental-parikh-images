@@ -278,11 +278,20 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
   \centering
 \begin{prooftree}
   \hypo[]{{\text{Regular solving finishes the proof}}}
+  \infer1[\EquationReasoning{}: $i = 1$]{
+  i = 1
+  \land n = 2
+  \land \TransitionVar_2 = l_A - 3
+  \land \TransitionVar_3 = 0
+  \land \TransitionVar_5 = 1
+  \land \TransitionVar_1 = \TransitionVar_4 = 1
+  }
   \infer1[]{
     \begin{aligned}
     i = \TransitionVar_5 \land 
     n = 2 \land \\
-    2 \geq i \land l_A - i - 2 > 0 
+    0 < i < 2
+    \land l_A - i - 2 > 0 
     \land \TransitionVar_2 = l_A - i - 2 
     \land \TransitionVar_3 = 0 \\
     \end{aligned}}
@@ -291,17 +300,20 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     \Connected(A', \Filter) \land 
     \TransitionVar_1 = 1 \land 
     i = \TransitionVar_5 \land 
-    n = 2 \land 
-    2 \geq i \land l_A - i - 2 > 0  \\
+    n = 2 \land \\
+    0 < i < 2 
+    \land l_A - i - 2 > 0
     \land \TransitionVar_2 = l_A - i - 2 
-    \land \TransitionVar_3 = 0 \\
+    \land \TransitionVar_3 = 0
     \end{aligned}
   }
   \infer1[\EquationReasoning{}: $\TransitionVar_1 = 1$ \cref{sec:a_1}]{
     \begin{aligned}
-    \Connected(A', \Filter) \land \\
+    \Connected(A', \Filter) \land
     i = \TransitionVar_5 \land 
-    n = 2\TransitionVar_1 \land n \geq i \land l_A - i - n > 0 
+    n = 2\TransitionVar_1 
+    \land n > i > 0 \\
+    \land l_A - i - n > 0 
     \land \TransitionVar_2 = l_A - i - n 
     \land \TransitionVar_3 = 1 - \TransitionVar_1 
     \end{aligned}
@@ -311,12 +323,13 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     \Connected(A', \Filter)  
     \land i = \TransitionVar_5 
     \land n = \TransitionVar_4 + \TransitionVar_1 
-    \land n \geq i 
-    \land l_A - i - n > 0 \\
-    \land \TransitionVar_4 = \TransitionVar_1 
+    \land n > i > 0
+    \land l_A - i - n > 0
+    \land \TransitionVar_4 = \TransitionVar_1 \\
     \land \TransitionVar_2 = l_A - i - n 
     \land \TransitionVar_3 = 1 - \TransitionVar_1
     \land 1 = \TransitionVar_3 + \TransitionVar_1 
+    \land i > 0
     \land \TransitionVar_4 = \TransitionVar_1 
     \end{aligned}
   }
@@ -324,7 +337,8 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     \begin{aligned}
     i = \TransitionVar_5 
     \land l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k 
-    \land n \geq i \land l_A - i - n > 0
+    \land n > i > 0
+    \land l_A - i - n > 0
     \land n = \TransitionVar_4 + \TransitionVar_1\\
     \land \Connected(A', \Filter) 
     \land \FlowEq(A', \Filter)
@@ -336,7 +350,12 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     \left[l_A, i, n\right] =
     \sum\limits_{\Transition \in \Transitions_{A'} } \Map(\Transition) \cdot \Filter(\Transition)
   }
-  \infer1[\Expand{}]{\Image{}_{A', \Map}(\Filter, \left[l_A, i, n\right]) \land n \geq i \land l_A - i - n > 0}
+  \infer1[\Expand{}]{
+    \Image{}_{A', \Map}(\Filter, \left[l_A, i, n\right]) 
+    \land n \geq i 
+    \land l_A - i - n > 0
+    \land i > 0
+    }
 \end{prooftree}
 \caption{A derivation tree for an application of
 \cref{const:s1-in-c-dd,const:s1-substring,const:something-before-and-after,const:more-inside-than-before}

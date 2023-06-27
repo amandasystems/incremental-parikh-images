@@ -2,14 +2,14 @@ digraph Automaton {rankdir = LR;
 initial [shape=plaintext,label=""];
 initial -> I_B;
 A [shape=circle,label="A"];
-A -> F_B [label="a/x_2"]
-A -> A [label="c/l_A -x_1 -2x_2 -2x_3"]
+A -> F_B [label="a/x_{11}"]
+A -> A [label="c/l_A -x_9 -2x_{11} -2x_{12}"]
 B [shape=circle,label="B"];
-B -> I_B [label="b/x_2 + x_3  - 1"]
-B -> B [label="c/x_1"]
-B -> F_B [label="c/1 -x_2"]
+B -> I_B [label="b/x_{11} + x_{12}  - 1"]
+B -> B [label="c/x_9"]
+B -> F_B [label="c/1 -x_{11}"]
 F_B [shape=doublecircle,label="F_B"];
 I_B [shape=circle,label="I_B"];
-I_B -> A [label="a/x_2"]
-I_B -> B [label="b/x_3"]
+I_B -> A [label="a/x_{11}"]
+I_B -> B [label="b/x_{12}"]
 }
