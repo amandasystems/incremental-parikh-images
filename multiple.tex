@@ -139,7 +139,7 @@ perform the calculus as before.
 
 \subsection{An Example}\label{sec:multiple:example}
 
-We return again to our example in \cref{sec:intuition}.We also reuse the
+We return again to our example in \cref{sec:intuition}. We also reuse the
 definition of $\Map$ as the simple projection to extract the counter increments,
 so in this case, $\Map(\Transition) = \left[l_{B+}\right]$ for every
 transition~$\Transition$ since we are only counting the length. The reader is
@@ -152,14 +152,14 @@ The transition variables of \cref{sec:single:example} recur
 \cref{eq:multi-filter}:
 \begin{equation}\label{eq:multi-filter}
     \begin{aligned}
-        \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) = \TransitionVar_6\\
-        \Filter(\FromLabelTo{A}{c / l_{B+}}{A} ) = \TransitionVar_7\\
-        \Filter(\FromLabelTo{B}{b / l_{B+}}{I_B})= \TransitionVar_8 \\
-        \Filter(\FromLabelTo{B}{c / l_{B+}}{B})= \TransitionVar_9\\
-        \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B})= \TransitionVar_{10}\\
-        \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A})= \TransitionVar_{11}\\
-        \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B})= \TransitionVar_{12}\\
-        \FlowEq(B, \Filter) =  \begin{aligned}
+        & \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) = \TransitionVar_6 
+        & \Filter(\FromLabelTo{A}{c / l_{B+}}{A} ) = \TransitionVar_7 
+        & \Filter(\FromLabelTo{B}{b / l_{B+}}{I_B}) = \TransitionVar_8 
+        &\Filter(\FromLabelTo{B}{c / l_{B+}}{B}) = \TransitionVar_9  \\
+        & \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B})= \TransitionVar_{10}
+        & \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A})= \TransitionVar_{11}
+        & \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B})= \TransitionVar_{12}
+        \FlowEq(B, \Filter) &=  \begin{aligned}
             1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12}\\
             \land \TransitionVar_{11} &= \TransitionVar_6\\
             \land \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}
@@ -295,7 +295,7 @@ Since \cref{tbl:rules:multi} only extends the existing rules of
 \cref{tbl:rules:single}, we focus on the differences compared
 to the calculus for a single automaton.
 
-%\subsubsection{\Calculus{} for products of automata terminates}
+\subsubsection{\Calculus{} for products of automata terminates}
 \begin{lemma}\label{lma:multi-terminates}
   Suppose $\SomeClause{}$ is a set of formulas in which the product
   version of $\Image$ only occurs positively. There is no
@@ -316,7 +316,7 @@ to the calculus for a single automaton.
   many instances of $\Image$ can be introduced on each branch.
 \end{proof}
 
-%\subsubsection{The rules in \cref{tbl:rules:multi} are solution-preserving}
+\subsubsection{The rules in \cref{tbl:rules:multi} are solution-preserving}
 
 Since our calculus now includes a rule introducing new variables, the
 \Materialise{} rule, we have to slightly generalise the notion of

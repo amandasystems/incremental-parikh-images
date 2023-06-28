@@ -31,16 +31,16 @@ In \cref{fig:solve-division} we show how many of the~\NrBenchmarks{} instances
 the respective back-end could solve. A summary of their outcomes by instance
 type is also available in \cref{tab:solve-status}. Note that many instances lack
 a corum ground truth as they are solved by only one backend. We see that
-\Calculus{} generally outperforms \Nuxmv{} on determining unsatisfiability,
-while being similar at satisfiable instances. Both \Nuxmv{} and \Calculus{}
-outperform baseline on satisfiable instances, and \Calculus{} outperforms
-\Nuxmv{}.
+\Calculus{} generally outperforms \Nuxmv{} on determining unsatisfiability, as
+does baseline while being similar at satisfiable instances. Both \Calculus{} and
+baseline outperforms baseline on satisfiable instances. On satisfiable
+instances, \Nuxmv and \Calculus{} has similar performance.
 
 Baseline performs worse on satisfiable instances because it executes a heuristic
 meant to detect unsatisfiability early at a heavy penalty to satisfiable
 instances roughly similar to \cite{approximate-parikh}. The heuristic is enabled
-since we suspect that unsatisifiable instances are more common; at least we have
-seen more solved unsatisfiable instances.
+since the improvement is significant compared to the extra cost and since we
+have observed more unsatisfiable instances than satisfiable ones.
 
 \begin{table}
   \centering
@@ -82,31 +82,20 @@ variants of \Calculus{}: one with clause learning and restarts disabled, and one
 with only clause learning disabled to show the impact of
 \cref{sec:random-restarts}, and \cref{sec:clause-learning} respectively.
 
-A cactus plot showing the number of instances solved within a given timeout for
-each backend configuration can be seen in \cref{fig:cactus}. Here, we see
-clearly that \Calculus{} outperforms \Nuxmv{} in general, but that \Nuxmv{}
-might have better long-term scaling properties. Notably, for machines with
-better single-core performance \Nuxmv{}'s scaling benefits kicks in faster,
-though the graph looks similar in shape.
-
-\iffalse
-\subsection{Finding a Presburger Formula}\label{sec:evaluation:finding-image}
-
-For baseline and \Calculus{}, \Catra{} offers the ability to find the equivalent Presburger formula representing a given instance. For baseline, we use the built-in quantifier elimination facilities of the underlying \Princess{} theorem prover, while for \Catra{} we use the specially tailored approach described in \cref{sec:finding-the-image}. For this experiment, we use only the~\NrKnownSat{} instances known to be satisfiable from the previous experiment detailed in \cref{sec:scaling,sec:runtime}. 
-
-To make sure baseline puts up as much competition as possible, we disable
-checking intermittent satisfiability and configure \Catra{} to run in the
-maximally eager mode where the product is first computed before any
-satisifiability check is performed. We run the experiments with a timeout
-of~\ImageTimeout{}. The results of the experiment is summarised in
-\cref{fig:cactus:image} and \cref{tab:image-results}. \Fudge{We see here that
-something happens}.
-
-\begin{figure}[ht]
-  \caption{The number of instances \Catra{} was able to find the Presburger form of the image for within a given number of seconds per backend.}
-  \label{fig:cactus:image}
-\end{figure}
-\fi
+A cactus plot showing the number of instances solved within a given timeout can
+be seen in \cref{fig:cactus}. We see that \Calculus{} outperforms \Nuxmv{} in
+general, but that \Nuxmv{} might have better scaling properties on longer runs.
+For machines with better single-core performance than our experiment machine
+\Nuxmv{}'s scaling benefits kicks in faster, so it is likely that the amount of
+CPU cycles spent on the problem is the underlying factor. This is likely due to
+two factors. First, \Nuxmv{} is more mature than \Calculus{}, and it makes sense
+that its more general model checking methods would pay off on more difficult
+instances where more problem-specific methods offer less payoff. Second, for
+longer running calculations clause learning as described in
+\cref{sec:clause-learning} can be assumed to matter more. However, the clauses
+we learn are still relatively unpolished, and in particular generalising
+insights across product computations is nontrivial and therefore partially left
+as future work.
 
 \subsection{Threats to Validity}
 

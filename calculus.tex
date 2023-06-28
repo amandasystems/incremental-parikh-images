@@ -244,15 +244,16 @@ of $1$ and $0$ coefficients, i.e. = $\left[ l_{A+}, i_+ \right] = \left[1, 1,
 0\right]$. Initially, we let $\Filter$ map to fresh variables to obtain:
 \begin{equation}\label{eq:single-filter}
     \begin{aligned}
-      \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) & = \TransitionVar_1    & 
-                \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) & = \TransitionVar_2 &       \FlowEq(A', \Filter) & = \begin{aligned}
-                    1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 + \TransitionVar_1\\
+      & \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) = \TransitionVar_1
+        & \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) = \TransitionVar_2   
+        & \FlowEq(A', \Filter)  = \begin{aligned}
+                       1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 + \TransitionVar_1\\
                     \TransitionVar_4 &= \TransitionVar_1 \\
                     \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &\geq \cancel{\TransitionVar_2}  \\
-                  \end{aligned} \\
-      \Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) & =  \TransitionVar_3 & 
-                \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) & = \TransitionVar_4 &\\
-      \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) & = \TransitionVar_5 & 
+                    \end{aligned} \\
+      &\Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) =  \TransitionVar_3 
+          & \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) = \TransitionVar_4
+          & \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) = \TransitionVar_5  
     \end{aligned}
 \end{equation}
 
