@@ -185,10 +185,12 @@ constants.
 \begin{prooftree}
   {% % LEFT TREE: here x_12 is zero
   \hypo{
-      \ldots \land 1 = 0 
+    \begin{array}{l}
+      \ldots \boxed{\land 1 = 0} \\
       \land \Image{}_{\emptyset, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A})
+    \end{array}
   }
-  \infer1[\Materialise: $\emptyset$]{
+  \infer1[\Materialise]{
     \begin{array}{llll}
       \TransitionVar_9 = 0 
       \land \TransitionVar_7 = l_A - 2 \\
@@ -215,10 +217,12 @@ constants.
   }% END LEFT TREE
   {% RIGHT TREE % here x_12 is > 0
   \hypo{
-      \ldots \land 1 = 0 
+    \begin{array}{l}
+      \ldots \boxed{\land 1 = 0} \\
       \land \Image{}_{\emptyset, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A})
+    \end{array}
   }
-  \infer1[\Materialise: $\emptyset$]{
+  \infer1[\Materialise]{
     \begin{array}{rrrr}
       \TransitionVar_{12} > 0 \land \\
       \TransitionVar_7 = l_A - \TransitionVar_9 - 2\TransitionVar_{11}-2\TransitionVar_{12} \land \\
