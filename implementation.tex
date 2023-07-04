@@ -6,11 +6,6 @@ Parikh automaton with transition labels defined as ranges of Unicode characters,
 along with a set of constraints on the final values of their registers expressed
 as Presburger arithmetic in a C-like syntax. We call this program
 \Catra.
-% \footnote{If you really must read it as an acronym, please read it as
-%CAtegory Theory on Register Automata, or if you object to the somewhat
-%nonstandard use of register automata and category theory, as Check Assignments
-%of The Registers Afterwards. Or alternatively if you find it all to be too much
-%of a theoretical exercise, as Can Anyone Think of A Real Application.}
 
 \Catra{} is written in Scala, with the calculus described in this paper
 implemented as a theory plug-in for the \Princess{} automated theorem
@@ -20,44 +15,43 @@ from~\cite{generate-parikh-image}, a direct translation that uses the~\Nuxmv{}
 symbolic model checker~\cite{nuxmv} to solve our constraints, and the
 approximation described in~\cite{approximate-parikh} on top of the standard
 baseline back-end. An example of an input file corresponding to our running
-example introduced in \cref{sec:motivation} can be seen in
+example introduced in \cref{sec:intuition} can be seen in
 \cref{lst:input-example}.
 
 \Catra{} uses symbolic labels for automata. A symbolic label is defined as a
 finite range of Unicode code points. This allows succinct representation of many
-regular expression patterns such as \lstinline{(a-z).*} which would have
+regular expression patterns such as \lstinline{(a-z).*}, which would have
 otherwise required $27$~transitions. The transition for the range would be
 written \lstinline{a -> b [97, 122]}.
 
 In satisfaction mode, supported by all backends, \Catra{} tries to satisfy the
 constraints expressed by the input file, reporting \Sat{} with register
 assignments or \Unsat{} much like traditional~SAT- or SMT solvers would.
-Additionally, baseline and \Calculus{} also support generation of the Presburger
+Additionally, baseline and \Calculus{} also support generating the Presburger
 formula describing the constraints of the input file. Baseline uses standard
 quantifier elimination, and \Calculus{} uses the method described in
 \cref{sec:finding-the-image}.
 
-Since \Princess{} does not support multiple-arity predicates like the ones we
-use in \Calculus{}, we have implemented variable-length arguments using
-additional helper predicates. These are $\Unused{}(\Automaton)$, which marks an
-automaton as unused in any product, and $\TransitionMask{}(\Automaton,
-\Transition, \Filter(\Transition))$ which associates a transition $\Transition$
-and automaton $\Automaton$ with its corresponding transition variable.
-Additionally, we associate each of our predicates with an instance variable in
-order to differentiate instances of the predicates.
+Since \Princess{} does not support the multiple-arity predicates used in
+\Calculus{}, we have implemented variable-length arguments using additional
+helper predicates. These are $\Unused{}(\Automaton)$, which marks an automaton
+as unused in any product, and $\TransitionMask{}(\Automaton, \Transition,
+\Filter(\Transition))$ which associates a transition $\Transition$ and automaton
+$\Automaton$ with its corresponding transition variable. Additionally, we
+associate each predicate with an instance variable to tie helper predicates
+to the $\Image$ predicate they originated from.
 
 \subsection{Implementing the Baseline}\label{sec:implementing-baseline}
 
 We baseline using the same Presburger solver (\Princess{}), input file parser,
-and automaton implementation as \Catra. We do this in order to better analyse
-the impact of the calculus rules themselves. Using the formula of
+and automaton implementation as \Catra. We do this to better analyse the impact
+of the calculus rules themselves. Using the formula of
 \eqref{eq:generate-parikh}, we produce quantified Presburger formulae for each
 successive term and add them to \Princess. We compute the product incrementally
 term by term, checking satisfiability at each step. We use a priority queue to
-select automata for each step, and order it by the number of transitions as a
-heuristic for the size of the automata. We use this heuristic to avoid computing
-large (and therefore slow) products until we have to, banking our hopes on
-computing an empty intermittent product early.
+select automata for each step and order them by their number of transitions. We
+use this heuristic to put off computing large (and therefore slow) products until
+we have to, hoping to find an empty intermittent product.
 
 \begin{algorithm}
   \caption{How we implement the baseline approach}\label{alg:baseline}
@@ -95,45 +89,49 @@ computing an empty intermittent product early.
 
   \end{algorithm}
 
-As an optimisation, our automata (including intermittent products) are created
-forward- and backward- reachable-minimal. Any automaton we produce only contains
+As an optimisation, our automata (including intermittent products) have dead
+states eliminated during construction. Any automaton we produce contains only
 states that are both reachable from the initial state and has a path to an
 accepting state. We never perform any other minimisation on the automata for
 either backend. More complex minimisation was left out since performing
 minimisation on automata with counters is non-trivial, and minimising symbolic
-automata risks exponential blowup \cite{minimising-symbolic}.
+automata risks exponential blowup~\cite{minimising-symbolic}.
 
 \subsection{Heuristics and search strategies}
 
-There are a number of choices left unspecified in \Calculus{} as described in
-\cref{sec:calculus,sec:multiple}. For example, the order of materialisation of
-intermediate products and the order of splitting. In this section we describe
-additional implementation details and techniques used to enhance \Catra{}.
+\Calculus{} as described in \cref{sec:calculus,sec:multiple} leaves some choices
+unspecified, including the priority of rules and the order of their arguments. In
+this section, we address these and describe additional implementation details
+and techniques used to enhance \Catra{}.
 
 \subsubsection{Splitting, Materialisation, and Propagation}
 
-We order our rule applications so that we first propagate connectedness if
+We order our rule applications as follows: first, propagate connectedness if
 possible, then perform materialisation if tractable as defined below, then
-finally resort to splitting if we must.
+finally resort to splitting as a last resort.
 
 In addition to applying \Split{} as described in \cref{tbl:rules:single} to
 randomly selected transitions, we prefer splitting to sever a strongly connected
-from the initial state. We randomly select an automaton where we can compute a
-cut between an SCC and the initial state, that is where the SCC does not contain
-the initial state and where the sum of the transition variables of the
-transitions in the cut is not known to be positive. If there are multiple such
-strongly connected components we choose one randomly. We then proceed to split
-on the sum of the transition variables of the cut as if it were a regular
-transition, e.g. its sum being zero or nonzero. In this way we drive \Calculus{}
+component from the initial state. We randomly select an automaton where we can
+compute a cut between an SCC and the initial state, that is, where the SCC does
+not contain the initial state and where the sum of the transition variables of
+the transitions in the cut is not known to be positive. If there are multiple
+such strongly connected components, we choose one randomly. We then proceed to
+split on the sum of the transition variables of the cut as if it were a regular
+transition, e.g., its sum being zero or nonzero. In this way, we drive \Calculus{}
 towards applying \Propagate{}.
 
-The implementation of the connectedness constraint is opportunistic and straightforward. We compute a set of dead states by performing forward and backwards reachability computations on an automaton, where we disregard any transition whose associated variable is known to be zero. After that we add clauses ensuring any transition variable associated with a transition starting in a dead state is zero.
+The implementation of the connectedness constraint is opportunistic and
+straightforward. We compute a set of dead states by performing forward and
+backward reachability computations on an automaton, where we disregard any
+transition whose associated variable is known to be zero. After that we add
+clauses ensuring any transition variable associated with a transition starting
+in a dead state is zero.
 
 Product materialisation is the final piece of the puzzle. In the current
-implementation we put off computing intermediate products until at least all but
-two transition variables of one of the automata is known to be either present or
-absent. The number was chosen experimentally, and we observe a consistent trend
-towards lower numbers being better. The other automaton for the product is
+implementation we put off computing intermediate products until six transition
+variables of one of the automata is known to be either present or absent. The
+number was chosen experimentally. The other automaton for the product is
 selected randomly.
 
 \subsubsection{Clause Learning}\label{sec:clause-learning}

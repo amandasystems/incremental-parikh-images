@@ -2,6 +2,8 @@
 
 from collections import namedtuple
 from enum import Enum, auto
+from pandas import DataFrame
+import pandas
 import re
 
 class Status(Enum):
@@ -48,3 +50,32 @@ def parse_log(log):
             if line.startswith("RESULT"):
                 for r in parse_line(line[len("RESULT "):], configurations):
                     yield r
+                    
+def log2df(log):
+    runtimes = DataFrame(parse_log(log))
+    runtimes = runtimes[~runtimes.index.duplicated()]
+    runtimes['backend'] = runtimes['backend'].astype("category")
+    runtimes['status'] = runtimes['status'].astype("category")
+    runtimes['status'] = runtimes['status'].cat.set_categories(
+        [Status.SAT, Status.UNSAT, Status.TIMEOUT, Status.MEMORY_OUT, Status.ERROR], 
+        ordered=True)
+    return runtimes
+
+
+def solved_after(seconds, known_solved):
+    df = known_solved[known_solved['runtime'] < seconds]\
+        .groupby('backend')\
+        .size()\
+        .reset_index()
+    df['after'] = seconds
+    df = df.rename(columns = {0: 'nr solved'})
+    return df
+
+
+def prepare_cactus_plot(log, timeout_s, step_size):
+    runtimes = log2df(log)
+    known_solved = runtimes[runtimes['status'] < Status.TIMEOUT]
+    return (runtimes.instance.unique().size, 
+            pandas.concat([solved_after(i * step_size, known_solved) for i in range(int(timeout_s / step_size) + 1)], axis=0))
+
+    
