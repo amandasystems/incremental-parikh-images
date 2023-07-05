@@ -11,7 +11,7 @@ main.synctex.gz
 .DS_Store
 .vscode
 __pycache__
-experiments/.ipynb_checkpoints
+.ipynb_checkpoints
 experiments/.venv
 experiments/solved_pivot_table.tex
 experiments/*-*.log

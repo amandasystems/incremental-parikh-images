@@ -51,15 +51,16 @@ def parse_log(log):
                 for r in parse_line(line[len("RESULT "):], configurations):
                     yield r
                     
-def log2df(log):
-    runtimes = DataFrame(parse_log(log))
-    runtimes = runtimes[~runtimes.index.duplicated()]
+def adjust_categories(runtimes):
     runtimes['backend'] = runtimes['backend'].astype("category")
     runtimes['status'] = runtimes['status'].astype("category")
     runtimes['status'] = runtimes['status'].cat.set_categories(
         [Status.SAT, Status.UNSAT, Status.TIMEOUT, Status.MEMORY_OUT, Status.ERROR], 
         ordered=True)
     return runtimes
+                    
+def log2df(log):
+    return adjust_categories(DataFrame(parse_log(log)))
 
 
 def solved_after(seconds, known_solved):
@@ -78,4 +79,46 @@ def prepare_cactus_plot(log, timeout_s, step_size):
     return (runtimes.instance.unique().size, 
             pandas.concat([solved_after(i * step_size, known_solved) for i in range(int(timeout_s / step_size) + 1)], axis=0))
 
+
+LINE_RE = re.compile(
+    r"^==== (?P<instance>.*?): (?P<status>sat|unsat|timeout.*ms|memory-out) run: (?P<runtime>.+)s parse: .*====$"
+)
+
+ERROR_RE = re.compile("^==== (?P<instance>.*?) error: (?P<message>.*)====?$")
+
+
+
+def catra_status_from_str(status):
+    if "timeout" in status:
+        return Status.TIMEOUT
+    if status == "unsat":
+        return Status.UNSAT
+    if status == "sat":
+        return Status.SAT
+    if status == "memory-out":
+        return Status.MEMORY_OUT
+    if "error" in status:
+        return Status.ERROR
     
+    raise ValueError(f"Unexpected status {status}")
+    
+
+def parse_catra_line(backend, line):
+    match = LINE_RE.match(line)
+    if match:
+        status = catra_status_from_str(match.group("status"))
+        runtime = (
+            float(match.group("runtime"))
+            if status not in [Status.TIMEOUT, Status.MEMORY_OUT]
+            else float("inf")
+        )
+        return Result(backend, match.group("instance"), status, runtime)
+    match = ERROR_RE.match(line)
+    if not match:
+        return None
+    # It's an error
+    return Result(backend, match.group("instance"), Status.ERROR, float("inf"))
+
+def parse_catra_log(logfile, backend):
+    with open(logfile) as fp:
+        return adjust_categories(DataFrame([result for line in fp if (result := parse_catra_line(backend, line))]))
