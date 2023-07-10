@@ -72,8 +72,7 @@ def solved_after(seconds, known_solved):
     df = df.rename(columns = {0: 'nr solved'})
     return df
 
-def prepare_cactus_plot(log, timeout_s, step_size):
-    runtimes = log2df(log)
+def prepare_cactus_plot(runtimes, timeout_s, step_size):
     known_solved = runtimes[runtimes['status'] < Status.TIMEOUT]
     return (runtimes.instance.unique().size, 
             pandas.concat([solved_after(i * step_size, known_solved) for i in range(int(timeout_s / step_size) + 1)], axis=0))
