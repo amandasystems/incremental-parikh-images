@@ -66,9 +66,9 @@ have observed more unsatisfiable instances than satisfiable ones.
     \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the lazy backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for lazy. On the other hand, lazy has  a lot of outliers.}
   \end{subfigure}
   \vfill
-  \begin{subfigure}[b]{0.75\textwidth}
+  \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{graphs/\commit-cactus.pdf}
-    \caption{The number of instances solved as the time budget increases, simulated from one \RuntimeTimeout-timeout run.}
+    \caption{The number of instances solved as the time budget increases, simulated from one \numprint{120}s-timeout run.}
     \label{fig:cactus}
     \Description[A cactus plot comparing the performance of nuxmv, lazy and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv.}
   \end{subfigure}
@@ -76,26 +76,25 @@ have observed more unsatisfiable instances than satisfiable ones.
 
 \subsubsection{Scalability}\label{sec:scaling}%
 To get an idea of how the different backends scale, we additionally execute
-\numprint{2000} different randomly sampled benchmarks with a
-\numprint{120}-second timeout. In this set we also include two additional
-variants of \Calculus{}: one with clause learning and restarts disabled, and one
-with only clause learning disabled to show the impact of
-\cref{sec:random-restarts}, and \cref{sec:clause-learning} respectively.
+\numprint{2000} randomly sampled (without replacement) benchmarks with a
+\numprint{120}-second timeout. In addition to the previous back-ends, we also
+execute \Calculus{} with clause learning and restarts disabled, and with only
+clause learning disabled to show the impact of \cref{sec:random-restarts}, and
+\cref{sec:clause-learning} respectively.
 
 A cactus plot showing the number of instances solved within a given timeout can
 be seen in \cref{fig:cactus}. We see that \Calculus{} outperforms \Nuxmv{} in
-general, but that \Nuxmv{} might have better scaling properties on longer runs.
-For machines with better single-core performance than our experiment machine
-\Nuxmv{}'s scaling benefits kicks in faster, so it is likely that the amount of
-CPU cycles spent on the problem is the underlying factor. This is likely due to
-two factors. First, \Nuxmv{} is more mature than \Calculus{}, and it makes sense
-that its more general model checking methods would pay off on more difficult
-instances where more problem-specific methods offer less payoff. Second, for
-longer running calculations clause learning as described in
-\cref{sec:clause-learning} can be assumed to matter more. However, the clauses
-we learn are still relatively unpolished, and in particular generalising
-insights across product computations is nontrivial and therefore partially left
-as future work.
+general but that \Nuxmv{} might scale better on very long runtimes.
+Non-systematic observations suggest that \Nuxmv{}'s scaling benefits kicks in
+faster on newer machines, so it is likely that the amount of CPU cycles spent is
+the underlying factor. This is likely due to two factors. First, \Nuxmv{} is
+more mature than \Calculus{}, and it makes sense that its more general model
+checking methods would pay off on more difficult instances where more
+problem-specific methods offer less payoff. Second, for longer running
+calculations clause learning as described in \cref{sec:clause-learning} can be
+assumed to matter more. However, the clauses we learn are still unpolished, and
+in particular, generalise poorly across product computations. Improvements are
+left as future work.
 
 \subsection{Threats to Validity}
 

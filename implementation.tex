@@ -45,13 +45,14 @@ to the $\Image$ predicate they originated from.
 
 We baseline using the same Presburger solver (\Princess{}), input file parser,
 and automaton implementation as \Catra. We do this to better analyse the impact
-of the calculus rules themselves. Using the formula of
-\eqref{eq:generate-parikh}, we produce quantified Presburger formulae for each
-successive term and add them to \Princess. We compute the product incrementally
-term by term, checking satisfiability at each step. We use a priority queue to
-select automata for each step and order them by their number of transitions. We
-use this heuristic to put off computing large (and therefore slow) products until
-we have to, hoping to find an empty intermittent product.
+of the calculus rules themselves. Adapting~\cite{generate-parikh-image}, we
+produce quantified Presburger formulae for each successive term and add them to
+\Princess. We compute the product incrementally term by term, checking
+satisfiability at each step. We use a priority queue to select automata for each
+step and order them by their number of transitions. We use this heuristic to put
+off computing large (and therefore slow) products until we have to, hoping to
+find an empty intermittent product. This is roughly similar to the approach
+taken in~\cite{approximate-parikh}.
 
 \begin{algorithm}
   \caption{How we implement the baseline approach}\label{alg:baseline}
