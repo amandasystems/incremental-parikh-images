@@ -82,8 +82,7 @@ In \cref{sec:intuition} we hand-wavily modelled \cref{const:s1-substring} (and
 
 Applied to \cref{const:s1-substring}, the decision procedure in
 \cite{ostrich-plus} will construct a pre-image of $s_1$ under the substring
-operation, and check whether this pre-image is consistent with the constraint~$x
-\in \Language_1$, corresponding to the full product seen in
+operation, and check whether this pre-image is consistent with the constraint~$s_2 \in \Language(B)$, corresponding to the full product seen in
 \cref{ex:string-constraints}. Because the substring operation depends on the
 values of the integer variables~$i, n$, a Parikh automaton of dimension~$2$,
 shown in \cref{fig:aut_a}, models the pre-image. Intuitively, this construction
@@ -95,6 +94,7 @@ suffix after the matched substring.
 
 % @Philipp: I am quite unsure about which intersection we are looking for here,
 % please verify I'm not wrong!
+% PR: Sounds right (did some small fixes)
 Denoting the language described by \cref{fig:aut_a} as $\Language_{pre}$, we can
 then replace $s_1 = \Substring(s_2, i, n)$ and $s_2 \in
 \Language(B)$ (of \cref{const:s1-in-c-dd}) with an
