@@ -72,7 +72,6 @@ def solved_after(seconds, known_solved):
     df = df.rename(columns = {0: 'nr solved'})
     return df
 
-
 def prepare_cactus_plot(log, timeout_s, step_size):
     runtimes = log2df(log)
     known_solved = runtimes[runtimes['status'] < Status.TIMEOUT]
