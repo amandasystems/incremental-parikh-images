@@ -1,6 +1,10 @@
 \subsection{Monoids}
 
-% @Philipp: reviewer comment #54 complains that this is basic, are they right?
+% AS: reviewer comment #54 complains that this is basic, are they right?
+
+% PR: sure, this is rather basic; but I think we should still include
+% those definitions
+
 A monoid $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ is an algebraic structure
 consisting of the non-empty carrier set of elements, $X$, an associative binary operation
 $X \times X \rightarrow X$ denoted as $\MonoidOp$, that is where for all $a, b,
@@ -82,17 +86,19 @@ Thus, we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1,
 notation $\#l(w)$ to talk about an individual letter $l$ in a word $w$. For
 example, for the Parikh vector above, we would have $\CountOf{a} = 1$.
 
-% @Philipp: Reviewers suggest we drop this:
+% AS: Reviewers suggest we drop this:
+% PR, shortened a bit
 Parikh's theorem states that any context-free language has a Parikh-equivalent
 regular language (c.f.~\cite{construction} for a construction of such automata
-from context-free grammars and~\cite{bounds} for bounds on its size). However,
-there are languages that are not context-free that also have semilinear images
-under~$\ParikhMap$ (e.g. $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) =
-\ParikhMap((abc)^*) = \CountOf{a} = \CountOf{b} = \CountOf{c} \land \CountOf{a}
-\geq 0$). This means they can be represented as a quantifier-free Presburger
-formula.
-
-Note that while Parikh's theorem applies to context-free languages, in this
+from context-free grammars and~\cite{bounds} for bounds on its size).
+%However,
+%there are languages that are not context-free that also have semilinear images
+%under~$\ParikhMap$ (e.g. $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) =
+%\ParikhMap((abc)^*) = \CountOf{a} = \CountOf{b} = \CountOf{c} \land \CountOf{a}
+%\geq 0$). This means they can be represented as a quantifier-free Presburger
+%formula.
+%
+While Parikh's theorem applies to arbitrary context-free languages, in this
 paper we focus only on regular languages.
 
 \subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
