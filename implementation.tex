@@ -95,8 +95,11 @@ states eliminated during construction. Any automaton we produce contains only
 states that are both reachable from the initial state and has a path to an
 accepting state. We never perform any other minimisation on the automata for
 either backend. More complex minimisation was left out since performing
-minimisation on automata with counters is non-trivial, and minimising symbolic
-automata risks exponential blowup~\cite{minimising-symbolic}.
+minimisation on automata with counters is non-trivial.
+
+% @ AS: I did the simple thing and dropped the claim about symbolic automata
+% here: ours are less symbolic (i.e. typically finite) than the ones in the
+% cited paper, and so are technically no worse than normal non-symbolic ones.
 
 \subsection{Heuristics and search strategies}
 
