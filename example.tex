@@ -14,7 +14,8 @@ this example are in $\Naturals$ with $0$.
 \begin{constraints}
     \item\label{const:s1-in-c-dd} $s_1 \in \Language(\Regex{c\RegexOr{}dd})$.
     \item\label{const:s2-in-b} $s_2 \in \Language(B)$, the language accepted by
-    automaton~$B$ of \cref{fig:aut_b}.
+    automaton~$B$ of \cref{fig:aut_b} (ignoring
+    the counter~$l_B$).
     \item\label{const:s1-substring} $s_1 = \Substring(s_2, i, n)$, that is $s_1$ is an
     $n$-length substring of $s_2$ starting at offset $i$.
     \item\label{const:more-inside-than-before} $n > i$, that is what comes
@@ -26,16 +27,18 @@ this example are in $\Naturals$ with $0$.
 
 Although the constraints are simple, it should be noted that
 decidability results for string constraints involving integers are
-notoriously hard to obtain; most state-of-the-art string solvers, for
+notoriously hard to obtain; many state-of-the-art string solvers, for
 instance Z3~\cite{Z3}, different versions of
 Z3-str~\cite{Z3-str,DBLP:conf/fm/MoraBKNG21}, or
 cvc5~\cite{cvc5}
-are not guaranteed to be complete or to terminate on constraints of this kind.
+are not guaranteed to be complete or to terminate on such constraints
+(but, of course, they often achieve very good performance in practice).
 
-A decision procedure for constraints of this kind is defined in
+A decision procedure for a fragment of string constraints with integers,
+covering our constraints, is defined in
 \cite{ostrich-plus}.
 %
-To solve the constraints, we will first perform translation into Parikh
+We will first perform translation into Parikh
 automata, then break down how the constraints will be handled by \Calculus{}.
 This example will recur in a more formal fashion in \cref{sec:generalised},
 which can be read in parallel if (even) more detail is desired.
@@ -47,16 +50,23 @@ By a Parikh automaton we mean a standard non-deterministic finite automaton
 (or decremented) at each transition. A formal definition can be found in
 \cref{def:parikh-automata}.
 
-To solve \cref{ex:string-constraints} using \Calculus{} in a theorem proving
-context, \cref{const:s1-in-c-dd,const:s2-in-b,const:s1-substring} can be
-translated to the product of Parikh automata $B \times A'$, where $A'$
-(\cref{fig:aut_a}) is the Parikh automata obtained by applying the encoding of
-$\Substring$ described in \cite{ostrich-plus} to
-$\Language(\Regex{c\RegexOr{}dd})$. That description can then be used to obtain
-values for the substring offsets $i, n$. The corresponding automata can be found
-in \cref{fig:examples}.
+To solve \cref{ex:string-constraints} using \Calculus{} in a theorem
+proving context,
+\cref{const:s1-in-c-dd,const:s2-in-b,const:s1-substring} can be
+translated to the product of Parikh automata $B \times
+A'$. Automaton~$B$ is given in \cref{fig:aut_b}.  Automaton~$A'$
+(\cref{fig:aut_a}) is an automaton defining the pre-image of
+$\Language(\Regex{c\RegexOr{}dd})$ under the $\Substring$ function,
+and obtained by applying the construction described in
+\cite{ostrich-plus}. Intuitively, $A'$ describes all
+tuples~$(s_2, i, n)$ such that $\Substring(s_2, i, n)$ is in
+$\Language(\Regex{c\RegexOr{}dd})$. To this end, $A'$ contains
+registers~$l_A, i, n$, which count the length of the overall string
+read, the length of the prefix before the extracted substring, and the
+length of the substring, respectively. Registers are assumed to start
+from zero in each automaton run.
 
-In the automata of \cref{fig:examples}, we will use the notation $a /
+In the automata of \cref{fig:examples}, we use the notation $a /
 \begin{bmatrix} x_+ \end{bmatrix}$ to mean that a transition reads an input
 character $a$ and increments register $x$ by one. We will omit zero-valued
 increments and assume that all registers are scoped to their automaton. The
@@ -94,7 +104,7 @@ representing any character in the alphabet.
   examples, both derived from \cref{ex:string-constraints}.}\label{fig:examples}
 \end{figure}
 
-Intuitively, \cref{ex:string-constraints} are unsatisfiable. By inspecting the
+Intuitively, \cref{ex:string-constraints} is unsatisfiable. By inspecting the
 automata, we realise that the path using $\Char{dd}$ in $A'$ is unusable since
 are no $\Char{d}$-labelled transitions in $B$. This means that $s_1 = \Char{c}$,
 and thus $n = 1$. That means that \cref{const:more-inside-than-before} implies
@@ -106,7 +116,7 @@ together are unsatisfiable.
 We will now proceed to show how we prove this using the three principles of
 \Calculus{}: problem-aware case splitting (sometimes called branching), lazy
 enforcement of connectivity constraints (essentially consisting of a constraint
-programmgin-style propagator), and lazy computation of products of automata.
+programming-style propagator), and lazy computation of products of automata.
 
 Both lazinesses are in contrast to the eager approach to finding the Parikh
 image described in~\cite{generate-parikh-image}, that would have started by
