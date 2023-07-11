@@ -3,7 +3,7 @@ COMMIT ?= $(shell git rev-parse --short HEAD)
 .PHONY: all
 all:
 	./.venv/bin/papermill ./Analysis.ipynb -p commit ${COMMIT} \
-			--no-report-mode /dev/null
+			--no-report-mode Report.ipynb
 
 clean:
 	${RM} trivial-*.log solved_pivot_table.tex *.pdf
