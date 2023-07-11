@@ -25,11 +25,7 @@ contains some vector~$\VectorLiteral{m_1, m_2, \ldots, m_k}$ if and only if the
 formal language contains a word in which each $a_i$ occurs $m_i$ times. It is a
 classical result that the Parikh image of every context-free language (and,
 thus, also of every regular language) is a semilinear set,
-i.e., Presburger-definable~\cite{parikh-theorem}. As mentioned,
-Parikh images are 
-
- Beyond the field
-of string constraint solving
+i.e., Presburger-definable~\cite{parikh-theorem}.
 
 It is possible to compute an existential Presburger formula describing the
 Parikh image of any context-free language in linear
@@ -118,58 +114,66 @@ In summary, we contribute:
 \subsection{Related Work}
 
 The problem of computing constraints on Parikh images over products of regular
-languages under a given commutative homomorphism amounts to solving products of
+languages under a given commutative homomorphism amounts to checking emptiness
+of products of
 Parikh automata. Parikh automata are regular automata extended with integer
 counters with given increments and decrements for each transition, where we
 allow checking a set of linear constraints on the final values of the counters
 (but not their intermittent values) \cite{parikh-automata}. Parikh automata
 without constraints on the final values on their registers are also sometimes
-called cost-enriched automata, weighted automata or counter automata, depending
-on exact definitions and side-constraints. The decision problem tackled in this
+called cost-enriched automata, weighted automata, or counter automata, depending
+on exact definitions and side constraints. The decision problem tackled in this
 paper, determining the emptiness of an intersection of Parikh automata, was
 recently shown to be PSPACE-complete~\cite{graph-queries}.
 
-Parikh image computations as well as Parikh automata feature extensively in
+Parikh image computations, as well as Parikh automata, feature extensively in
 string solvers, including as mentioned above \Ostrich{} and \OstrichPlus{}
-\cite{ostrich,ostrich-plus}, but also forms the basis of Trau~\cite{trau-pldi},
+\cite{ostrich,ostrich-plus}, but also forms the basis of
+\textsc{Trau}~\cite{trau-pldi},
 and occurs in \textsc{Sloth}~\cite{sloth}. Parikh images frequently appear when
 introducing cardinality constraints like length or string indexing. The
 state-of-the-art approach to handling Parikh image computation is to
 over-approximate the Parikh image of a product of $k$~automata
 $\ParikhMap(\Language(\Automaton_1) \cap \ldots \cap \Language(\Automaton_k))$
 with the conjunction of the automata's Parikh maps, $\bigwedge_{i=1}^{k}
-\ParikhMap(\Automaton_i)$. This approach works only for unsatisfiable instances,
+\ParikhMap(\Automaton_i)$. Due to the over-approximation,
+this approach works only for unsatisfiable instances,
 and will require falling back to computing the product of the automata before
 using the standard approach for finding its image originally presented
 in~\cite{generate-parikh-image}.
 
-% AS please verify that this is not a lie!
-
-% PR from looking quickly at this article, it seems to solve a
-% completely different problem?
-
-The problem and our calculus, \Calculus{}, takes a similar approach to the work
-of \citeauthor{symbolic-boolean-derivatives}, who present an orthogonal calculus
-for handling a similar blow-up in complexity resulting from Boolean combinations
-of regular automata in SMT string solvers \cite{symbolic-boolean-derivatives}.
+Our calculus~\Calculus{} is similar in spirit to the work
+of \citeauthor{symbolic-boolean-derivatives}, who tackle the exponential
+blow-up resulting from Boolean combinations
+of regular automata in SMT string solvers
+through the use of symbolic derivatives~\cite{symbolic-boolean-derivatives}.
 In addition to presenting a decision procedure for lazily dispatching
 constraints, we similarly also allow for symbolic labelling of automata to
 handle large Unicode alphabets.
 
-Outside of string solvers, Parikh automata have been proposed as the basis of
-queries~\cite{graph-queries}, and for solving cardinalities in model checking
-problems involving epistemic logic~\cite{epistemic-logic}.
+Beyond the field of string solving, Parikh image computation is used
+as an elementary building block in a variety of areas.  For instance,
+Parikh automata have been proposed as the basis of queries in graph
+databases~\cite{graph-queries}; Parikh images are used for handling
+cardinalities in parameterised model checking for epistemic
+logic~\cite{epistemic-logic}; or for handling summation constraints in
+expressive array logics~\cite{rodrigoRaya}. Our calculus~\Calculus{},
+and the stand-alone solver~\Catra{},
+are potentially useful in all such applications.
 
-Many other generalisations of the Parikh image than the projections we use here
+Other generalisations of the Parikh image than the projections we use here
 have been studied. Prominent examples include generalising the Parikh map to
-segments of a fixed length \cite{KARHUMAKI1980155} and the more general Parikh
+segments of a fixed length~\cite{KARHUMAKI1980155} and the more general Parikh
 matrix, which contains not only the Parikh vector, but also information about
 the order of letters. Another notable generalisation is the p-vector, introduced
 in~\cite{infinite-words}, which denotes the position of each letter in the word
 rather than the number of their occurrences and allows for generalisations into
 infinite alphabets. All of these in some sense extend the Parikh map. By
-contrast, the main utility of the formulation introduced here is that it allows
-us to \emph{remove} something, thereby potentialy obtaining an easier problem.
+contrast, the main utility of the formulation introduced here is to reason
+about Parikh images \emph{lazily,}
+thereby potentially obtaining answers more quickly. We expect that our
+calculus~\Calculus{} can be generalised to the mentioned functions on
+formal languages as well, but leave such investigations to future work.
 
 
 %%% Local Variables:
