@@ -83,6 +83,14 @@ therefore also the transition sets) are pairwise disjoint.
     since it is needed to keep track of the currently considered
     partial products.
 
+Additionally, for an
+automaton~$\Automaton = \AutomatonTuple$, we allow mapping the selection function
+like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
+\Set{\Transition \in \Transitions \SuchThat \Filter(\Transition) > 0}}$, i.e.
+$\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
+instance, the basis for the matched linear inequalities is
+implicitly~$\SomeInequalities$. 
+
 The rule~$\Materialise$ introduces the product of two individual
 automata~$\Automaton_i, \Automaton_j$; this step eliminates
 $\Automaton_i, \Automaton_j$ as index of the $\Image$ predicate, and

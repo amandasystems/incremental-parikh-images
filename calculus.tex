@@ -8,18 +8,6 @@ the notations introduced in \cref{sec:languages}. For convenience, we
 introduce the following additional notions:
 
 \begin{definition}
-  A set~$C$ of transitions of an automaton~$\Automaton$ \emph{dominates}
-  a  transition~$\Transition$, written
-  $\Dominates(C, \Automaton, \Transition)$, if
-  every accepting path $p$ of $\Automaton$
-  with $\Transition \in p$ contains at least one transition from
-  $C$. Notably, $\Dominates(\emptyset, \Automaton, \Transition)$ for
-  every unreachable transition $\Transition$, and
-  $\Dominates(\Set{\Transition}, \Automaton, \Transition)$ for every
-  transition~$\Transition$.
-\end{definition}
-
-\begin{definition}
   The \textit{transition count},
   $\TransitionCount(\Transition, \Path)$ is the number of times a
   transition
@@ -30,9 +18,9 @@ introduce the following additional notions:
   non-negative number.
 \end{definition}
 
-We then introduce the two predicates into our calculus with the following
-definitions:
-
+We introduce the two predicates that will be used by our calculus,
+with the following definitions:
+%
 \begin{definition}\label{def:single-image}
   The Parikh predicate, $\SinglePredicateInstance$ holds for some
   automaton $\Automaton = \AutomatonTuple$, some map
@@ -65,58 +53,6 @@ definitions:
   $\SinglePredicateInstance$.
 \end{definition}
 
-We present the rules of \Calculus{} for one automaton in
-\cref{tbl:rules:single}. The rules operate on sets of formulas and
-can be interpreted as rules of a one-sided sequent calculus, in
-which all formulas are located in the antecedent~\cite{Fitting96a}.
-
-Each rule should be read and applied bottom-up and relates
-premises~$\SomeClause_1, \ldots, \SomeClause_k$ with some
-conclusion~$\SomeClause$. When constructing a proof, we start with some
-root~$\SomeClause$, and then apply proof rules to the goals of the proof until a
-goal can be closed, or no more rule is applicable.
-
-A proof in which all proof goals are closed witnesses that the formulas
-in the root~$\SomeClause$ of the proof are inconsistent, and do not
-have any solutions. A proof goal that cannot be closed, but to which no
-more rules are applicable, gives rise to  a solution of the formulas in the
-root~$\SomeClause$. Such an open proof goal will only contain formulas
-in Presburger arithmetic allowing a solution to be computed using
-standard algorithms~\cite{DBLP:books/daglib/0022394}.
-
-We use the convention of splitting the formulas into linear (in)equalities
-($\SomeInequalities$) and other formulas ($\SomeClause$), and assume that
-predicates $\Image$ and $\Connected$ only occur positively. Since our rules
-operate by adding and matching linear (in)equalities in a proof goal; we use the
-shorthand of listing the matched inequalities as antecedents, e.g., in
-\Propagate{}.
-
-The filtering function~$\Filter$ is evaluated symbolically and can, in practice,
-be read as a function from transitions to $\Naturals$-valued terms
-(e.g.~\texttt{t} or~\texttt{t+1}). In our implementation \Catra{}, described in
-\cref{sec:implementation}, $\Filter$~is a vector of fresh variables with the
-same size as~$\Transitions$.
-
-We use the shorthand notation~$\Transitions_\Automaton$ to refer to the
-transitions of an automaton~$\Automaton$. Additionally, for an
-automaton~$\Automaton = \AutomatonTuple$, we allow mapping the selection function
-like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
-\Set{\Transition \in \Transitions \SuchThat \Filter(\Transition) > 0}}$, i.e.
-$\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
-instance, the basis for the matched linear inequalities is
-implicitly~$\SomeInequalities$. Similarly, for our commutative monoid $\Monoid =
-\left(X;\MonoidOp;0_{\Monoid}\right)$ and the map into it $\Map : \Strings
-\rightarrow X$, we also allow mapping over transitions:
-$\Map(\FromLabelTo{\State}{\Label}{\State'}) = \Map(\Label)$.
-
-We require that rules can only be applied when they add new formulas
-on every created branch (the notion of \emph{regularity} of a proof is
-required~\cite{Fitting96a}). For example, this means that \Split{} can
-only be applied to proof goals that contain neither
-$\Filter(\Transition) = 0$ nor $\Filter(\Transition) > 0$, and can
-never be applied to split on the same term twice on the same branch.
-This suggests a proof strategy where you \Propagate{} when you can, \Split{}
-when you must, and \Subsume{} when neither is possible anymore.
 
 \begin{table}
 \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
@@ -152,65 +88,149 @@ when you must, and \Subsume{} when neither is possible anymore.
   \end{tabular}
   \caption{Derivation rules for one automaton.}\label{tbl:rules:single}
 \end{table}
-We use the symbolic function $\FlowEq(\Automaton, \Filter)$ that generates a set
-of existentially quantified linear inequalities with the following definition,
-where we assign fresh, existentially quantified variables to
-$\FinalStateVar_\State, \Filter(\Transition)$ for every $\State \in
-\AcceptingStates, \Transition \in \Transitions$:
+
+The rules of \Calculus{} for one automaton are given in
+\cref{tbl:rules:single}. The rules operate on sets of formulas and can
+be interpreted as rules of a one-sided sequent calculus, in which all
+formulas are located in the antecedent~\cite{Fitting96a}.
+%
+The rules relate premises~$\SomeClause_1, \ldots, \SomeClause_k$ with
+some conclusion~$\SomeClause$. 
+%
+When constructing a proof, we start with some root~$\SomeClause$, and
+then apply proof rules to the goals of the proof, in bottom-up
+direction, until all goals are closed, or no more rule is applicable.
+
+A proof in which all proof goals are closed shows that the formulas
+in the root~$\SomeClause$ of the proof are inconsistent, and do not
+have any solutions. A proof goal that cannot be closed, but to which no
+more rules are applicable, gives rise to  a solution of the formulas in the
+root~$\SomeClause$. Such an open proof goal will only contain formulas
+in Presburger arithmetic allowing a solution to be computed using
+standard algorithms~\cite{DBLP:books/daglib/0022394}.
+
+We use the convention of splitting the formulas in proof goals into
+linear (in)equalities ($\SomeInequalities$) and other formulas
+($\SomeClause$), and assume that predicates $\Image$ and $\Connected$
+only occur positively.
+%Since our rules operate by adding and matching
+%linear (in)equalities in a proof goal; we use the shorthand of listing
+%the matched inequalities as antecedents, e.g., in \Propagate{}.
+%
+The transition selection function~$\Filter$ is represented
+symbolically and can, in practice, be read as a function from
+transitions to $\Naturals$-valued terms (e.g.~\texttt{t}
+or~\texttt{t+1}). In our implementation \Catra{}, described in
+\cref{sec:implementation}, $\Filter$~is a vector of fresh variables
+with the same size as~$\Transitions$.
+
+To ensure termination, rules can only be applied when they add new formulas
+on every created branch (the notion of \emph{regularity} of a proof is
+required~\cite{Fitting96a}). For example, this means that \Split{} can
+only be applied to proof goals that contain neither
+$\Filter(\Transition) = 0$ nor $\Filter(\Transition) > 0$, and can
+never be applied to split on the same term twice on the same branch.
+
+\medskip
+%
+The rule~\textsc{Expand} expands an $\SinglePredicateInstance$
+predicate into the more basic predicate
+$\Connected(\Automaton, \Filter)$, as well as linear equations
+relating the transitions mentioned by~$\Filter$ with the monoid
+element~$\MonoidElement$, and linear flow equations described
+by~\FlowEq{} (below). Since $\Connected$ and $\Image$ are partially
+redundant and the difference is covered by~$\FlowEq$, we can remove
+the instance of~$\Image$ when applying~$\Expand$. In this sense, we
+split the semantics of the $\Image$~predicate into its counting aspect
+(covered by $\FlowEq$) and its connectedness aspect (covered by
+$\Connected$).
+
+In \textsc{Expand}, we use the shorthand
+notation~$\Map(\FromLabelTo{\State}{\Label}{\State'}) = \Map(\Label)$,
+i.e., we allow the homomorphism~$h$ to be applied also to
+transitions~$\Transition$.
+%
+The predicate $\FlowEq(\Automaton, \Filter)$ represents the flow
+equations to be generated when expanding
+$\SinglePredicateInstance$. We assume that each application of the
+predicate introduces fresh integer variables~$f_q$ for every accepting
+state~$q \in \AcceptingStates$, and define:
+%
 \[
 \begin{aligned}
-  \FlowEq(\Automaton, \Filter) &= \sum\limits_{\State \in \AcceptingStates} \FinalStateVar_\State = 1 \land \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)} = \Sink(\State) \land
-  \AndComp{\State \in \AcceptingStates}{\FinalStateVar_\State \geq 0}\\
-  \Sink(\State) & = 0 \text{ if } \State \not\in \AcceptingStates, \FinalStateVar_\State \text{ otherwise.} \\
-  \In(\State, \Filter) & = \StartFlow(\State) + \sum_{\Transition \in \FromLabelTo{\State'}{}{\State}} \Filter(\Transition)\\
-  \StartFlow(\State)  &= 1 \text{ if } \State = \InitialState, \text{ otherwise $0$.} \\
-  \Out(\State, \Filter) &= \sum_{\Transition \in \FromLabelTo{\State}{}{\State'}} \Filter(\Transition)
+  \FlowEq(\Automaton, \Filter) &~=~
+   \AndComp{\State \in \AcceptingStates}{\FinalStateVar_\State \geq 0}
+   \land
+   \sum\limits_{\State \in \AcceptingStates} \FinalStateVar_\State = 1 \land \AndComp{\State \in \States}{\In(\State, \Filter) - \Out(\State, \Filter)} = \Sink(\State)\\
+  \Sink(\State) & ~=~ 0 \text{ if } \State \not\in \AcceptingStates, \FinalStateVar_\State \text{ otherwise.} \\
+  \In(\State, \Filter) & ~=~ \StartFlow(\State) + \sum_{\Transition \in\, (\FromLabelTo{}{}{\State})} \Filter(\Transition)\\
+  \StartFlow(\State)  &~=~ 1 \text{ if } \State = \InitialState, \text{ otherwise $0$.} \\
+  \Out(\State, \Filter) &~=~ \sum_{\Transition \in\, (\FromLabelTo{\State\,}{}{})} \Filter(\Transition)
 \end{aligned}
 \]
 
-In addition to \cref{tbl:rules:single}, we assume the existence of a rule
-\PresburgerClose{}, corresponding to a sound and complete solver for Presburger
-formulae, and for the elements of~$\Monoid$.
-
-The $\Propagate{}$ rule allows us to propagate (dis-)connectedness across
-$\Automaton$. It states that we are only allowed to use transitions attached to
-a reachable state, and is necessary to ensure connectedness in the presence of
-cycles in~$\Automaton$.
-
-\textsc{Expand} expands the predicate into its most basic rules; one set of
-linear equations synchronising the transitions mentioned by~$\Filter$ to the
-corresponding Monoid element~$\MonoidElement$, and the linear flow equations of
-the standard Parikh image formulation, as described by~\FlowEq. Since
-$\Connected$ and $\Image$ are partially redundant and the difference is covered
-by~$\FlowEq$, we can remove the instance of~$\Image$ when applying~$\Expand$. In
-this sense, we split the semantics of the $\Image$~predicate into its counting
-aspect (covered by $\FlowEq$) and its connectedness aspect (covered by
-$\Connected$).
-
-Finally, $\Split{}$ allows us to branch the proof tree by trying to exclude a
+The rule~$\Split{}$ allows us to branch the proof tree by trying to exclude a
 contested transition from a potential solution before concluding that it must be
 included. Intuitively, this is what guarantees our ability to make forward
 progress by eliminating paths through~$\Automaton$.
 
-A decision procedure for our predicate in a tableau-based automated theorem
-prover would start by expanding the predicate using the $\Expand{}$~rule. A
-theorem prover would perform algebraic substitution on the underlying constants
-of~$\Filter$, boiling them down to choices of branches, which depend on one
-single variable and loop transitions. This logic corresponds to the placement
-of counters for optimally edge-profiling the CFG of a program, making up a
-minimum-spanning tree of the automaton~\cite{path-profiling}.
+The $\Propagate{}$ rule allows us to propagate (dis-)connectedness
+across $\Automaton$. It states that we are only allowed to use
+transitions attached to a reachable state, and is necessary to ensure
+connectedness in the presence of cycles in~$\Automaton$. The rule
+makes use of the notion of \emph{dominating} sets of transitions, defined
+as follows:
+%
+\begin{definition}
+  A set~$C$ of transitions of an automaton~$\Automaton$ \emph{dominates}
+  a  transition~$\Transition$, written
+  $\Dominates(C, \Automaton, \Transition)$, if
+  every accepting path $p$ of $\Automaton$
+  with $\Transition \in p$ contains at least one transition from
+  $C$. Notably, $\Dominates(\emptyset, \Automaton, \Transition)$ for
+  every unreachable transition $\Transition$, and
+  $\Dominates(\Set{\Transition}, \Automaton, \Transition)$ for every
+  transition~$\Transition$.
+\end{definition}
 
-In order to make the examples below tractable, we will assume the existence of a
+Finally, the rule~\Subsume{} can be applied when the connectedness of
+an automaton has been ensured by exhaustive application of the other
+rules. This suggests a proof strategy where you \Propagate{} when you
+can, \Split{} when you must, and \Subsume{} when neither is possible
+anymore.
+
+In addition to \cref{tbl:rules:single}, we assume the existence of a rule
+\PresburgerClose{}, corresponding to a sound and complete solver for Presburger
+formulae, and for constraints over~$\Monoid$.
+
+\medskip
+%
+A decision procedure would start from one or multiple
+predicates~$\SinglePredicateInstance$ to be satisfied, possibly in
+combination with other constraints about $m$. It would then first
+expand the predicates using the $\Expand{}$~rule, and subsequently
+apply the other rules to search for a solution.
+
+As illustrated in \cref{sec:intuition}, a decision procedure can
+also perform arithmetic rewriting of the occurring terms and
+equations. Such reasoning is not necessary for correctness or
+completeness, but it shortens the examples considerably; we
+will therefore assume the existence of a
 rule \EquationReasoning{} that allows us to perform standard algebraic reasoning
-on linear inequalities. This rule is not necessary for correctness or
-completeness but shortens the examples considerably.
+on linear arithmetic constraints. 
+
+%, boiling them down to choices of branches, which depend
+%on one single variable and loop transitions. This logic corresponds to
+%the placement of counters for optimally edge-profiling the CFG of a
+%program, making up a minimum-spanning tree of the
+%automaton~\cite{path-profiling}.
 
 \subsection{An Example}\label{sec:single:example}
-Here we will return to $\mathcal{A}'$ from \cref{sec:intuition} and performs the steps of
+Here we will return to $\mathcal{A}'$ from \cref{sec:intuition} and perform the steps of
 \cref{sec:intuition:algebra,sec:intuition:split} with the
 formal calculus we just established, but exclude \cref{const:s2-in-b} and
-therefore the entire automaton $\mathcal{B}$ since we introduce support for products of
-automata in \cref{sec:multiple}. Note that this example then becomes
+therefore the entire automaton $\mathcal{B}$, since we introduce support for products of
+automata in \cref{sec:multiple}. The example then becomes
 satisfiable, as $s_1 = \Char{dd}, i = 1, s_2 = \Char{adda}, l_A = 4$ is a
 satisfying assignment to
 \cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring}.
@@ -219,147 +239,206 @@ Starting with~$\mathcal{A}'$, $\Map$ extracts the increments of a transition, $h
 vector $\Vec{v}$, concretely $h(\FromLabelTo{I_A}{\Sigma / \left[ l_{A+}, i_+
 \right]}{I_A}) = \left[ l_{A+}, i_+ \right]$. We use the same compact notation
 here as in \cref{sec:intuition} to represent what is essentially a sparse vector
-of $1$ and $0$ coefficients, i.e. = $\left[ l_{A+}, i_+ \right] = \left[1, 1,
-0\right]$. Initially, we let $\Filter$ map to fresh variables to obtain:
+of $1$ and $0$ coefficients, i.e. $\left[ l_{A+}, i_+ \right] = \left[1, 1,
+0\right]$. Initially, we let $\Filter$ map to fresh variables to obtain, after some simplifications:
 \begin{equation}\label{eq:single-filter}
   \begin{array}{rl@{\qquad}rl@{\qquad}rl}
-    \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A})
+    \Filter(\FromLabelTo{D}{d/[l_{A+}, n_+]}{F_A})
     &= \TransitionVar_1
     &
-    \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} )
+    \Filter(\FromLabelTo{F_A}{\Sigma/[ l_{A+} ]}{F_A} )
     &= \TransitionVar_2   
     &
-    \Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) 
+    \Filter(\FromLabelTo{I_A}{c/[l_{A+}, n_+]}{F_A} ) 
     &=  \TransitionVar_3 
     \\
-    \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) 
+    \Filter(\FromLabelTo{I_A}{d/[l_{A+}, n_+]}{D}) 
     &= \TransitionVar_4
     &
-    \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) 
+    \Filter(\FromLabelTo{I_A}{\Sigma/[ l_{A+}, i_+]}{I_A}) 
     &= \TransitionVar_5  \\[3ex]
 %
   \multicolumn{6}{c}{
     \FlowEq(\mathcal{A}', \Filter)  = \begin{aligned}
-                       1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 + \TransitionVar_1\\
+                       1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_4 + \TransitionVar_3\\
                     \TransitionVar_4 &= \TransitionVar_1 \\
-                    \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &\geq \cancel{\TransitionVar_2}  \\
+                    \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &= \cancel{\TransitionVar_2} + 1  \\
                     \end{aligned}}
   \end{array}
 \end{equation}
 
-Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
-  to end up with fixed values for several of the transition variables
-  $\TransitionVar_k$, and eventually we use \cref{const:more-inside-than-before}
-  and \cref{const:something-before-and-after} to conclude that the transition
-  directly from state $I_{A}$ to $F_{A}$ is incompatible with the constraint.
+The proof tree is shown in \cref{fig:derivation:single}.  Like in
+\cref{sec:a_1,sec:intuition:algebra}, by arithmetic reasoning the
+calculus ends up with fixed values for several of the transition
+variables $\TransitionVar_k$, and eventually concludes that the
+transition directly from state $I_{A}$ to $F_{A}$ (variable~$x_3$)
+is incompatible with
+the constraint.  It is then possible to remove the $\Connected{}$
+predicate using \Subsume{}, since \Propagate{} is not able to infer
+further constraints, and no non-trivial applications of \Split{}
+remain to be done.  After this, by further arithmetic reasoning we can
+derive a solution~$l_A = 4, i = 1, n = 2$, and conclude that the root
+constraint is satisfiable.  To obtain values for the string
+variables~$s_1, s_2$ corresponding to the solution, one can
+construct an accepting path of the automaton with each transition~$t$
+taken $\Filter(t)$ times.
 
-  Then, we remove the $\Connected{}$ predicate using \Subsume{} since no
-   transition can become disconnected (and never could for $\mathcal{A}'$,
-   since all looping transitions are attached to the initial and single
-   accepting state and therefore always must be reachable from any accepting
-   path). After this, the rest of the reasoning can be continued without any
-   part of \Calculus{} since all values of the existentially quantified
-   transition variables $\TransitionVar_1,\ldots,\TransitionVar_5$ compatible
-   with
-   \cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring,const:something-before-and-after}
-   are represented by the flow equations introduced by $\Expand{}$. The
-   derivation is shown in \cref{fig:derivation:single}.
+\iffalse
 
-\begin{figure}[ht]
+the rest of the reasoning can be
+continued without any part of \Calculus{} since all values of the
+existentially quantified transition variables
+$\TransitionVar_1,\ldots,\TransitionVar_5$ compatible with
+\cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring,const:something-before-and-after}
+are represented by the flow equations introduced by $\Expand{}$.
+\fi
+
+\begin{figure}[tb]
   \centering
 \begin{prooftree}
-  \hypo[]{{\text{Regular solving finishes the proof}}}
-  \infer1[\EquationReasoning{}: $i = 1$]{
-  i = 1
-  \land n = 2
-  \land \TransitionVar_2 = l_A - 3
-  \land \TransitionVar_3 = 0
-  \land \TransitionVar_5 = 1
-  \land \TransitionVar_1 = \TransitionVar_4 = 1
-  }
+  \hypo[]{$\vdots$}
   \infer1[]{
-    \begin{aligned}
-    i = \TransitionVar_5 \land 
-    n = 2 \land \\
-    0 < i < 2
-    \land l_A - i - 2 > 0 
-    \land \TransitionVar_2 = l_A - i - 2 
-    \land \TransitionVar_3 = 0 \\
-    \end{aligned}}
+      x_1 = 1 \land
+      x_2 = l_A - 3 \land
+      x_3 = 0 \land 
+      x_4 = 1 \land
+      x_5 = 1 \land
+      n = 2 \land i = 1
+    \land l_A > 3
+  }
   \infer1[\Subsume]{
-    \begin{aligned}
-    \Connected(\mathcal{A}', \Filter) \land 
-    \TransitionVar_1 = 1 \land 
-    i = \TransitionVar_5 \land 
-    n = 2 \land \\
-    0 < i < 2 
-    \land l_A - i - 2 > 0
-    \land \TransitionVar_2 = l_A - i - 2 
-    \land \TransitionVar_3 = 0
-    \end{aligned}
+    \begin{array}{c}
+      \Connected(A', \Filter) \land \mbox{}\\
+      x_1 = 1 \land
+      x_2 = l_A - 3 \land
+      x_3 = 0 \land 
+      x_4 = 1 \land
+      x_5 = 1 \land
+      n = 2 \land i = 1
+    \land l_A > 3
+    \end{array}
+%    \begin{aligned}
+%    i = \TransitionVar_5 \land 
+%    n = 2 \land \\
+%    0 < i < 2
+%    \land l_A - i - 2 > 0 
+%    \land \TransitionVar_2 = l_A - i - 2 
+%    \land \TransitionVar_3 = 0 \\
+%  \end{aligned}
   }
-  \infer1[\EquationReasoning{}: $\TransitionVar_1 = 1$ \cref{sec:a_1}]{
-    \begin{aligned}
-    \Connected(\mathcal{A}', \Filter) \land
-    i = \TransitionVar_5 \land 
-    n = 2\TransitionVar_1 
-    \land n > i > 0 \\
-    \land l_A - i - n > 0 
-    \land \TransitionVar_2 = l_A - i - n 
-    \land \TransitionVar_3 = 1 - \TransitionVar_1 
-    \end{aligned}
+  \infer1[\EquationReasoning: $=$-simplification]{
+    \begin{array}{c}
+      \Connected(A', \Filter) \land\mbox{}\\
+      x_1 = n - 1 \land
+      x_2 = l_A - n - i \land
+      x_3 = 2 - n \land 
+      x_4 = n - 1 \land
+      x_5 = i \land \mbox{}\\
+      n = 2 \land i = 1
+    \land l_A > 3
+    \end{array}
+%    \begin{aligned}
+%    \Connected(\mathcal{A}', \Filter) \land 
+%    \TransitionVar_1 = 1 \land 
+%    i = \TransitionVar_5 \land 
+%    n = 2 \land \\
+%    0 < i < 2 
+%    \land l_A - i - 2 > 0
+%    \land \TransitionVar_2 = l_A - i - 2 
+%    \land \TransitionVar_3 = 0
+%    \end{aligned}
   }
-  \infer1[\EquationReasoning{}: $=$-elimination]{
-    \begin{aligned}
-    \Connected(\mathcal{A}', \Filter)  
-    \land i = \TransitionVar_5 
-    \land n = \TransitionVar_4 + \TransitionVar_1 
-    \land n > i > 0
+  \infer1[\EquationReasoning{}: $>$-reasoning]{
+    \begin{array}{c}
+      \Connected(A', \Filter) \land\mbox{}\\
+      x_1 = n - 1 \land
+      x_2 = l_A - n - i \land
+      x_3 = 2 - n \land 
+      x_4 = n - 1 \land
+      x_5 = i \land \mbox{}\\
+      n > i 
     \land l_A - i - n > 0
-    \land \TransitionVar_4 = \TransitionVar_1 \\
-    \land \TransitionVar_2 = l_A - i - n 
-    \land \TransitionVar_3 = 1 - \TransitionVar_1
-    \land 1 = \TransitionVar_3 + \TransitionVar_1 
     \land i > 0
-    \land \TransitionVar_4 = \TransitionVar_1 
-    \end{aligned}
+    \end{array}
+%    \begin{aligned}
+%    \Connected(\mathcal{A}', \Filter) \land
+%    i = \TransitionVar_5 \land 
+%    n = 2\TransitionVar_1 
+%    \land n > i > 0 \\
+%    \land l_A - i - n > 0 
+%    \land \TransitionVar_2 = l_A - i - n 
+%    \land \TransitionVar_3 = 1 - \TransitionVar_1 
+%    \end{aligned}
   }
-  \infer1[\EquationReasoning{}: expand $\Sigma, \FlowEq$]{
-    \begin{aligned}
-    i = \TransitionVar_5 
-    \land l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k 
-    \land n > i > 0
+  \infer1[\EquationReasoning{}: $=$-simplification]{
+    \begin{array}{c}
+      \Connected(A', \Filter) \land\mbox{}\\
+      1 = x_4 + x_3 \land x_4 = x_1 \land x_3 + x_1 = 1 \land \mbox{}\\
+      l_A = x_1 + x_2 + x_3 + x_4 + x_5 \land
+      i = x_5 \land 
+      n = x_1 + x_3 + x_4 \land \mbox{}\\
+      n > i 
     \land l_A - i - n > 0
-    \land n = \TransitionVar_4 + \TransitionVar_1\\
-    \land \Connected(\mathcal{A}', \Filter) 
-    \land \FlowEq(\mathcal{A}', \Filter)
-    \end{aligned}
+    \land i > 0
+    \end{array}
+%    \begin{aligned}
+%    \Connected(\mathcal{A}', \Filter)  
+%    \land i = \TransitionVar_5 
+%    \land n = \TransitionVar_4 + \TransitionVar_1 
+%    \land n > i > 0
+%    \land l_A - i - n > 0
+%    \land \TransitionVar_4 = \TransitionVar_1 \\
+%    \land \TransitionVar_2 = l_A - i - n 
+%    \land \TransitionVar_3 = 1 - \TransitionVar_1
+%    \land 1 = \TransitionVar_3 + \TransitionVar_1 
+%    \land i > 0
+%    \land \TransitionVar_4 = \TransitionVar_1 
+%    \end{aligned}
   }
-  \infer1[\EquationReasoning{}: expand sum]{
-    \Connected(A', \Filter) \land
-    \FlowEq(A', \Filter) \land
-    \left[l_A, i, n\right] =
-    \sum\limits_{\Transition \in \Transitions_{\mathcal{A}'} } \Map(\Transition) \cdot \Filter(\Transition)
+  \infer1[(Expanding $\FlowEq$)]{
+    \begin{array}{c}
+      \Connected(A', \Filter) \land
+      \FlowEq(A', \Filter) \land \mbox{}\\
+      l_A = x_1 + x_2 + x_3 + x_4 + x_5 \land
+      i = x_5 \land 
+      n = x_1 + x_3 + x_4 \land \mbox{}\\
+      n > i 
+    \land l_A - i - n > 0
+    \land i > 0
+    \end{array}
+%    \begin{aligned}
+%    i = \TransitionVar_5 
+%    \land l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k 
+%    \land n > i > 0
+%    \land l_A - i - n > 0
+%    \land n = \TransitionVar_4 + \TransitionVar_1\\
+%    \land \Connected(\mathcal{A}', \Filter) 
+%    \land \FlowEq(\mathcal{A}', \Filter)
+%    \end{aligned}
+  }
+  \infer1[(Expanding sum)]{
+    \begin{array}{c}
+      \Connected(A', \Filter) \land
+      \FlowEq(A', \Filter) \land
+      \left[l_A, i, n\right] =
+      \sum\limits_{\Transition \in \Transitions_{\mathcal{A}'} } \Map(\Transition) \cdot \Filter(\Transition) \land\mbox{}\\
+     n > i 
+    \land l_A - i - n > 0
+    \land i > 0
+    \end{array}
   }
   \infer1[\Expand{}]{
     \Image{}_{\mathcal{A}', \Map}(\Filter, \left[l_A, i, n\right]) 
-    \land n \geq i 
+    \land n > i 
     \land l_A - i - n > 0
     \land i > 0
     }
 \end{prooftree}
-\caption{A derivation tree for an application of
+\caption{A proof tree for
 \cref{const:s1-in-c-dd,const:s1-substring,const:something-before-and-after,const:more-inside-than-before}
 from \cref{ex:string-constraints}, corresponding to handling the Parikh
-automaton $\mathcal{A}'$ of \cref{fig:aut_a}. Note the liberal use of removal of equal
-variables (e.g. if $x = y$ appears as a statement, we substitute $y$ for $x$
-everywhere and drop $\ldots \land x=y \land \ldots$) to keep the size of the
-equations manageable.}\label{fig:derivation:single}
+automaton $\mathcal{A}'$ of \cref{fig:aut_a}.}\label{fig:derivation:single}
 \end{figure}
-
-To obtain the automaton corresponding to the final model, one can evaluate
-$\Filter(\Transition) = k$ for each transition $\Transition$ and construct a
-path with each such transition taken $k$ times.
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
