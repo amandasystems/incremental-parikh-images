@@ -44,19 +44,21 @@ Parikh images are also applicable for deciding more general classes of string
 constraints~\cite{ostrich-plus}. Consider the substring constraint
 \cref{const:s1-substring} of \cref{ex:string-constraints}: $ s_1 =
 \Substring(s_2, i, n)$, that is $s_1$ is an $n$-length substring of $s_2$
-starting at offset $i$ (in some variants , $n$ is $i + |n|$, i.e. the ending
-index). That constraint belongs to an expressive fragment of string logic that
+starting at offset $i$.
+% (in some variants , $n$ is $i + |n|$, i.e. the ending index).
+That constraint belongs to an expressive fragment of string logic that
 cannot be decided by most state-of-the-art string solvers.
 
-In \cref{sec:intuition} we hand-wavily modelled \cref{const:s1-substring} (and
-  the other constraints) using \emph{Parikh
-  automata}~\cite{parikh-automata,expressiveness}. A Parikh automaton is a
-  standard NFA extended such that transitions are additionally labelled both
-  with offset vectors defining the increments of a finite number of counters.
-  This means that Parikh automata recognise words over an extended
-  alphabet~$\Alphabet \times D$, where $D \subseteq \Naturals^d$ is a finite set
-  of increment vectors (notation as in~\cite{expressiveness}) and $\Alphabet$ is
-  the alphabet of the original NFA.
+In \cref{sec:intuition} we modelled \cref{const:s1-substring} (and the
+other constraints) using \emph{Parikh
+  automata}~\cite{parikh-automata,expressiveness}. A Parikh automaton
+is a finite-state automaton extended such that transitions are
+additionally labelled with offset vectors defining the increments
+of a finite number of counters.  This means that Parikh automata
+recognise words over an extended alphabet~$\Alphabet \times D$, where
+$D \subseteq \Naturals^d$ is a finite set of increment vectors
+(notation as in~\cite{expressiveness}) and $\Alphabet$ is the alphabet
+of the original automaton.
   
   We use the symbols~$\pi_\Alphabet, \pi_D$ to denote projections to the first
   and the second component of a composite letter~$(a, \Vector{v})$,
@@ -83,13 +85,15 @@ In \cref{sec:intuition} we hand-wavily modelled \cref{const:s1-substring} (and
 Applied to \cref{const:s1-substring}, the decision procedure in
 \cite{ostrich-plus} will construct a pre-image of $s_1$ under the substring
 operation, and check whether this pre-image is consistent with the constraint~$s_2 \in \Language(B)$, corresponding to the full product seen in
-\cref{ex:string-constraints}. Because the substring operation depends on the
-values of the integer variables~$i, n$, a Parikh automaton of dimension~$2$,
-shown in \cref{fig:aut_a}, models the pre-image. Intuitively, this construction
-accumulates any symbol (for the prefix of the substring operation), incrementing
-$i$ to mark the start of the substring, followed by the automaton representing
+\cref{ex:string-constraints}. Because $\Substring$ depends on the
+values of the integer variables~$i, n$, a Parikh automaton,
+shown in \cref{fig:aut_a}, models the pre-image. The Parikh automaton
+has dimension~$3$, as it includes also the length register~$l_{A}$, besides
+variables $i, n$.  Intuitively, this construction
+accumulates any prefix symbol, incrementing
+$i$ to mark the start of the substring; followed by the automaton representing
 the substring itself, modified to add a counter to increment $n$ at each
-transition, followed by a state that performs no increments and only accepts any
+transition; followed by a state that accepts any
 suffix after the matched substring.
 
 % AS: I am quite unsure about which intersection we are looking for here,
@@ -107,9 +111,9 @@ operation:
   \pi_\Alphabet(p) \in \Language(B)
   \wedge~~ \pi_D(p) =
   \begin{bmatrix}
-    i \\ n
+    l_{A} \\ i \\ n
   \end{bmatrix}~~
-  \wedge 0 \leq i \leq i + n \leq |p|
+  \wedge 0 \leq i \leq i + n \leq l_{A}
 \end{equation}
 %
 To check the satisfiability of \cref{eq:parikh-constraint}, we need a
@@ -120,3 +124,8 @@ condition~$0 \leq n \leq m \leq |p|$ on the increment sum. In
 \cite{ostrich-plus}, this decision procedure turned out to be main
 bottleneck of the string solver, which was one of the motivations to
 develop the lazy algorithm proposed in this paper.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
