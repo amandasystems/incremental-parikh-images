@@ -132,7 +132,7 @@ the calculus as before.
 We return to our example in \cref{sec:intuition}. We also reuse the
 definition of $\Map$ as the simple projection to extract the counter increments,
 so in this case, $\Map(\Transition) = \left[l_{B+}\right]$ for every
-transition~$\Transition$ since $B$ only counts length. The reader is
+transition~$\Transition$ since $\mathcal{B}$ only counts length. The reader is
 strongly advised to review \cref{fig:aut_a_annotated,fig:aut_b_annotated} from
 \cref{sec:intuition} while going through this example! In particular, note that
 the transition variables of the figures match the ones used here.
@@ -148,7 +148,7 @@ definitions for $B$ shown in \cref{eq:multi-filter}:
         & \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B})= \TransitionVar_{10}
         & \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A})= \TransitionVar_{11}
         & \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B})= \TransitionVar_{12}
-        \FlowEq(B, \Filter) &=  \begin{aligned}
+        \FlowEq(\mathcal{B}, \Filter) &=  \begin{aligned}
             1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12}\\
             \land \TransitionVar_{11} &= \TransitionVar_6\\
             \land \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}
@@ -163,13 +163,13 @@ light equality propagation.
 
 We then continue by repeating the steps of \cref{sec:single:example} shown in
 \cref{fig:derivation:single}, since the steps to propagate
-\cref{ex:string-constraints} across the automaton $A'$ still apply for the
-product. Note that this fixes the values of all transitions but one of $A'$ as
+\cref{ex:string-constraints} across the automaton $\mathcal{A}'$ still apply for the
+product. Note that this fixes the values of all transitions but one of $\mathcal{A}'$ as
 constants, including the free counter variables $i, n$, whose new constant
 values we propagate everywhere.
 
 Once we have performed reasoning by equality to eliminate transition variables,
-we obtain the version of $B$ shown in \cref{fig:aut_b_annotated} and represented
+we obtain the version of $\mathcal{B}$ shown in \cref{fig:aut_b_annotated} and represented
 by the clauses in the final node in the tree. This corresponds to the end of
 \cref{sec:intuition:algebra}. Our only options now are to either split on which
 path we take from $I_B$ by case-splitting on~$\TransitionVar_{12}$ or to
@@ -207,7 +207,7 @@ is unsatisfiable.
       \land \TransitionVar_6 = \TransitionVar_{11} = 1
       \land \TransitionVar_{10} = 0 \\
       \land \Connected(B, \Filter)\\
-      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A})
+      \land \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A})
     \end{array}
   }
   \infer1[\Propagate{}]{
@@ -218,8 +218,8 @@ is unsatisfiable.
       \land \TransitionVar_{8} = 0 \\
       \land \TransitionVar_6 = \TransitionVar_{11} = 1 \\
       \land \TransitionVar_{10} = 0 
-      \land \Connected(B, \Filter) \\
-      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
+      \land \Connected(\mathcal{B}, \Filter) \\
+      \land \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
     \end{array}
     }
   }% END LEFT TREE
@@ -238,8 +238,8 @@ is unsatisfiable.
       \TransitionVar_{8} = \TransitionVar_{11} + \TransitionVar_{12} - 1 \land \\
       \TransitionVar_6 = \TransitionVar_{11} \land\\
       \TransitionVar_{10} = 1 - \TransitionVar_{11} \land\\
-      \Connected(B, \Filter) \land\\
-      \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
+      \Connected(\mathcal{B}, \Filter) \land\\
+      \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
     \end{array}
   }
   }% END RIGHT TREE
@@ -250,8 +250,8 @@ is unsatisfiable.
     \land \TransitionVar_{8} = \TransitionVar_{11} + \TransitionVar_{12} - 1 \\
     \land \TransitionVar_6 = \TransitionVar_{11} \\
     \land \TransitionVar_{10} = 1 - \TransitionVar_{11} \\
-    \land \Connected(B, \Filter)\\
-    \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
+    \land \Connected(\mathcal{B}, \Filter)\\
+    \land \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
   \end{array}
   }
   \infer1[Expand $\sum$, \EquationReasoning] {
@@ -261,17 +261,17 @@ is unsatisfiable.
       \land 1 + \TransitionVar_{8}   = \TransitionVar_{11} + \TransitionVar_{12}
       \land \TransitionVar_{11} = \TransitionVar_6 \\
       \land \TransitionVar_{12} = \TransitionVar_8 + \TransitionVar_{10}
-      \land \Connected(B, \Filter) 
-      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
+      \land \Connected(\mathcal{B}, \Filter) 
+      \land \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
     \end{array}
   }
   \infer1[\EquationReasoning: expand $\FlowEq$]{
     \begin{array}{llll}
       l_A = \sum_{k = 6}^{k = 12} \TransitionVar_k
       \land \TransitionVar_2 = l_A - 3
-      \land \FlowEq(B, \Filter) \\
-      \land \Connected(B, \Filter) 
-      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
+      \land \FlowEq(\mathcal{B}, \Filter) \\
+      \land \Connected(\mathcal{B}, \Filter) 
+      \land \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, 1, 2, l_A}) 
     \end{array}
   }
   \infer1[Repeat \cref{fig:derivation:single}, $l_A = l_B$.]{
@@ -280,17 +280,17 @@ is unsatisfiable.
       \land i = \TransitionVar_5
       \land l_A = \sum_{k = 1}^{k = 5} \TransitionVar_k \\
       \land n = \TransitionVar_4 + \TransitionVar_1
-      \land \FlowEq(B, \Filter)
-      \land \Connected(A', \Filter)\\
-      \land \Connected(B, \Filter)
-      \land \Image{}_{\Tuple{A',B}, \Map}(\Filter, \VectorLiteral{l_A, i, n, l_B}) \\
+      \land \FlowEq(\mathcal{B}, \Filter)
+      \land \Connected(\mathcal{A}', \Filter)\\
+      \land \Connected(\mathcal{B}, \Filter)
+      \land \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, i, n, l_B}) \\
       \land l_A = l_B
       \land l_A - i - n > 0
       \land 0 < i < n
     \end{array}
   }
   \infer1[\ExpandM]{
-    \Image{}_{\Tuple{A', B}, \Map}(\Filter, \VectorLiteral{l_A, i, n, l_B})
+    \Image{}_{\Tuple{\mathcal{A}',\mathcal{B}}, \Map}(\Filter, \VectorLiteral{l_A, i, n, l_B})
     \land l_A = l_B % Implied constraint
     \land l_A - i - n > 0
     \land 0 < i < n
