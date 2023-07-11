@@ -89,16 +89,16 @@ That is, $\ParikhMap(s)$ is a vector of the number of occurrences of each
 character in the language for a given string $s$. For example, for  $\Alphabet =
 \Set{a, b}$, we would have $\ParikhMap(abb) = \VectorLiteral{1, 2}$.
 
-We define the image of this map, the \textit{Parikh image}, of some subset of
-the language $\Language \subseteq \Strings$ as:
+We define the image of this map, the \textit{Parikh image}, of some
+language $\Language \subseteq \Strings$ as:
 \[
 \ParikhMap(\Language) = \Set{\ParikhMap(x) \SuchThat x \in \Language}
 \]
 
 Thus, we would have $\ParikhMap(\left\{ab, abb\right\}) = \left\{\left[1,
 1\right], \left[1, 2\right]\right\}$. We also sometimes use the standard
-notation $\#l(w)$ to talk about an individual letter $l$ in a word $w$. For
-example, for the Parikh vector above, we would have $\CountOf{a} = 1$.
+notation $\CountOf{l}(w)$ to talk about an individual letter $l$ in a word $w$. For
+example, for the Parikh vector above, we would have $\CountOf{a}(abb) = 1$.
 
 % AS: Reviewers suggest we drop this:
 % PR, shortened a bit
@@ -119,17 +119,17 @@ paper we focus only on regular languages.
 \subsection{The Parikh image of a regular language expressed in Presburger arithmetic}
 \label{sec:verma}
 
-Since Parikh images are semilinear, any Parikh image can be written as a set of
-linear equations. The version for context-free grammars presented in
-\cite{generate-parikh-image} can be straightforwardly adapted for use with a
-product of regular languages or Parikh automta. For an intuition, the approach
-consists of first computing the product, then assigning each state and
-transition an existentially quantified non-negative integer variable, then
-describing all paths through the automaton through two sets of equations: one
-that preserves the incoming flow across the variables of a state's incoming
-transitions is equal to the flow across its outgoing transitions, and one set of
-constraints that enforces coherence in the presence of loops by ordering states
-by distance in a spanning tree rooted in the initial state.
+It is known that the Parikh image of any context-free language can be
+described by a linear-size existential Presburger
+formula~\cite{generate-parikh-image}. This representation can be
+straightforwardly adapted for use with a product of regular
+languages. For an intuition, the approach consists of first computing
+the product, then assigning each state and transition an existentially
+quantified non-negative integer variable, and then describing all
+paths through the automaton through two sets of constraints: flow
+equations relating the inflow and outflow of each automaton state, and
+constraints that enforce connectedness by ordering states by distance
+in a spanning tree rooted in the initial state.
 
 We refer to this model as the baseline approach, though we also apply
 optimisations as described in \cref{sec:implementing-baseline}. The calculus
