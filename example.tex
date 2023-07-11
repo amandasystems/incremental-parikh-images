@@ -113,36 +113,43 @@ preceding character. Therefore, already
 \cref{const:s1-in-c-dd,const:s1-in-c-dd,const:s1-substring,const:more-inside-than-before}
 together are unsatisfiable.
 
-We will now proceed to show how we prove this using the three principles of
-\Calculus{}: problem-aware case splitting (sometimes called branching), lazy
-enforcement of connectivity constraints (essentially consisting of a constraint
-programming-style propagator), and lazy computation of products of automata.
+%We will now proceed to show how we prove this using the three principles of
+%\Calculus{}: problem-aware case splitting (sometimes called branching), lazy
+%enforcement of connectivity constraints (essentially consisting of a constraint
+%programming-style propagator), and lazy computation of products of automata.
 
-Both lazinesses are in contrast to the eager approach to finding the Parikh
-image described in~\cite{generate-parikh-image}, that would have started by
-computing the product $A' \times B$, translated it to a Presburger formula with
-$i, n$ etc as free variables, and then plugged in
+An eager approach to finding the Parikh
+image, as described in~\cite{generate-parikh-image}, would start by
+computing the product $A' \times B$, translating it to a Presburger formula with
+$i, n$, etc., as free variables, and then adding
 \cref{const:more-inside-than-before,const:something-before-and-after} to the
-resulting set of linear inequalitites.
+resulting set of linear inequalitites. Scalability of this
+construction is limited due to the size of the product automata to be computed,
+and the complexity of the resulting Presburger formula.
 
 \subsection{Solving the Parikh automata intersection problem using \Calculus{}}
 
-Our approach proceedings in multiple steps:
+We will now proceed to show how our calculus~\Calculus{} can lazily
+prove the unsatisfiability of the running example. The calculus
+interleaves several reasoning principles, which we will later
+define precisely as calculus rules:
 \begin{inparaenum}[(i)]
 \item Similarly as in \cite{generate-parikh-image}, we first describe
-  each automaton as a network-flow problem, counting how often each
-  transition is taken in a run of the automaton.
-\item   We use a linear integer solver to discover that some
-  paths through the automata are incompatible with
-  \cref{const:more-inside-than-before,const:something-before-and-after}. This
-  will allow us to discover an unreachable state, which allows further
-  elimination. Finally, we will use case splitting to further
-  subdivide the problem into bite-sized products of automata, both of
-  which are empty, thus concluding that \cref{ex:string-constraints}
-  is unsatisfiable.
+  each automaton as a flow network, counting how often each transition
+  is taken in a run of the automaton. The flow constraints are an
+  over-approximation of the possible accepting runs of an automaton.
+\item We use a linear integer solver to simplify the flow constraints,
+  and prune away paths through the automata that are not feasible.
+\item We use a tailor-made propagation algorithm to identify disconnected
+  transitions of the automata that can never be taken, and lazily add
+  the corresponding constraints.
+\item When propagation cannot infer further constraints, we use case
+  splitting to sub-divide the problem into smaller parts.
+\item Once the constituent automata of a product have become
+  sufficiently small, we compute the precise product automaton.
 \end{inparaenum}
 
-\subsubsection{Eliminating paths through automata using flow analysis}\label{sec:a_1}
+\subsubsection{Approximating paths through automata using flow analysis}\label{sec:a_1}
 
 We associate each transition $\Transition$ of $A'$ and $B$ with a fresh
 variable~$\TransitionVar_\Transition$ ranging over natural numbers (i.e.,
@@ -188,7 +195,7 @@ However, being lazy, we put off that work until later.
 %  }\label{fig:a_1}
 %\end{figure}
 
-\subsubsection{Using linear algebra to eliminate flow}\label{sec:intuition:algebra}
+\subsubsection{Arithmetic flow simplification}\label{sec:intuition:algebra}
 
 We then use linear arithmetic reasoning on register
 equations~\eqref{eq:counter-sums} and flow
@@ -200,7 +207,7 @@ automaton in \cref{fig:a_2}, where the notation~$a / t$ now denotes
 a transition that accepts letter~$a$ and is taken~$t$ times.
 In this case, the transitions of the automaton
 can be specified purely in terms of the free
-variables we care about representing:  the length of the automaton ($l_A$), the
+variables we care about representing:  the length of the accepted word ($l_A$), the
 start of the substring ($i$), and the length of the substring ($n$).
 
 \begin{figure}[tb]
@@ -213,41 +220,51 @@ start of the substring ($i$), and the length of the substring ($n$).
   \label{fig:a_2}
 \end{figure}
 
-Having obtained this representation, we conclude that $1 < n \leq 2$ from
-\cref{const:something-before-and-after,const:something-before-and-after}. The
-upper bound is obtained by the following reasoning. Since all transition
-variables are nonnegative integers (a transition cannot be used a negative
-amount of times), $n \leq 2$ from the $I_A$ to $F_A$ transition. Therefore, it
-follows that $n=2$, which implies that the $I_A$ to $F_A$ transition can never
-be used under these constraints and that we must use the two $\Char{d}$-labelled
-transitions, both now taken $n-1 =1$ times. This immediately implies that the problem is
-unsatisfiable, since we know this transition has no correspondance in automaton
-$B$.
-
-We repeat similar methods to arrive at the automata in \cref{fig:propagated}.
+Having obtained this representation, we conclude that $1 < n \leq 2$
+from
+\cref{const:more-inside-than-before,const:something-before-and-after}. The
+lower bound directly follows from
+\cref{const:more-inside-than-before,const:something-before-and-after},
+whereas the upper bound is obtained by the following reasoning. Since all
+transition variables are non-negative integers (a transition cannot be
+used a negative amount of times), $n \leq 2$ from the $I_A$ to $F_A$
+transition. Therefore, it follows that $n=2$, which implies that the
+$I_A$ to $F_A$ transition can never be used under these constraints
+and that we must use the two $\Char{d}$-labelled transitions, both now
+taken $n-1 =1$ times.
+% This immediately implies that the problem is
+%unsatisfiable, since we know this transition has no correspondance in
+%automaton $B$.
+%
+Substituting the derived value of $n$, and applying similar
+reasoning to automaton~$B$, we arrive at the simplified
+automata in \cref{fig:propagated}.
 
 \begin{figure}[ht]
     \centering 
-  \begin{subfigure}[b]{\autscale\textwidth}
+  \begin{subfigure}{0.42\textwidth}
     \centering
     \includegraphics[width=\textwidth]{a_annotated}
+    \vspace*{5ex}
     \caption{ $A'$ with its associated transition variables in symbolic
     form.}\label{fig:aut_a_annotated}
       %\Description[SHORT]{LONG}
+    \vspace*{1.9ex}
   \end{subfigure}\hfill%
-  \begin{subfigure}[b]{\autscale\textwidth}
+  \begin{subfigure}{0.54\textwidth}
     \centering
     \includegraphics[width=\textwidth]{b_annotated}
     \caption{$B$ with its associated transition variables in symbolic forms.
-    Note the large number of implicitly existence-quantified bound variables on
-    transitions, suggesting that this automaton has a more complex structure
+    The large number of implicitly existentially quantified
+    variables~$x_i$ on
+    transitions  suggests that this automaton has a more complex structure
     with relation to its (free) target variable representing the string length
-    than $A'$. The variables used here are fresh, and do not correspond to the
-    ones previously used.}\label{fig:aut_b_annotated}
+    than $A'$. %The variables used here are fresh, and do not correspond to the
+    % ones previously used.
+  }\label{fig:aut_b_annotated}
       %\Description[SHORT]{LONG}
   \end{subfigure}
-  \caption{The automata after applying linear algebra and equality elimination
-  to prune them.}\label{fig:propagated}
+  \caption{The automata after arithmetic simplification.}\label{fig:propagated}
 \end{figure}
 
 
@@ -255,47 +272,42 @@ Note that the per-automata length counting registers have been assigned the same
 solver variable $l_A$. Since they have to be equal, either one can be used in
 both automata through similar applications of equality elimination rules.
 
-\subsubsection{Subsumption of connectivity constraints}\label{sec:intuition:subsume}
-At this point we can conclude that none of the loops of $A'$ can become
-disconnected since they are at the initial and final states, both of which are
-reachable for any future assignments of the transition variables. This means
-that all valid counter assignments of $A'$ are described by
-\cref{eq:counter-sums} and the flow equations alone without the need for
-expensive connectivity constraints.
+%\subsubsection{Connectivity reasoning}\label{sec:intuition:subsume}
+%At this point we can conclude that none of the loops of $A'$ can become
+%disconnected since they are at the initial and final states, both of which are
+%reachable for any future assignments of the transition variables. This means
+%that all valid counter assignments of $A'$ are described by
+%\cref{eq:counter-sums} and the flow equations alone without the need for
+%expensive connectivity constraints.
 
-\subsubsection{Case Splitting and propagation of connectivity constraints}\label{sec:intuition:split}
-After concluding this, we have a choice of two paths through automaton $B$; the
-upper through state $A$ or the lower through state $B$. We case split on a
-problem-aware basis by selecting a transition variable that would disconnect
+\subsubsection{Case Splitting and connectivity propagation}\label{sec:intuition:split}
+We now have a choice of two paths through automaton $B$; the
+upper through state $A$ or the lower through state $B$. Since
+arithmetic reasoning and propagation are not able to resolve this choice,
+we perform a case split by selecting a transition variable that would disconnect
 some strongly connected component of automaton $B$, in this case the transition
-form $I_B$ to state $B$. We divide it into the cases used ($> 0$) or unused ($ =
-0$) since those are the threshold values of the calculus, preferring the latter
-option on the first-fail principle.
+from~$I_B$ to state $B$ guarded by variable~$x_{12}$.
+ We split the reasoning into the cases $x_{12} > 0$ (transition used)
+and $x_{12} = 0$ (transition unused). For presentation, we focus
+on the latter case, as the former can be handled in a similar way.
 
-Having performed the split, we can conclude that the path from $I_B$ to state
-$B$ is now unreachable without passing through a zero-times-used transition.
-This means that the self-loop from state $B$ is also unusable, and thus must
-also be used zero times.
+In the case~$x_{12} = 0$ we can conclude
+that the state~$B$ is now unreachable, which means that also
+transitions outgoing from state $B$ are now unusable. Propagation can
+therefore infer the additional equations $x_9 = 0$ and $x_{11} = 1$.
+
 
 \subsubsection{Computing products}\label{sec:intuition:materialise}
-Now we have two small, stick-like automata after discounting all
-transitions with a corresponding transition variable that is zero, and can try
-to compute their product. Doing so, we will immediately notice that the
-$\Char{d}$-labelled transition of automaton $A'$ has no correspondence in $B$,
-leading to an empty product. We close the proof goal and backtrack with the
-opposite constraint, choosing the upper $I_B$ to $A$ transition this time, the
-only potentially productive choice we have left. However, proceding with
-calculation of the product from the almost identical terms will be similarly
-improductive, and we must conclude that the problem is unsatisfiable.
-
-By putting off computing the product $B \times A'$ until after performing linear
-reasoning on the number of times each transition must be taken and using that to
-prune the terms, we have computed a smaller product than we would have with a
-na\"ive approach. Moreover, since this automaton contains only one loop along
-one main path, all runs through it can be described by the flow-preservation
-equations described above without the need for costly connectivity-enforcing
-constraints as in~\cite{generate-parikh-image}.
-
+After discounting all transitions that can no longer be taken, we are
+left with two (small) flat automata, and can compute their product with
+relative ease. By putting off computing the product $B \times A'$ until after
+performing linear reasoning, and using that to prune transitions, we
+have computed a smaller product than we would have with an eager
+approach. Computing the product, we will immediately notice that the
+$\Char{d}$-labelled transition of automaton $A'$ has no correspondence
+in $B$, leading to an empty product. We can close the proof goal and
+backtrack, and will eventually derive that the imposed constraints are
+unsatisfiable.
 
 %%% Local Variables:
 %%% mode: latex
