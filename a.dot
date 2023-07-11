@@ -10,6 +10,6 @@ S -> S [label="\Sigma / \begin{bmatrix} l_{A+} \\ i_+  \end{bmatrix}"]
 
 S -> C [label="c / \begin{bmatrix} l_{A+} \\ n_+  \end{bmatrix}"]
 
-S -> D [label="b / \begin{bmatrix} l_{A+} \\ n_+  \end{bmatrix}"]
-D -> C [label="b / \begin{bmatrix} l_{A+} \\ n_+  \end{bmatrix}"]
+S -> D [label="d / \begin{bmatrix} l_{A+} \\ n_+  \end{bmatrix}"]
+D -> C [label="d / \begin{bmatrix} l_{A+} \\ n_+  \end{bmatrix}"]
 }

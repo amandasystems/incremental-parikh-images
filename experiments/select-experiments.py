@@ -141,3 +141,5 @@ for benchmark in sys.argv[1:]:
     results = wait_all(benchmark)
     columns = [benchmark, *[f"{solver}={summarise_results(res)}" for solver, res in results.items()]]
     print(" || ".join(columns))
+    with open("experiments.log", "a") as logfile:
+        logfile.write(" || ".join(columns) + "\n")
