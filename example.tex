@@ -35,7 +35,7 @@ are not guaranteed to be complete or to terminate on such constraints
 (but, of course, they often achieve very good performance in practice).
 
 A decision procedure for a fragment of string constraints with integers,
-covering our constraints, is defined in
+covering our constraints is defined in
 \cite{ostrich-plus}.
 %
 We will first perform translation into Parikh
@@ -61,7 +61,7 @@ and obtained by applying the construction described in
 \cite{ostrich-plus}. Intuitively, $\mathcal{A}'$ describes all
 tuples~$(s_2, i, n)$ such that $\Substring(s_2, i, n)$ is in
 $\Language(\Regex{c\RegexOr{}dd})$. To this end, $\mathcal{A}'$ contains
-registers~$l_A, i, n$, which count the length of the overall string
+registers~$l_A, i, n$, which counts the length of the overall string
 read, the length of the prefix before the extracted substring, and the
 length of the substring, respectively. Registers are assumed to start
 from zero in each automaton run.
@@ -134,17 +134,17 @@ prove the unsatisfiability of the running example. The calculus
 interleaves several reasoning principles, which we will later
 define precisely as calculus rules:
 \begin{inparaenum}[(i)]
-\item Similarly as in \cite{generate-parikh-image}, we first describe
+\item Similarly, as in \cite{generate-parikh-image}, we first describe
   each automaton as a flow network, counting how often each transition
   is taken in a run of the automaton. The flow constraints are an
   over-approximation of the possible accepting runs of an automaton.
-\item We use a linear integer solver to simplify the flow constraints,
+\item We use a linear integer solver to simplify the flow constraints
   and prune away paths through the automata that are not feasible.
 \item We use a tailor-made propagation algorithm to identify disconnected
-  transitions of the automata that can never be taken, and lazily add
+  transitions of the automata that can never be taken and lazily add
   the corresponding constraints.
 \item When propagation cannot infer further constraints, we use case
-  splitting to sub-divide the problem into smaller parts.
+  splitting to subdivide the problem into smaller parts.
 \item Once the constituent automata of a product have become
   sufficiently small, we compute the precise product automaton.
 \end{inparaenum}
@@ -197,7 +197,7 @@ However, being lazy, we put off that work until later.
 
 \subsubsection{Arithmetic flow simplification}\label{sec:intuition:algebra}
 
-We then use linear arithmetic reasoning on register
+We then use linear arithmetic reasoning on the register
 equations~\eqref{eq:counter-sums} and flow
 equations~\eqref{eq:flow-eqs} to simplify the counters associated
 with transitions.
@@ -236,7 +236,7 @@ taken $n-1 =1$ times.
 %unsatisfiable, since we know this transition has no correspondance in
 %automaton $B$.
 %
-Substituting the derived value of $n$, and applying similar
+Substituting the derived value of $n$ and applying similar
 reasoning to automaton~$B$, we arrive at the simplified
 automata in \cref{fig:propagated}.
 
