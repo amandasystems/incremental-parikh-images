@@ -13,9 +13,9 @@ this example are in $\Naturals$ with $0$.
     variables~$n, i$:
 \begin{constraints}
     \item\label{const:s1-in-c-dd} $s_1 \in \Language(\Regex{c\RegexOr{}dd})$.
-    \item\label{const:s2-in-b} $s_2 \in \Language(B)$, the language accepted by
-    automaton~$B$ of \cref{fig:aut_b} (ignoring
-    the registers~$l_B$).
+    \item\label{const:s2-in-b} $s_2 \in \Language(\mathcal{B})$, the language accepted by
+    automaton~$\mathcal{B}$ of \cref{fig:aut_b} (ignoring
+    the registers~$l_\mathcal{B}$).
     \item\label{const:s1-substring} $s_1 = \Substring(s_2, i, n)$, that is $s_1$ is an
     $n$-length substring of $s_2$ starting at offset $i$.
     \item\label{const:more-inside-than-before} $n > i$, that is what comes
@@ -53,14 +53,14 @@ By a Parikh automaton we mean a standard non-deterministic finite automaton
 To solve \cref{ex:string-constraints} using \Calculus{} in a theorem
 proving context,
 \cref{const:s1-in-c-dd,const:s2-in-b,const:s1-substring} can be
-translated to the product of Parikh automata $B \times
-A'$. Automaton~$B$ is given in \cref{fig:aut_b}.  Automaton~$A'$
+translated to the product of Parikh automata $\mathcal{B} \times
+\mathcal{A}'$. Automaton~$\mathcal{B}$ is given in \cref{fig:aut_b}.  Automaton~$\mathcal{A}'$
 (\cref{fig:aut_a}) is an automaton defining the pre-image of
 $\Language(\Regex{c\RegexOr{}dd})$ under the $\Substring$ function,
 and obtained by applying the construction described in
-\cite{ostrich-plus}. Intuitively, $A'$ describes all
+\cite{ostrich-plus}. Intuitively, $\mathcal{A}'$ describes all
 tuples~$(s_2, i, n)$ such that $\Substring(s_2, i, n)$ is in
-$\Language(\Regex{c\RegexOr{}dd})$. To this end, $A'$ contains
+$\Language(\Regex{c\RegexOr{}dd})$. To this end, $\mathcal{A}'$ contains
 registers~$l_A, i, n$, which count the length of the overall string
 read, the length of the prefix before the extracted substring, and the
 length of the substring, respectively. Registers are assumed to start
@@ -106,7 +106,7 @@ representing any character in the alphabet.
 
 Intuitively, \cref{ex:string-constraints} is unsatisfiable. By inspecting the
 automata, we realise that the path using $\Char{dd}$ in $A'$ is unusable since
-are no $\Char{d}$-labelled transitions in $B$. This means that $s_1 = \Char{c}$,
+are no $\Char{d}$-labelled transitions in~$\mathcal{B}$. This means that $s_1 = \Char{c}$,
 and thus $n = 1$. That means that \cref{const:more-inside-than-before} implies
 that $i = 0$. However, no path through $B$ passes by a $\Char{c}$ without a
 preceding character. Therefore, already
@@ -120,7 +120,7 @@ together are unsatisfiable.
 
 An eager approach to finding the Parikh
 image, as described in~\cite{generate-parikh-image}, would start by
-computing the product $A' \times B$, translating it to a Presburger formula with
+computing the product $\mathcal{A}' \times \mathcal{B}$, translating it to a Presburger formula with
 $i, n$, etc., as free variables, and then adding
 \cref{const:more-inside-than-before,const:something-before-and-after} to the
 resulting set of linear inequalitites. Scalability of this
@@ -151,7 +151,7 @@ define precisely as calculus rules:
 
 \subsubsection{Approximating paths through automata using flow analysis}\label{sec:a_1}
 
-We associate each transition $\Transition$ of $A'$ and $B$ with a fresh
+We associate each transition $\Transition$ of $\mathcal{A}'$ and $\mathcal{B}$ with a fresh
 variable~$\TransitionVar_\Transition$ ranging over natural numbers (i.e.,
 non-negative integers).
 These variables represent how many times each
@@ -169,7 +169,7 @@ r_k$ of each automaton is the element-wise sum:
 We proceed by adding linear constraints requiring transition variables to
 represent a flow through their automaton by adding linear constraints stating
 that the number of incoming transitions is equal to the number of outgoing ones.
-E.g., state $B$ of automaton~$B$ would have the sum
+E.g., state $B$ of automaton~$\mathcal{B}$ would have the sum
 %
 \begin{equation}\label{eq:flow-eqs}
   \cancel{x_{\Tuple{B, \Char{c}, B}}} +
@@ -201,19 +201,19 @@ We then use linear arithmetic reasoning on register
 equations~\eqref{eq:counter-sums} and flow
 equations~\eqref{eq:flow-eqs} to simplify the counters associated
 with transitions.
-As an example, we start with $A'$. Substituting back
-solutions to the equations for $A'$ to the automaton, we obtain the
+As an example, we start with $\mathcal{A}'$. Substituting back
+solutions to the equations for $\mathcal{A}'$ to the automaton, we obtain the
 automaton in \cref{fig:a_2}, where the notation~$a / t$ now denotes
 a transition that accepts letter~$a$ and is taken~$t$ times.
 In this case, the transitions of the automaton
 can be specified purely in terms of the free
-variables we care about representing:  the length of the accepted word ($l_A$), the
+variables we care about representing:  the length of the accepted word ($l_\mathcal{A}$), the
 start of the substring ($i$), and the length of the substring ($n$).
 
 \begin{figure}[tb]
   \centering 
   \includegraphics[width=0.6\textwidth]{a_2}
-  \caption{ $A'$ after even more linear algebra, with most transitions expressed
+  \caption{ $\mathcal{A}'$ after even more linear algebra, with most transitions expressed
   in terms of $n$. Intuitively, this version captures the fact that $n$ is given
   by distributing the incoming flow of $1$ across the two outgoing transitions
   from $I_{A'}$, the initial state.}
@@ -246,7 +246,7 @@ automata in \cref{fig:propagated}.
     \centering
     \includegraphics[width=\textwidth]{a_annotated}
     \vspace*{5ex}
-    \caption{ $A'$ with its associated transition variables in symbolic
+    \caption{ $\mathcal{A}'$ with its associated transition variables in symbolic
     form.}\label{fig:aut_a_annotated}
       %\Description[SHORT]{LONG}
     \vspace*{1.9ex}
@@ -254,12 +254,12 @@ automata in \cref{fig:propagated}.
   \begin{subfigure}{0.54\textwidth}
     \centering
     \includegraphics[width=\textwidth]{b_annotated}
-    \caption{$B$ with its associated transition variables in symbolic forms.
+    \caption{$\mathcal{B}$ with its associated transition variables in symbolic forms.
     The large number of implicitly existentially quantified
     variables~$x_i$ on
-    transitions  suggests that this automaton has a more complex structure
+    transitions suggest that this automaton has a more complex structure
     with relation to its (free) target variable representing the string length
-    than $A'$. %The variables used here are fresh, and do not correspond to the
+    than $\mathcal{A}'$. %The variables used here are fresh, and do not correspond to the
     % ones previously used.
   }\label{fig:aut_b_annotated}
       %\Description[SHORT]{LONG}
@@ -281,11 +281,11 @@ both automata through similar applications of equality elimination rules.
 %expensive connectivity constraints.
 
 \subsubsection{Case Splitting and connectivity propagation}\label{sec:intuition:split}
-We now have a choice of two paths through automaton $B$; the
+We now have a choice of two paths through automaton $\mathcal{B}$; the
 upper through state $A$ or the lower through state $B$. Since
 arithmetic reasoning and propagation are not able to resolve this choice,
 we perform a case split by selecting a transition variable that would disconnect
-some strongly connected component of automaton $B$, in this case the transition
+some strongly connected component of automaton $\mathcal{B}$, in this case the transition
 from~$I_B$ to state $B$ guarded by variable~$x_{12}$.
  We split the reasoning into the cases $x_{12} > 0$ (transition used)
 and $x_{12} = 0$ (transition unused). For presentation, we focus
@@ -300,12 +300,12 @@ therefore infer the additional equations $x_9 = 0$ and $x_{11} = 1$.
 \subsubsection{Computing products}\label{sec:intuition:materialise}
 After discounting all transitions that can no longer be taken, we are
 left with two (small) flat automata, and can compute their product with
-relative ease. By putting off computing the product $B \times A'$ until after
+relative ease. By putting off computing the product $\mathcal{B} \times \mathcal{A}'$ until after
 performing linear reasoning, and using that to prune transitions, we
 have computed a smaller product than we would have with an eager
 approach. Computing the product, we will immediately notice that the
-$\Char{d}$-labelled transition of automaton $A'$ has no correspondence
-in $B$, leading to an empty product. We can close the proof goal and
+$\Char{d}$-labelled transition of automaton $\mathcal{A}'$ has no correspondence
+in $\mathcal{B}$, leading to an empty product. We can close the proof goal and
 backtrack, and will eventually derive that the imposed constraints are
 unsatisfiable.
 
