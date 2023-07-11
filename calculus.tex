@@ -76,13 +76,13 @@ conclusion~$\SomeClause$. When constructing a proof, we start from some
 root~$\SomeClause$, and then apply proof rules to the goals of the proof until a
 goal can be closed, or no more rule is applicable.
 
-A proof in which all proof goals could be closed shows that the formulas
+A proof in which all proof goals are closed witnesses that the formulas
 in the root~$\SomeClause$ of the proof are inconsistent, and do not
-have any solutions. A proof goal that could not be closed, but to which no
+have any solutions. A proof goal that cannot be closed, but to which no
 more rules are applicable, gives rise to  a solution of the formulas in the
 root~$\SomeClause$. Such an open proof goal will only contain formulas
 in Presburger arithmetic allowing a solution to be computed using
-standard algorithms~\cite{Fitting96a}.
+standard algorithms~\cite{DBLP:books/daglib/0022394}.
 
 We use the convention of splitting the formulas into linear (in)equalities
 ($\SomeInequalities$) and other formulas ($\SomeClause$), and assume that
@@ -140,13 +140,14 @@ when you must, and \Subsume{} when neither is possible anymore.
   \Set{\Filter(\Transition') = 0 \SuchThat \Transition' \in C},
   \SomeInequalities, \SomeClause, \Filter(\Transition) =
   0}{\Connected(\Automaton, \Filter), \Set{\Filter(\Transition') = 0 \SuchThat
-  \Transition' \in C}, \SomeInequalities, \SomeClause} & if $\Dominates(C,
-  \Automaton, \Transition) t \in \Transitions_\Automaton, $ \\[4ex]
+  \Transition' \in C}, \SomeInequalities, \SomeClause} & if
+                                                         $t \in \Transitions_\Automaton$ and\newline $\Dominates(C,
+  \Automaton, \Transition)$ \\[4ex]
 
   % SUBSUME
   \Subsume &
   \inferrule{\SomeInequalities,\SomeClause}{\Connected(\Automaton, \Filter), \SomeInequalities, \SomeClause} &
-  \Split{} and \Propagate{} cannot be applied \\
+  \Split{} and \Propagate{}\newline cannot be applied \\
   \bottomrule
   \end{tabular}
   \caption{Derivation rules for one automaton.}\label{tbl:rules:single}
@@ -221,18 +222,29 @@ here as in \cref{sec:intuition} to represent what is essentially a sparse vector
 of $1$ and $0$ coefficients, i.e. = $\left[ l_{A+}, i_+ \right] = \left[1, 1,
 0\right]$. Initially, we let $\Filter$ map to fresh variables to obtain:
 \begin{equation}\label{eq:single-filter}
-    \begin{aligned}
-      & \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) = \TransitionVar_1
-        & \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) = \TransitionVar_2   
-        & \FlowEq(\mathcal{A}', \Filter)  = \begin{aligned}
+  \begin{array}{rl@{\qquad}rl@{\qquad}rl}
+    \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A})
+    &= \TransitionVar_1
+    &
+    \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} )
+    &= \TransitionVar_2   
+    &
+    \Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) 
+    &=  \TransitionVar_3 
+    \\
+    \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) 
+    &= \TransitionVar_4
+    &
+    \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) 
+    &= \TransitionVar_5  \\[3ex]
+%
+  \multicolumn{6}{c}{
+    \FlowEq(\mathcal{A}', \Filter)  = \begin{aligned}
                        1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 + \TransitionVar_1\\
                     \TransitionVar_4 &= \TransitionVar_1 \\
                     \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &\geq \cancel{\TransitionVar_2}  \\
-                    \end{aligned} \\
-      &\Filter(\FromLabelTo{I_A}{c/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A} ) =  \TransitionVar_3 
-          & \Filter(\FromLabelTo{I_A}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{D}) = \TransitionVar_4
-          & \Filter(\FromLabelTo{I_A}{\Sigma/\begin{bmatrix} l_{A+} i_+\end{bmatrix}}{I_A}) = \TransitionVar_5  
-    \end{aligned}
+                    \end{aligned}}
+  \end{array}
 \end{equation}
 
 Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
