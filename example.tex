@@ -15,7 +15,7 @@ this example are in $\Naturals$ with $0$.
     \item\label{const:s1-in-c-dd} $s_1 \in \Language(\Regex{c\RegexOr{}dd})$.
     \item\label{const:s2-in-b} $s_2 \in \Language(B)$, the language accepted by
     automaton~$B$ of \cref{fig:aut_b} (ignoring
-    the counter~$l_B$).
+    the registers~$l_B$).
     \item\label{const:s1-substring} $s_1 = \Substring(s_2, i, n)$, that is $s_1$ is an
     $n$-length substring of $s_2$ starting at offset $i$.
     \item\label{const:more-inside-than-before} $n > i$, that is what comes
@@ -127,12 +127,12 @@ resulting set of linear inequalitites.
 
 \subsection{Solving the Parikh automata intersection problem using \Calculus{}}
 
-The approach consists of four steps: first we approximately describe each
+Our approach proceedings in multiple steps. Similarly as in
+\cite{generate-parikh-image}, we first approximately describe each
 automaton as a transition-counting flow from the initial state to its accepting
-states where we relate its transitions to integer variables and register values
-to their transitions. Then we will use the linear algebra part of the theorem
-prover to discover that some paths through one of the automata are incompatible
-by \cref{const:more-inside-than-before,const:something-before-and-after}. This
+states, relating the automaton transitions to integer variables.
+We use a linear integer solver to discover that some paths through the automata are incompatible
+with \cref{const:more-inside-than-before,const:something-before-and-after}. This
 will allow us to discover an unreachable state, which allows further
 elimination. Finally, we will use case splitting to further subdivide the
 problem into bite-sized products of automata, both of which are empty, thus
@@ -141,9 +141,10 @@ concluding that \cref{ex:string-constraints} is unsatisfiable.
 \subsubsection{Eliminating paths through automata using flow analysis}\label{sec:a_1}
 
 We associate each transition $\Transition$ of $A'$ and $B$ with a fresh
-nonnegative integer variable from, $\TransitionVar_\Transition$, identically to
-\cite{generate-parikh-image}. These variables represent how many times each
-transition is taken. Hence, the final counter value for counters $r_1, \ldots,
+variable~$\TransitionVar_\Transition$ ranging over natural numbers (i.e.,
+non-negative integers).
+These variables represent how many times each
+transition is taken. Hence, the final value for registers~$r_1, \ldots,
 r_k$ of each automaton is the element-wise sum:
 \begin{equation}\label{eq:counter-sums}
 \begin{bmatrix} 
@@ -157,35 +158,48 @@ r_k$ of each automaton is the element-wise sum:
 We proceed by adding linear constraints requiring transition variables to
 represent a flow through their automaton by adding linear constraints stating
 that the number of incoming transitions is equal to the number of outgoing ones.
-E.g. state $B$ would have the sum $\cancel{x_{\Tuple{B, \Char{c}, B}}} +
-x_{\Tuple{I_B, \Char{b}, B}} = \cancel{x_{\Tuple{B, \Char{c}, B}}}  +
-x_{\Tuple{B, \Char{c}, F_B}} + x_{\Tuple{B, \Char{b}, I_B}}$ where we let
+E.g., state $B$ of automaton~$B$ would have the sum
+%
+\begin{equation}\label{eq:flow-eqs}
+  \cancel{x_{\Tuple{B, \Char{c}, B}}} +
+  x_{\Tuple{I_B, \Char{b}, B}} = \cancel{x_{\Tuple{B, \Char{c}, B}}}  +
+  x_{\Tuple{B, \Char{c}, F_B}} + x_{\Tuple{B, \Char{b}, I_B}}
+\end{equation}
+%
+where we let
 $x_{\Tuple{q, l, c'}}$ refer to the integer variable associated with a
-transition from state $q$ to state $q'$ with label $l$. Note that the self-loop
-cancels itself out. This means that for automata where a loop can become
+transition from state $q$ to state $q'$ with label $l$. The initial state
+of the automaton receives an additional inflow of $1$, and accepting
+states have an additional common outflow of $1$. Note that self-loops
+cancels themselves out. This means that for automata where a loop can become
 unreachable, additional constraints would be required to ensure reachability.
 However, being lazy, we put off that work until later.
 
-\begin{figure}[ht]
-  \centering 
-  \includegraphics[width=0.6\textwidth]{a_1}
-  \caption{ $A'$ with its associated transition variables in symbolic form after
-  minimal elminiation of variables using linear algebra. Note the incoming flow
-  of $1$ in the starting state and its balancing of the outgoing transitions!
-  }\label{fig:a_1}
-\end{figure}
+%\begin{figure}[tb]
+%  \centering 
+%  \includegraphics[width=0.6\textwidth]{a_1}
+%  \caption{ $A'$ with its associated transition variables in symbolic form after
+%  minimal elimination of variables using linear algebra. Note the incoming flow
+%  of $1$ in the starting state and its balancing of the outgoing transitions!
+%  }\label{fig:a_1}
+%\end{figure}
 
 \subsubsection{Using linear algebra to eliminate flow}\label{sec:intuition:algebra}
-As an example, we start with reasoning about $A'$. Performing symbolic reasoning
-on these equations and plugging the corresponding symbolic representation of the
-constraints on each corresponding integer variable back as an annotation on its
-transition, we obtain the automaton in \cref{fig:a_1}. After slightly more
-linear algebra to remove variables through equality elimination, we have
-\cref{fig:a_2}, whose transitions are only described in terms of the free
-variables we care about representing the length of the automaton ($l_A$), the
+
+We then use linear arithmetic reasoning on register
+equations~\eqref{eq:counter-sums} and flow
+equations~\eqref{eq:flow-eqs} to simplify the counters associated
+with transitions.
+As an example, we start with $A'$. Substituting back
+solutions to the equations for $A'$ to the automaton, we obtain the
+automaton in \cref{fig:a_2}, where the notation~$a / t$ now denotes
+a transition that accepts letter~$a$ and is taken~$t$ times.
+In this case, the transitions of the automaton
+can be specified purely in terms of the free
+variables we care about representing:  the length of the automaton ($l_A$), the
 start of the substring ($i$), and the length of the substring ($n$).
 
-\begin{figure}[ht]
+\begin{figure}[tb]
   \centering 
   \includegraphics[width=0.6\textwidth]{a_2}
   \caption{ $A'$ after even more linear algebra, with most transitions expressed
