@@ -127,16 +127,20 @@ resulting set of linear inequalitites.
 
 \subsection{Solving the Parikh automata intersection problem using \Calculus{}}
 
-Our approach proceedings in multiple steps. Similarly as in
-\cite{generate-parikh-image}, we first approximately describe each
-automaton as a transition-counting flow from the initial state to its accepting
-states, relating the automaton transitions to integer variables.
-We use a linear integer solver to discover that some paths through the automata are incompatible
-with \cref{const:more-inside-than-before,const:something-before-and-after}. This
-will allow us to discover an unreachable state, which allows further
-elimination. Finally, we will use case splitting to further subdivide the
-problem into bite-sized products of automata, both of which are empty, thus
-concluding that \cref{ex:string-constraints} is unsatisfiable.
+Our approach proceedings in multiple steps:
+\begin{inparaenum}[(i)]
+\item Similarly as in \cite{generate-parikh-image}, we first describe
+  each automaton as a network-flow problem, counting how often each
+  transition is taken in a run of the automaton.
+\item   We use a linear integer solver to discover that some
+  paths through the automata are incompatible with
+  \cref{const:more-inside-than-before,const:something-before-and-after}. This
+  will allow us to discover an unreachable state, which allows further
+  elimination. Finally, we will use case splitting to further
+  subdivide the problem into bite-sized products of automata, both of
+  which are empty, thus concluding that \cref{ex:string-constraints}
+  is unsatisfiable.
+\end{inparaenum}
 
 \subsubsection{Eliminating paths through automata using flow analysis}\label{sec:a_1}
 
