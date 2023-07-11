@@ -1,89 +1,68 @@
 We start by defining our calculus, \Calculus{}, for one automaton, and only
-extend it to products of automata in \cref{sec:multiple}. We assume basic
-familiarity with first-order logic, Presburger arithmetic, and the classical
-sequent calculus. For reference, see e.g. \cite{Fitting96a}.
-
-
-First, assume an NFA $\Automaton = \AutomatonTuple$ with $\NrTransitions$
+extend it to products of automata in \cref{sec:multiple}.
+%
+Assume an automaton $\Automaton = \AutomatonTuple$ with $\NrTransitions$
 transitions $\Transitions =
-\Set{\EllipsisSequence{\Transition}{\NrTransitions}}$. For convenience, we then
-introduce the following supporting notations:
+\Set{\EllipsisSequence{\Transition}{\NrTransitions}}$. We use
+the notations introduced in \cref{sec:languages}. For convenience, we
+introduce the following additional notions:
 
 \begin{definition}
-  A \textit{path} $\Path = \PathEnumeration$ of an automaton~$\Automaton$ with
-  transitions $\Transitions$ represents a path through $\Automaton$ using
-  transitions in $\Transitions$ (i.e. $\Transitions(\State_k, \Label_{k+1},
-  \State_{k+1})$ holds), passing zero or more labels $\Label_1, \ldots,
-  \Label_n$. The path must begin in the initial state, i.e.~$\State_0 =
-  \InitialState$. The end state, $\State_n$, is not necessarily accepting. If it
-  is, we say the path is also \textit{accepting}.
-  \end{definition}
-
-\begin{definition}
-  Moreover, we talk about the \textit{set of paths} of an automaton,
-  $\Paths(\Automaton)$, a possibly infinite (if $\Automaton$ has loops) set of
-  valid paths through $\Automaton$. Additionally, we use the
-  notation~$\Paths(\Automaton, \State)$ to mean all paths ending in
-  state~$\State$.
+  A set~$C$ of transitions of an automaton~$\Automaton$ \emph{dominates}
+  a  transition~$\Transition$, written
+  $\Dominates(C, \Automaton, \Transition)$, if
+  every accepting path $p$ of $\Automaton$
+  with $\Transition \in p$ contains at least one transition from
+  $C$. Notably, $\Dominates(\emptyset, \Automaton, \Transition)$ for
+  every unreachable transition $\Transition$, and
+  $\Dominates(\Set{\Transition}, \Automaton, \Transition)$ for every
+  transition~$\Transition$.
 \end{definition}
 
 \begin{definition}
-  For a path $\Path = \Tuple{\State_0 \Label_1 \State_1 \RepeatSum{,}
-  \State_n}$, its \textit{word} $\WordOf(\Path) = \Label_1 \RepeatSum{\Concat}
-  \Label_n$ is the word read out on its labels.
-\end{definition}
-
-\begin{definition}
-  The \textit{states} of a path $\Path = \Tuple{\State_0 \Label_1 \State_1
-  \RepeatSum{,} \State_n}$, $\StatesOf(\Path) = \Set{\State_0\RepeatSum{,}
-  \State_n}$ are the states visited along $\Path$. Note that $\InitialState \in
-  \StatesOf(\Path)$ for every path since all paths start in the initial state.
-\end{definition}
-
-\begin{definition}
-  A \textit{dominating set of transitions}, $C$ of an automaton~$\Automaton$ of
-  a transition $\Transition$, written $\Dominates(C, \Automaton, \Transition)$,
-  is a set of transitions from $\Automaton$ such that every accepting path $p
-  \in \Automaton$ where $\Transition \in p$ contains at least one transition
-  from $C$. Notably, $\Dominates(\emptyset, \Automaton, \Transition')$ for every
-  dead transition $\Transition'$ and $\Dominates(Set{\Transition''}, \Automaton,
-  \Transition)$.
-\end{definition}
-
-\begin{definition}
- The \textit{transition count}, $\TransitionCount(\Transition, \Path)$ is the
- number of times a transition $\Transition =
- \FromLabelTo{\State_1}{\Label}{\State_2} \in \Transitions$ appears in a path
- $p$.
+  The \textit{transition count},
+  $\TransitionCount(\Transition, \Path)$ is the number of times a
+  transition
+  $\Transition = \FromLabelTo{\State}{\Label}{\State'} \in
+  \Transitions$ appears on a path $p$. A \emph{transition selection
+    function} is a function~$\Filter:\: \Transitions \to \Naturals$
+  labelling every transition~$\Transition \in \Transitions$ with a
+  non-negative number.
 \end{definition}
 
 We then introduce the two predicates into our calculus with the following
 definitions:
 
 \begin{definition}\label{def:single-image}
-  The Parikh predicate, $\SinglePredicateInstance$, for some automaton
-  $\Automaton = \AutomatonTuple$, modulo some map $\Map : \Alphabet^* \to \Monoid$ to a
-  commutative monoid $\Monoid$ as described in \cref{sec:generalised}
-  and with a transition selection function
-  $\Filter:\: \Transitions \to \Naturals$ holds when
-  $\MonoidElement \in \Monoid$ is an element of the Parikh image of
-  $\Language(\Automaton)$
-  modulo $\Map$, or more formally when there is an accepting path
+  The Parikh predicate, $\SinglePredicateInstance$ holds for some
+  automaton $\Automaton = \AutomatonTuple$, some map
+  $\Map : \Alphabet^* \to \Monoid$ to a commutative monoid $\Monoid$,
+  some transition selection function
+  $\Filter:\: \Transitions \to \Naturals$, and some monoid
+  element~$\MonoidElement \in \Monoid$ if $\MonoidElement$ is an
+  element of the Parikh image of $\Language(\Automaton)$ modulo
+  $\Map$, or more formally when there is an accepting path
   $\Path = \PathEnumeration \in \Accepting{\Paths(\Automaton)}$ such
   that $\Filter(\Transition) = \TransitionCount(\Transition, \Path)$
-  for all $t \in \Transitions$, and $\MonoidElement = \Map(\WordOf(\Path))$.
+  for all $t \in \Transitions$, and
+  $\MonoidElement = \Map(\WordOf(\Path))$.
 \end{definition}
 
-\begin{definition}\label{def:connected} $\Connected(\Automaton, \Filter)$ for
-  some automaton $\Automaton = \AutomatonTuple$ holds when for every
+\begin{definition}\label{def:connected} $\Connected(\Automaton, \Filter)$
+  holds for some automaton $\Automaton = \AutomatonTuple$ and
+  transition selection function
+  $\Filter:\: \Transitions \to \Naturals$
+  if for every
   $\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions$,
-  $\Filter(\Transition) > 0 \implies \exists \Path \in \Paths(\Automaton)$
-  $\Filter(\Transition_i) > 0$ for $\Transition_i \in p$, and $\State \in
-  \StatesOf(p)$, or in words that there exists some $\Filter$-selected valid
-  path that reaches $\Transition$'s starting state, $\State$. It represents the
+  if $\Filter(\Transition) > 0$ then there is some $\Filter$-selected
+  path that reaches $\Transition$'s starting state~$\State$. More formally,
+  if $\Filter(\Transition) > 0$ then there is some
+  path~$\Path \in \Paths(\Automaton)$ with
+  $\Filter(\Transition') > 0$ for every $\Transition' \in p$, and $\State \in
+  \StatesOf(p)$. Predicate~$\Connected(\Automaton, \Filter)$ represents the
   condition that $\Automaton$ is connected with respect to the selection
-  function $\Filter$ for every transition. It is redundant to $\Image$ by
-  design.
+  function $\Filter$ for every transition, and is implied by
+  $\SinglePredicateInstance$.
 \end{definition}
 
 We present the rules of \Calculus{} for one automaton in
@@ -477,3 +456,8 @@ immediately imply that \Calculus{} gives rise to a decision procedure.
   automaton; this means that $\Connected(\Automaton, \Filter)$ is
   redundant as it is implied by $\SomeInequalities$.
 \end{proof}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

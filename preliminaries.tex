@@ -1,3 +1,9 @@
+We first survey some of the required background on finite-state
+automata and the Parikh image. In addition, we assume basic familiarity
+with first-order logic, Presburger
+arithmetic, and the classical sequent calculus; for reference, see
+e.g. \cite{Fitting96a}.
+
 \subsection{Monoids}
 
 % AS: reviewer comment #54 complains that this is basic, are they right?
@@ -24,6 +30,7 @@ $\Map(a \MonoidOp b) = \Map(a) \MonoidOp' \Map(b)$ and
 $\Map(0_{\Monoid}) = 0_{\Monoid'}$.
 
 \subsection{Languages, Finite-state Automata and their Products}
+\label{sec:languages}
 
 We define an alphabet as a finite set of symbols $\Alphabet$ with words $\Strings$, and
 the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
@@ -44,19 +51,38 @@ $\Transition = \FromLabelTo{\State}{\Label}{\State'}$.  Similarly, we
 use the notation $\FromLabelTo{\State}{}{}$ to refer to the set of
 transitions starting in $\State$, and $\FromLabelTo{}{}{\State}$ to
 refer to the set of transitions coming into $\State$, whenever the
-automaton is clear from the context. An accepting run of $\Automaton$
-is a sequence
-$\InitialState = q_0 \xrightarrow{l_1} q_1 \xrightarrow{l_2} \cdots
-\xrightarrow{l_k} q_k \in \AcceptingStates$, and the accepted word is
-$l_1 \circ l_2 \circ \cdots \circ l_k \in \Strings$. The set of words accepted by an
-automaton~$\Automaton$ is denoted by
-$\Language(\Automaton) \subseteq \Strings$.
+automaton is clear from the context.
 
 We will let variables $\Transition, \Transition', \Transition_1, \ldots,
 \Transition_n$, etc., denote transitions, $\State, \ldots, \State_n$ states, and
 $\Automaton, \ldots, \Automaton_n$ automata, and use subscript indexing
 ($\Transitions_\Automaton$) to refer to the transitions, states, etc., of a given
 automaton.
+
+A \textit{path} $\Path = \PathEnumeration$ of an
+automaton~$\Automaton$ is a sequence of
+states~$\State_0, \ldots, \State_n$ interleaved with
+letters~$\Label_1, \ldots, \Label_n$ such that
+$\State_0 = \InitialState$ and
+$\FromLabelTo{\State_{i-1}}{\Label_{i}}{\State_{i}}$ for
+$i \in \{1, \ldots, n\}$.  The path is \emph{accepting} if the end
+state is accepting, $\State_n \in \AcceptingStates$. The \textit{set
+  of paths} of $\Automaton$ is denoted by
+$\Paths(\Automaton)$. Additionally, we use the
+notation~$\Paths(\Automaton, \State)$ to mean all paths ending in
+state~$\State$. We write $\Transition \in \Path$ to express that
+transition~$\Transition$ occurs on path~$\Path$. The \textit{states} of a path
+$\Path = \PathEnumeration$, denoted
+$\StatesOf(\Path) = \Set{\State_0\RepeatSum{,} \State_n}$ are the
+states visited along $\Path$. Note that
+$\InitialState \in \StatesOf(\Path)$ for every path since all paths
+start in the initial state.  The \textit{word} of a path
+$\Path = \PathEnumeration$ is the word
+$\WordOf(\Path) = \Label_1 \RepeatSum{\Concat}
+ \Label_n \in \Strings$ formed by the labels on the path. Finally, the
+ set of words accepted by an automaton~$\Automaton$, denoted by
+ $\Language(\Automaton) \subseteq \Strings$, is the set of words of
+ accepting paths.
 
 The \emph{product} of two
 automata~$\Automaton_1 = \Tuple{\States^1, \InitialState^1,
