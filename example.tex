@@ -1,15 +1,16 @@
-In this section we will introduce an intuition for how a string constraint
+In this section, we will introduce an intuition for how a string constraint
 problem in an automata-based solver like \OstrichPlus{} is translated to a
-Parikh automata intersection problem and solved using \Calculus{}.
+Parikh automata intersection problem, and solved using \Calculus{}.
 
 We use PCRE regular expression notation here and throughout the paper, writing
-them $\Regex{\texttt{like this}}$. This means that $\RegexOr{}$ is alternation,
-$\mathtt{*}$ the Kleene star, and $\mathtt{.}$, matches any single character.
+them $\Regex{\texttt{like this}}$. This means that $\Regex{\RegexOr{}}$ is alternation,
+$\Regex{\mathtt{*}}$ the Kleene star, and $\Regex{\mathtt{.}}$ matches any single character.
 For the length of a string $s$, we write $\Length{s}$. All number variables in
 this example are in $\Naturals$ with $0$.
 
 \begin{example}\label{ex:string-constraints} Consider the following set of
-    string constraints:
+    string constraints over string variables~$s_1, s_2$ and integer
+    variables~$n, i$:
 \begin{constraints}
     \item\label{const:s1-in-c-dd} $s_1 \in \Language(\Regex{c\RegexOr{}dd})$.
     \item\label{const:s2-in-b} $s_2 \in \Language(B)$, the language accepted by
@@ -19,11 +20,22 @@ this example are in $\Naturals$ with $0$.
     \item\label{const:more-inside-than-before} $n > i$, that is what comes
     before $s_1$ in $s_2$ is shorter than $s_1$.
     \item\label{const:something-before-and-after} $i > 0 \land \Length{s_2} -i -n > 0$, that
-    is there is at least one character in $s_2$ after $s_1$.
+    is there is at least one character in $s_2$ before and after $s_1$.
 \end{constraints}
 \end{example}
 
-To solve these constraints, we will first perform translation into Parikh
+Although the constraints are simple, it should be noted that
+decidability results for string constraints involving integers are
+notoriously hard to obtain; most state-of-the-art string solvers, for
+instance Z3~\cite{Z3}, different versions of
+Z3-str~\cite{Z3-str,DBLP:conf/fm/MoraBKNG21}, or
+cvc5~\cite{cvc5}
+are not guaranteed to be complete or to terminate on constraints of this kind.
+
+A decision procedure for constraints of this kind is defined in
+\cite{ostrich-plus}.
+%
+To solve the constraints, we will first perform translation into Parikh
 automata, then break down how the constraints will be handled by \Calculus{}.
 This example will recur in a more formal fashion in \cref{sec:generalised},
 which can be read in parallel if (even) more detail is desired.
@@ -255,3 +267,9 @@ na\"ive approach. Moreover, since this automaton contains only one loop along
 one main path, all runs through it can be described by the flow-preservation
 equations described above without the need for costly connectivity-enforcing
 constraints as in~\cite{generate-parikh-image}.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
