@@ -15,7 +15,7 @@ this example are in $\Naturals$ with $0$.
     \item\label{const:s1-in-c-dd} $s_1 \in \Language(\Regex{c\RegexOr{}dd})$.
     \item\label{const:s2-in-b} $s_2 \in \Language(\mathcal{B})$, the language accepted by
     automaton~$\mathcal{B}$ of \cref{fig:aut_b} (ignoring
-    the registers~$l_\mathcal{B}$).
+    the registers~$l_B$).
     \item\label{const:s1-substring} $s_1 = \Substring(s_2, i, n)$, that is $s_1$ is an
     $n$-length substring of $s_2$ starting at offset $i$.
     \item\label{const:more-inside-than-before} $n > i$, that is what comes
@@ -105,7 +105,7 @@ representing any character in the alphabet.
 \end{figure}
 
 Intuitively, \cref{ex:string-constraints} is unsatisfiable. By inspecting the
-automata, we realise that the path using $\Char{dd}$ in $A'$ is unusable since
+automata, we realise that the path using $\Char{dd}$ in $\mathcal{A}'$ is unusable since
 are no $\Char{d}$-labelled transitions in~$\mathcal{B}$. This means that $s_1 = \Char{c}$,
 and thus $n = 1$. That means that \cref{const:more-inside-than-before} implies
 that $i = 0$. However, no path through $B$ passes by a $\Char{c}$ without a
@@ -178,13 +178,12 @@ E.g., state $B$ of automaton~$\mathcal{B}$ would have the sum
 \end{equation}
 %
 where we let
-$x_{\Tuple{q, l, c'}}$ refer to the integer variable associated with a
+$x_{\Tuple{q, l, q'}}$ refer to the integer variable associated with a
 transition from state $q$ to state $q'$ with label $l$. The initial state
 of the automaton receives an additional inflow of $1$, and accepting
 states have an additional common outflow of $1$. Note that self-loops
-cancels themselves out. This means that for automata where a loop can become
-unreachable, additional constraints would be required to ensure reachability.
-However, being lazy, we put off that work until later.
+cancels themselves out. Therefore, when a loop can become
+unreachable, additional constraints are required to ensure consistency.
 
 %\begin{figure}[tb]
 %  \centering 
@@ -207,7 +206,7 @@ automaton in \cref{fig:a_2}, where the notation~$a / t$ now denotes
 a transition that accepts letter~$a$ and is taken~$t$ times.
 In this case, the transitions of the automaton
 can be specified purely in terms of the free
-variables we care about representing:  the length of the accepted word ($l_\mathcal{A}$), the
+variables we care about representing:  the length of the accepted word ($l_A$), the
 start of the substring ($i$), and the length of the substring ($n$).
 
 \begin{figure}[tb]
@@ -237,7 +236,7 @@ taken $n-1 =1$ times.
 %automaton $B$.
 %
 Substituting the derived value of $n$ and applying similar
-reasoning to automaton~$B$, we arrive at the simplified
+reasoning to automaton~$\mathcal{B}$, we arrive at the simplified
 automata in \cref{fig:propagated}.
 
 \begin{figure}[ht]
@@ -291,9 +290,8 @@ from~$I_B$ to state $B$ guarded by variable~$x_{12}$.
 and $x_{12} = 0$ (transition unused). For presentation, we focus
 on the latter case, as the former can be handled in a similar way.
 
-In the case~$x_{12} = 0$ we can conclude
-that the state~$B$ is now unreachable, which means that also
-transitions outgoing from state $B$ are now unusable. Propagation can
+In the case~$x_{12} = 0$, we can conclude
+that the state~$B$ is now unreachable, which means that its outgoing transitions are now unusable. Propagation can
 therefore infer the additional equations $x_9 = 0$ and $x_{11} = 1$.
 
 
@@ -306,8 +304,8 @@ have computed a smaller product than we would have with an eager
 approach. Computing the product, we will immediately notice that the
 $\Char{d}$-labelled transition of automaton $\mathcal{A}'$ has no correspondence
 in $\mathcal{B}$, leading to an empty product. We can close the proof goal and
-backtrack, and will eventually derive that the imposed constraints are
-unsatisfiable.
+backtrack, and we will eventually derive that the imposed constraints are
+unsatisfiable by repeating the same process on the other branch.
 
 %%% Local Variables:
 %%% mode: latex
