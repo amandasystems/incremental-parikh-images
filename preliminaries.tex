@@ -6,60 +6,74 @@
 % those definitions
 
 A monoid $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ is an algebraic structure
-consisting of the non-empty carrier set of elements, $X$, an associative binary operation
+consisting of the non-empty carrier set of elements, $X$; an associative binary operation
 $X \times X \rightarrow X$ denoted as $\MonoidOp$, that is where for all $a, b,
-c \in X$, $(a \MonoidOp b) \MonoidOp c = a \MonoidOp (b \MonoidOp c)$. Finally,
-$\Monoid$ must have an identity element $0_{\Monoid} \in X$ such that
+c \in X$, $(a \MonoidOp b) \MonoidOp c = a \MonoidOp (b \MonoidOp c)$; 
+and an identity element $0_{\Monoid} \in X$ such that
 $0_{\Monoid} \MonoidOp a = a \MonoidOp 0_{\Monoid} =   a$ for every $a \in X$.
 We sometimes use integer multiplication to represent a repeated application of
 $\MonoidOp$, e.g. $3a = a \MonoidOp a \MonoidOp a$, for $a \in X$. $\Monoid$ is
 called \textit{commutative} if $\MonoidOp$ also commutes, that is if $a
 \MonoidOp b = b \MonoidOp a$ for all $a, b \in X$. 
 
-Finally, a \textit{homomorphism} is a structure-preserving map between two monoids
-$\Monoid_1, \Monoid_2$, that is a map $\Map : S_1 \rightarrow S_2$ such that $\Map(a
-\MonoidOp_1 b) = \Map(a) \MonoidOp_2 \Map(b)$, where $S_1, S_2$ are the carrier
-sets of $\Monoid_1$ and $\Monoid_2$ respectively, and $\MonoidOp_1, \MonoidOp_2$
-their binary operations.
+A \textit{homomorphism} is a structure-preserving map between two
+monoids $\Monoid = \Tuple{X;\MonoidOp;0_{\Monoid}}$ and
+$\Monoid' = \Tuple{X';\MonoidOp';0_{\Monoid'}}$, that is a map
+$\Map : X_1 \rightarrow X_2$ such that
+$\Map(a \MonoidOp b) = \Map(a) \MonoidOp' \Map(b)$ and
+$\Map(0_{\Monoid}) = 0_{\Monoid'}$.
 
 \subsection{Languages, Finite-state Automata and their Products}
 
 We define an alphabet as a finite set of symbols $\Alphabet$ with words $\Strings$, and
 the concatenation operation as $s_1 \Concat{} s_2$ over two strings $s_1, s_2$.
 Note that $\Strings = \Tuple{\Alphabet;\Concat{};\epsilon}$, is a
-non-commutative monoid, referred to as the free monoid. The string length
+non-commutative monoid, referred to as the free monoid on $\Alphabet$.
+The string length
 function, $\Length{s}$ is an example of a homomorphism between $\Strings$
 and~$\mathbb{Z}$.
 
-An automaton~$\Automaton$ with alphabet~$\Alphabet$ is
-$\AutomatonTuple$ where $\Transitions \subseteq \States \times \Alphabet \times
-\States$, $\States$ is its states, $\InitialState$ its
-initial state, and $\AcceptingStates$ is its set of accepting states.  We
-write a transition $\Transition = \Tuple{\State, \Label, \State'} \in
-\Transitions$ as $\Transition = \FromLabelTo{\State}{\Label}{\State'}$.
-Similarly, we use the notation $\FromLabelTo{\State}{}{}$ to refer to the set of
-transitions starting in $\State$, and $\FromLabelTo{}{}{\State}$ to refer to the
-set of transitions coming into $\State$, whenever the automaton is clear from
-the context.
+A \emph{finite-state automaton}~$\Automaton$ with alphabet~$\Alphabet$ is a
+tuple~$\AutomatonTuple$, where $\States$ is the set of states,
+$\InitialState$ the initial state, $\AcceptingStates$ the set of
+accepting states, and
+$\Transitions \subseteq \States \times \Alphabet \times \States$ the
+transition relation.  We write a transition
+$\Transition = \Tuple{\State, \Label, \State'} \in \Transitions$ as
+$\Transition = \FromLabelTo{\State}{\Label}{\State'}$.  Similarly, we
+use the notation $\FromLabelTo{\State}{}{}$ to refer to the set of
+transitions starting in $\State$, and $\FromLabelTo{}{}{\State}$ to
+refer to the set of transitions coming into $\State$, whenever the
+automaton is clear from the context. An accepting run of $\Automaton$
+is a sequence
+$\InitialState = q_0 \xrightarrow{l_1} q_1 \xrightarrow{l_2} \cdots
+\xrightarrow{l_k} q_k \in \AcceptingStates$, and the accepted word is
+$l_1 l_2 \ldots l_k \in \Strings$. The set of words accepted by an
+automaton~$\Automaton$ is denoted by
+$\Language(\Automaton) \subseteq \Strings$.
 
 We will let variables $\Transition, \Transition', \Transition_1, \ldots,
-\Transition_n$ etc describe transitions, $\State, \ldots, \State_n$ states, and
+\Transition_n$, etc., denote transitions, $\State, \ldots, \State_n$ states, and
 $\Automaton, \ldots, \Automaton_n$ automata, and use subscript indexing
-($\Transitions_\Automaton$) to refer to the transitions, states, etc of a given
+($\Transitions_\Automaton$) to refer to the transitions, states, etc., of a given
 automaton.
 
-By a \emph{product} of two automata $\Automaton_1, \Automaton_2$, written
-$\Automaton_1 \times \Automaton_2$, we mean an automaton constructed to run
-$\Automaton_1$ and $\Automaton_2$ in parallel on an input and only accept the
-input if both automata would do so.
-
-We refer to the resulting product states as tuples, $\Tuple{\State, \State'}$,
-which represent the state of the product automaton where $\Automaton_1$ would be
-in $\State$ and $\Automaton_2$ would be in $\State'$. Note that since we use
-ordered tuples the product is technically (but w.l.o.g) not commutative; the
-left-hand-side must come from the left-hand term. The sole purpose of this
-matching is to allow us to speak with precision about the origins of components
-in a product.
+The \emph{product} of two
+automata~$\Automaton_1 = \Tuple{\States^1, \InitialState^1,
+  \AcceptingStates^1, \Transitions^1}$ and
+$\Automaton_2 = \Tuple{\States^2, \InitialState^2,
+  \AcceptingStates^2, \Transitions^2}$ is the automaton
+\begin{align*}
+\Automaton_1 \times \Automaton_2 &=
+\Tuple{\States_1 \times \States_2, \STuple{\InitialState^1, \InitialState^2},
+\AcceptingStates^1 \times \AcceptingStates^2,
+  \Transitions}\\
+  \text{with}\quad \Transitions &= \{\STuple{\STuple{q,q''}, l, \STuple{q',q'''}} \mid \STuple{q, l, q'} \in \Transitions^1, \STuple{q'', l, q'''} \in \Transitions^2\}~.
+\end{align*}
+The product automaton runs $\Automaton_1$ and $\Automaton_2$ in
+parallel on an input and only accepts the input if both automata would
+do so; we have $\Language(\Automaton_1 \times \Automaton_2) =
+\Language(\Automaton_1) \cap \Language(\Automaton_2)$.
 
 \subsection{The Parikh Map and its Image}
 Formally, the \textit{Parikh map} over an alphabet $\Alphabet=
@@ -91,6 +105,7 @@ example, for the Parikh vector above, we would have $\CountOf{a} = 1$.
 Parikh's theorem states that any context-free language has a Parikh-equivalent
 regular language (c.f.~\cite{construction} for a construction of such automata
 from context-free grammars and~\cite{bounds} for bounds on its size).
+The Parikh image is therefore a semi-linear set and Presburger-definable.
 %However,
 %there are languages that are not context-free that also have semilinear images
 %under~$\ParikhMap$ (e.g. $\ParikhMap(\Set{a^nb^nc^n \SuchThat n \geq 0}) =
@@ -122,3 +137,8 @@ introduced in this paper, by contrast, lazily enforces the connectedness
 constraint while also interleaving the computation of products of automata and
 propagating information between the steps to reduce the amount of work that
 needs to be done.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
