@@ -41,7 +41,7 @@ definitions:
   $\Filter:\: \Transitions \to \Naturals$, and some monoid
   element~$\MonoidElement \in \Monoid$ if $\MonoidElement$ is an
   element of the Parikh image of $\Language(\Automaton)$ modulo
-  $\Map$, or more formally when there is an accepting path
+  $\Map$, or more formally, when there is an accepting path
   $\Path = \PathEnumeration \in \Accepting{\Paths(\Automaton)}$ such
   that $\Filter(\Transition) = \TransitionCount(\Transition, \Path)$
   for all $t \in \Transitions$, and
@@ -66,32 +66,32 @@ definitions:
 \end{definition}
 
 We present the rules of \Calculus{} for one automaton in
-\cref{tbl:rules:single}. The rules operate on sets of formulas, and
+\cref{tbl:rules:single}. The rules operate on sets of formulas and
 can be interpreted as rules of a one-sided sequent calculus, in
 which all formulas are located in the antecedent~\cite{Fitting96a}.
 
-Each rule should be read and applied bottom-up, and relates
+Each rule should be read and applied bottom-up and relates
 premises~$\SomeClause_1, \ldots, \SomeClause_k$ with some
-conclusion~$\SomeClause$. When constructing a proof, we start from some
+conclusion~$\SomeClause$. When constructing a proof, we start with some
 root~$\SomeClause$, and then apply proof rules to the goals of the proof until a
 goal can be closed, or no more rule is applicable.
 
 A proof in which all proof goals could be closed shows that the formulas
-in the root~$\SomeClause$ of the proof are inconsistent, and do not
-have any solutions. A proof goal that could not be closed, but to which no
-more rules are applicable, gives rise to  a solution of the formulas in the
+in the root~$\SomeClause$ of the proof are inconsistent and do not
+have any solutions. A proof goal that could not be closed but to which no
+more rules are applicable gives rise to a solution of the formulas in the
 root~$\SomeClause$. Such an open proof goal will only contain formulas
-in Presburger arithmetic allowing a solution to be computed using
+in Presburger arithmetic, allowing a solution to be computed using
 standard algorithms~\cite{Fitting96a}.
 
 We use the convention of splitting the formulas into linear (in)equalities
 ($\SomeInequalities$) and other formulas ($\SomeClause$), and assume that
 predicates $\Image$ and $\Connected$ only occur positively. Since our rules
-operate by adding and matching linear (in)equalities in a proof goal, we use the
-shorthand of listing the matched inequalities as antecedents e.g., in
+operate by adding and matching linear (in)equalities in a proof goal; we use the
+shorthand of listing the matched inequalities as antecedents, e.g., in
 \Propagate{}.
 
-The filtering function~$\Filter$ is evaluated symbolically, and can in practice
+The filtering function~$\Filter$ is evaluated symbolically and can, in practice,
 be read as a function from transitions to $\Naturals$-valued terms
 (e.g.~\texttt{t} or~\texttt{t+1}). In our implementation \Catra{}, described in
 \cref{sec:implementation}, $\Filter$~is a vector of fresh variables with the
@@ -99,7 +99,7 @@ same size as~$\Transitions$.
 
 We use the shorthand notation~$\Transitions_\Automaton$ to refer to the
 transitions of an automaton~$\Automaton$. Additionally, for an
-automaton~$\Automaton = \AutomatonTuple$ we allow mapping the selection function
+automaton~$\Automaton = \AutomatonTuple$, we allow mapping the selection function
 like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
 \Set{\Transition \in \Transitions \SuchThat \Filter(\Transition) > 0}}$, i.e.
 $\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
@@ -368,10 +368,10 @@ procedure.
 \end{lemma}
 
 \begin{proof}
-  The rule~\Expand{} can only be applied finitely often, since each
+  The rule~\Expand{} can only be applied finitely often since each
   application removes one $\Image$ predicate, and none of the rules
   introduce new instances of the predicate. The rule~\Subsume{} can
-  only be applied finitely often, since it strictly decreases the
+  only be applied finitely often since it strictly decreases the
   combined number of $\Image$ and $\Connected$ predicates in sets of
   formulas, and none of the rules increases that number.
 
@@ -400,7 +400,7 @@ procedure.
   of each proof rule.
 
   \Expand{} unfolds the definition of the $\Image$ predicate. To show
-  that the rule is solution-preserving we prove the equivalence of the
+  that the rule is solution-preserving, we prove the equivalence of the
   upper and lower sets of formulas:
   \begin{itemize}
   \item Assume that $\beta$ satisfies the conclusion, which means that
