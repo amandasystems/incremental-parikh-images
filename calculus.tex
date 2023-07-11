@@ -195,27 +195,26 @@ A decision procedure for our predicate in a tableau-based automated theorem
 prover would start by expanding the predicate using the $\Expand{}$~rule. A
 theorem prover would perform algebraic substitution on the underlying constants
 of~$\Filter$, boiling them down to choices of branches, which depend on one
-single variable, and loop transitions. This logic corresponds to the placement
+single variable and loop transitions. This logic corresponds to the placement
 of counters for optimally edge-profiling the CFG of a program, making up a
 minimum-spanning tree of the automaton~\cite{path-profiling}.
 
 In order to make the examples below tractable, we will assume the existence of a
 rule \EquationReasoning{} that allows us to perform standard algebraic reasoning
 on linear inequalities. This rule is not necessary for correctness or
-completeness, but shortens the examples considerably.
+completeness but shortens the examples considerably.
 
 \subsection{An Example}\label{sec:single:example}
-Here we will return to $A'$ from \cref{sec:intuition} and performs the steps of
-\cref{sec:intuition:algebra,sec:intuition:prop,sec:intuition:split} with the
+Here we will return to $\mathcal{A}'$ from \cref{sec:intuition} and performs the steps of
+\cref{sec:intuition:algebra,sec:intuition:split} with the
 formal calculus we just established, but exclude \cref{const:s2-in-b} and
-therefore the entire automaton $B$ since we introduce support for products of
+therefore the entire automaton $\mathcal{B}$ since we introduce support for products of
 automata in \cref{sec:multiple}. Note that this example then becomes
 satisfiable, as $s_1 = \Char{dd}, i = 1, s_2 = \Char{adda}, l_A = 4$ is a
 satisfying assignment to
 \cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring}.
 
-Starting with~$A'$, $\Map$ extracts the increments of a transition (see
-\cref{fig:a_1}), $h(\FromLabelTo{q_1}{c / i}{q_2}) = \Vec{v}$ for the increment
+Starting with~$\mathcal{A}'$, $\Map$ extracts the increments of a transition, $h(\FromLabelTo{q_1}{c / i}{q_2}) = \Vec{v}$ for the increment
 vector $\Vec{v}$, concretely $h(\FromLabelTo{I_A}{\Sigma / \left[ l_{A+}, i_+
 \right]}{I_A}) = \left[ l_{A+}, i_+ \right]$. We use the same compact notation
 here as in \cref{sec:intuition} to represent what is essentially a sparse vector
@@ -225,7 +224,7 @@ of $1$ and $0$ coefficients, i.e. = $\left[ l_{A+}, i_+ \right] = \left[1, 1,
     \begin{aligned}
       & \Filter(\FromLabelTo{D}{d/\begin{bmatrix}l_{A+}, n_+\end{bmatrix}}{F_A}) = \TransitionVar_1
         & \Filter(\FromLabelTo{F_A}{\Sigma/\begin{bmatrix} l_{A+} \end{bmatrix}}{F_A} ) = \TransitionVar_2   
-        & \FlowEq(A', \Filter)  = \begin{aligned}
+        & \FlowEq(\mathcal{A}', \Filter)  = \begin{aligned}
                        1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_3 + \TransitionVar_1\\
                     \TransitionVar_4 &= \TransitionVar_1 \\
                     \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &\geq \cancel{\TransitionVar_2}  \\
@@ -242,14 +241,14 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
   and \cref{const:something-before-and-after} to conclude that the transition
   directly from state $I_{A}$ to $F_{A}$ is incompatible with the constraint.
 
-  Then, following \cref{sec:intuition:subsume}, we remove the $\Connected{}$
-   predicate using \Subsume{} since no transition can can become disconnected
-   (and in fact never could for $A'$, since all looping transitions are attached
-   to the initial and single accepting state and therefore always must be
-   reachable from any accepting path). After this, the rest of the reasoning can
-   be continued without any part of our calculus, since all values of the
-   existentially quantified transition variables
-   $\TransitionVar_1,\ldots,\TransitionVar_5$ compatible with
+  Then, we remove the $\Connected{}$ predicate using \Subsume{} since no
+   transition can become disconnected (and never could for $\mathcal{A}'$,
+   since all looping transitions are attached to the initial and single
+   accepting state and therefore always must be reachable from any accepting
+   path). After this, the rest of the reasoning can be continued without any
+   part of \Calculus{} since all values of the existentially quantified
+   transition variables $\TransitionVar_1,\ldots,\TransitionVar_5$ compatible
+   with
    \cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring,const:something-before-and-after}
    are represented by the flow equations introduced by $\Expand{}$. The
    derivation is shown in \cref{fig:derivation:single}.
@@ -275,9 +274,9 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     \land \TransitionVar_2 = l_A - i - 2 
     \land \TransitionVar_3 = 0 \\
     \end{aligned}}
-  \infer1[\Subsume: \cref{sec:intuition:subsume}]{
+  \infer1[\Subsume]{
     \begin{aligned}
-    \Connected(A', \Filter) \land 
+    \Connected(\mathcal{A}', \Filter) \land 
     \TransitionVar_1 = 1 \land 
     i = \TransitionVar_5 \land 
     n = 2 \land \\
@@ -289,7 +288,7 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
   }
   \infer1[\EquationReasoning{}: $\TransitionVar_1 = 1$ \cref{sec:a_1}]{
     \begin{aligned}
-    \Connected(A', \Filter) \land
+    \Connected(\mathcal{A}', \Filter) \land
     i = \TransitionVar_5 \land 
     n = 2\TransitionVar_1 
     \land n > i > 0 \\
@@ -300,7 +299,7 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
   }
   \infer1[\EquationReasoning{}: $=$-elimination]{
     \begin{aligned}
-    \Connected(A', \Filter)  
+    \Connected(\mathcal{A}', \Filter)  
     \land i = \TransitionVar_5 
     \land n = \TransitionVar_4 + \TransitionVar_1 
     \land n > i > 0
@@ -320,18 +319,18 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
     \land n > i > 0
     \land l_A - i - n > 0
     \land n = \TransitionVar_4 + \TransitionVar_1\\
-    \land \Connected(A', \Filter) 
-    \land \FlowEq(A', \Filter)
+    \land \Connected(\mathcal{A}', \Filter) 
+    \land \FlowEq(\mathcal{A}', \Filter)
     \end{aligned}
   }
   \infer1[\EquationReasoning{}: expand sum]{
     \Connected(A', \Filter) \land
     \FlowEq(A', \Filter) \land
     \left[l_A, i, n\right] =
-    \sum\limits_{\Transition \in \Transitions_{A'} } \Map(\Transition) \cdot \Filter(\Transition)
+    \sum\limits_{\Transition \in \Transitions_{\mathcal{A}'} } \Map(\Transition) \cdot \Filter(\Transition)
   }
   \infer1[\Expand{}]{
-    \Image{}_{A', \Map}(\Filter, \left[l_A, i, n\right]) 
+    \Image{}_{\mathcal{A}', \Map}(\Filter, \left[l_A, i, n\right]) 
     \land n \geq i 
     \land l_A - i - n > 0
     \land i > 0
@@ -340,7 +339,7 @@ Like in \cref{sec:a_1,sec:intuition:algebra}, we apply reasoning by equivalence
 \caption{A derivation tree for an application of
 \cref{const:s1-in-c-dd,const:s1-substring,const:something-before-and-after,const:more-inside-than-before}
 from \cref{ex:string-constraints}, corresponding to handling the Parikh
-automaton $A'$ of \cref{fig:aut_a}. Note the liberal use of removal of equal
+automaton $\mathcal{A}'$ of \cref{fig:aut_a}. Note the liberal use of removal of equal
 variables (e.g. if $x = y$ appears as a statement, we substitute $y$ for $x$
 everywhere and drop $\ldots \land x=y \land \ldots$) to keep the size of the
 equations manageable.}\label{fig:derivation:single}
@@ -352,12 +351,12 @@ path with each such transition taken $k$ times.
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 
-Our correctness proof of \Calculus{} consists of two main parts: we
-first show that the construction of a proof always terminates, and
-then that each of the proof rules in \cref{tbl:rules:single} is
-an equivalence transformation, i.e., does not change the set of
-satisfying assignments of a formula. In combination, those two results
-immediately imply that \Calculus{} gives rise to a decision procedure.
+Our correctness proof of \Calculus{} consists of two main parts: first, we show
+that the construction of a proof always terminates, and then that each of the
+proof rules in \cref{tbl:rules:single} is an equivalence transformation, i.e.,
+does not change the set of satisfying assignments of a formula. In combination,
+those two results immediately imply that \Calculus{} gives rise to a decision
+procedure.
 
 \subsubsection{\Calculus{} terminates}
 \begin{lemma}\label{lma:single-terminates}
