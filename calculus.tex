@@ -55,12 +55,12 @@ definitions:
   if for every
   $\Transition = \FromLabelTo{\State}{}{\State'} \in \Transitions$,
   if $\Filter(\Transition) > 0$ then there is some $\Filter$-selected
-  path that reaches $\Transition$'s starting state~$\State$. More formally,
+  accepting path that visits $\Transition$'s starting state~$\State$. More formally,
   if $\Filter(\Transition) > 0$ then there is some
   path~$\Path \in \Paths(\Automaton)$ with
   $\Filter(\Transition') > 0$ for every $\Transition' \in p$, and $\State \in
-  \StatesOf(p)$. Predicate~$\Connected(\Automaton, \Filter)$ represents the
-  condition that $\Automaton$ is connected with respect to the selection
+  \StatesOf(p)$ such that $p$ ends in an accepting state $\State' \in \AcceptingStates$. The predicate~$\Connected(\Automaton, \Filter)$ represents the
+  condition that $\Automaton$ is connected under the selection
   function $\Filter$ for every transition, and is implied by
   $\SinglePredicateInstance$.
 \end{definition}
