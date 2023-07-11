@@ -33,9 +33,9 @@ the respective back-end could solve. A summary of their outcomes by instance
 type is also available in \cref{tab:solve-status}. Note that many instances lack
 a corum ground truth as they are solved by only one backend. We see that
 \Calculus{} generally outperforms \Nuxmv{} on determining unsatisfiability, as
-does baseline while being similar at satisfiable instances. Both \Calculus{} and
-baseline outperforms baseline on satisfiable instances. On satisfiable
-instances, \Nuxmv and \Calculus{} has similar performance.
+does baseline, while being similar at satisfiable instances. Both \Calculus{} and
+\Nuxmv outperforms baseline on satisfiable instances. On satisfiable
+instances, \Nuxmv and \Calculus{} have similar performance.
 
 Baseline performs worse on satisfiable instances because it executes a heuristic
 meant to detect unsatisfiability early at a heavy penalty to satisfiable
@@ -64,7 +64,7 @@ have observed more unsatisfiable instances than satisfiable ones.
     \includegraphics[width=\textwidth]{graphs/\commit-time-boxplot.pdf}
     \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
     \label{fig:runtime-boxplot}
-    \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the lazy backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for lazy. On the other hand, lazy has  a lot of outliers.}
+    \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the lazy backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for lazy. On the other hand, lazy has a lot of outliers.}
   \end{subfigure}
   \vfill
   \begin{subfigure}[b]{\textwidth}
@@ -129,30 +129,29 @@ integration to a state where it can participate in the full SMT-COMP.
 The most obvious threats to validity would be poor benchmarking or poor
 implementation, e.g. if the method described in \cref{sec:calculus,sec:multiple}
 deviate from what is actually benchmarked in section \cref{sec:experiments}, or
-if the methods used for benchmarking would be unsound. To increase the
-probability that our results are representative both in the sense of
-representing  on expected inputs and in the statistical sense for a given run of
-\Catra{} despite the use of randomness in our implementation we execute many
-experiments. Moreover, to address the issue of correctness we have validated all
-reported solutions made by \Calculus{} with \Nuxmv{} to ensure that \Calculus{}
-is indeed sound. A previous version contained a race condition triggered by
-random restarts during product materialisation which would in about
-\numprint{0.7} of instances lead to non-deterministically unsound behaviour. We
-have observed no instances of this bug or any other soundness issue since fixing
-that bug, and have in addition to running all \NrBenchmarks{} we have
-re-executed the same instances multiple times for long durations to capture
-other soundness issues without any issue.
+if the methods used for benchmarking were unsound. To increase the probability
+that our results are representative both in the sense of representing expected
+inputs and, in the statistical sense, for a given run of \Catra{} despite the
+use of randomness in our implementation, we execute many experiments. Moreover,
+to address the issue of correctness we have validated all reported solutions
+made by \Calculus{} with \Nuxmv{} to ensure that \Calculus{} is indeed sound. A
+previous version contained a race condition triggered by random restarts during
+product materialisation which would in about \numprint{0.7} of instances lead to
+non-deterministically unsound behaviour. We have observed no instances of this
+bug or any other soundness issue since fixing that bug, and in addition to
+running all \NrBenchmarks{}, we have re-executed the same instances multiple
+times for long durations to capture other soundness issues without any issues.
 
 Another threat to validity would be if the competition (baseline and \Nuxmv)
-would be disadvantaged in our comparison. For \Nuxmv{} we use the default
-configuration which we believe should be performant (or it should not be the
+would be disadvantaged in our comparison. For \Nuxmv{}, we use the default
+configuration, which we believe should be performant (or it should not be the
 default). Additionally, tweaking our invocation of \Nuxmv{} is explicitly made
 easy for artefact reviewers. For baseline, our best argument is that the
 solution we use is close to the one found in the \Ostrich{} string solver and
-that it therefore should be realistic.
+that it, therefore, should be realistic.
 
 The greatest threat to validity remaining is our choice of implementation
-platform and automata library. We There are some signs that product computation
+platform and automata library. There are some signs that product computation
 is inefficient, notably the good performance of low-threshold automata
 materialisation that prioritises computing smaller products. This means that
 \Calculus{} makes less heavy use of product computation than baseline does,
