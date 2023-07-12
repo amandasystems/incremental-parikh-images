@@ -57,7 +57,7 @@ therefore also the transition sets) are pairwise disjoint.
          \begin{array}{c}
            \FlowEq(\Automaton', \Filter'),~
            \Connected(\Automaton', \Filter'),~
-           \BindingSum(\Automaton_i, \Automaton_j, \Filter')
+           \BindingSum(\Automaton_i, \Automaton_j, \Automaton', \Filter')
            \\\ImagePredicate{
                      \Tuple{\Automaton_1, \Automaton_{i-1}, \Automaton_{i+1}, \ldots,
                      \Automaton_{j-1}, \Automaton_{j+1}, \ldots, \Automaton_k,
@@ -129,13 +129,13 @@ transitions in $\Filter_{\SomeInequalities}(\Automaton_i) \times \Filter_{\SomeI
 and similarly for $\Automaton_j$:
 %
   $$
-  \BindingSum(\Automaton_i, \Automaton_j, \Filter') ~~=~~
+  \BindingSum(\Automaton_i, \Automaton_j, \Automaton', \Filter') ~~=~~
   \begin{aligned}
   & \Set{ 
-    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State'_R}}} \Filter'(\Transition')
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State'_R}} \in \Transitions_{\Automaton'}} \Filter'(\Transition')
   \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_i} } \cup\mbox{} \\ 
   & \Set{
-    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State'_L, \State'}}} \Filter'(\Transition') \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_j}
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State'_L, \State'}} \in \Transitions_{\Automaton'}} \Filter'(\Transition') \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_j}
   }
   \end{aligned}
 $$
@@ -156,20 +156,29 @@ The transition variables of the figures match the ones used here.
 We extend \cref{eq:single-filter} from \cref{sec:single:example} with
 definitions for $B$ shown in \cref{eq:multi-filter}:
 \begin{equation}\label{eq:multi-filter}
-    \begin{aligned}
-        & \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) = \TransitionVar_6 
-        & \Filter(\FromLabelTo{A}{c / l_{B+}}{A} ) = \TransitionVar_7 
-        & \Filter(\FromLabelTo{B}{b / l_{B+}}{I_B}) = \TransitionVar_8 
-        &\Filter(\FromLabelTo{B}{c / l_{B+}}{B}) = \TransitionVar_9  \\
-        & \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B})= \TransitionVar_{10}
-        & \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A})= \TransitionVar_{11}
-        & \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B})= \TransitionVar_{12}
-        \FlowEq(\mathcal{B}, \Filter) &=  \begin{aligned}
+  \begin{array}{rl@{\qquad}rl@{\qquad}rl}
+     \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) &= \TransitionVar_6 
+     &
+     \Filter(\FromLabelTo{A}{c / l_{B+}}{A} ) &= \TransitionVar_7 
+     &
+      \Filter(\FromLabelTo{B}{b / l_{B+}}{I_B}) &= \TransitionVar_8 
+     \\
+     \Filter(\FromLabelTo{B}{c / l_{B+}}{B}) &= \TransitionVar_9 
+     &
+     \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B}) &= \TransitionVar_{10}
+     &
+     \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A}) &= \TransitionVar_{11}
+     \\
+      \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B}) &= \TransitionVar_{12}
+    \\[3ex]
+% 
+    \multicolumn{6}{c}{
+        \FlowEq(\mathcal{B}, \Filter) =  \begin{aligned}
             1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12}\\
             \land \TransitionVar_{11} &= \TransitionVar_6\\
             \land \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}
-        \end{aligned}
-    \end{aligned}
+        \end{aligned}}
+  \end{array}
 \end{equation}
 
 The only possible rule at the start is $\ExpandM$, which we use to add the
