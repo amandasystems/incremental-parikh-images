@@ -11,7 +11,7 @@ backjumping. In particular, key connectedness constraints for an automaton can
 be learnt. In that case, when discovering that a transition $\Transition$ of an
 automaton $\Automaton$ under a certain transition variable $\Filter$ has become
 unreachable, we can learn the clause $\Connected(\Automaton, \Filter) \land
-\sum_{\Transition' \in C} \Filter(\Transition') = 0 \implies \Transition = 0$ where
+\bigwedge_{\Transition' \in C} \Filter(\Transition') = 0 \implies \Transition = 0$ where
 $\Dominates(C, \Automaton, \Transition)$ for some minimal $C$. Note that this
 captures both forward (unrachable from the initial state) and
 backward (does not reach an accepting state) unreachability. Bidirectional cut
@@ -20,7 +20,7 @@ performance on some instances.
 
 The other source of clauses to learn is the \Materialise{} rule. Whenever an
 attempt to materialise a product of two ($\Filter$-filtered) automata
-$\Automaton_1 \times \Automaton_2$ produces an empty product, we can determine
+produces an empty product, we can determine
 the cause of the failure with respect to the automata and their respective
 transition variables, and learn no-good combinations that can never be part of a
 model. In order to be able to do this, we need a few semantic predicates to
@@ -66,7 +66,7 @@ transitions) on only some transitions, for example the first track.
 
 Implementing such a calculus is straightforward in \Calculus, since the
 definition of products was left out of the definition. All that would be needed
-is an appropriate update of the definitions of products. Simiarly, \Catra was
+is an appropriate update of the definitions of products. Similarly, \Catra was
 written with modularity in mind, and it should be straightforward to extend both
 the input grammar and automata implementations to accommodate multi-track
 automata with arbitrary synchronisation.
@@ -128,3 +128,8 @@ $\ImageVar \gets \bot$\;
     A preliminary implementation of this approach is available as part
     of~\Catra, but has been neither optimised nor fully tested.
 \fi
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
