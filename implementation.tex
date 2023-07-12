@@ -137,13 +137,10 @@ clauses ensuring any transition variable associated with a transition starting
 in a dead state is zero.
 
 Product materialisation is the final piece of the puzzle. In the current
-implementation we put off computing intermediate products until six transition
-variables of one of the automata is known to be either \Fudge{present or absent}. The
+implementation we put off computing intermediate products until at most six transition
+variables of one of the automata are not known to always be used ($> 0$) or always unused ($\leq 0$). The
 number was chosen experimentally. The other automaton for the product is
 selected randomly.
-
-% this is unclear; don't we delay computing products until one of the
-% automata is (almost) completely defined?
 
 \subsubsection{Clause Learning}\label{sec:clause-learning}
 
