@@ -122,16 +122,18 @@ into the string solver \Ostrich{}~version~1.3. \Ostrich{} is an independently
 developed solver that participated in the recent SMT-COMP~2023\footnote{\url{https://smt-comp.github.io/2023/participants/ostrich}},
  winning the single-query track
 for quantifier-free strings (\texttt{QF\_S}), as well as dominating
-other solvers on unsatisfiable string benchmarks~\cite{smt-comp-23}.
+other solvers on the complete set of
+ unsatisfiable string benchmarks~\cite{smt-comp-23}.
 
-At SMT-COMP, \Ostrich{} competed using three different back-ends:
+ At SMT-COMP, \Ostrich{} competed using different
+ (automata-based) back-ends:
 \begin{itemize}
 \item \textbf{BW-Str:} a backward-propagation-based solver, not utilising
   Parikh automata~\cite{ostrich}.
-\item \textbf{ADT-Str:} a solver based on algebraic data-types.
+%\item \textbf{ADT-Str:} a solver based on algebraic data-types.
 \item \textbf{CE-Str:} a re-implementation of the \OstrichPlus{}
-  algorithm~\cite{ostrichplus}., using Parikh automata and a variant
-  of our baseline method~\cite{generate-parikh-image}.
+  algorithm~\cite{ostrich-plus}, using Parikh automata and the
+  encoding from~\cite{generate-parikh-image}.
 \end{itemize}
 
 For our experiments, we modified the CE-Str solver to apply \Catra{}
@@ -139,8 +141,9 @@ instead of the previous baseline method, resulting in a new back-end
 \textbf{CA-Str}.
 
 As benchmarks, we again focused on the PyEx benchmarks~\cite{pyex}, of
-which we picked 1000~problems uniformly at random. We ran the
-different back-ends on those 1000~problems with a 120s timeout.
+which we picked 1000~problems uniformly at random. We ran
+different combinations of the
+back-ends on those 1000~problems with a 120s timeout.
 %
 %The \texttt{QF\_S} track contains no Parikh automata intersection problems,
 %however. For that, we need to look to the linear integer arithmetic
@@ -156,9 +159,14 @@ The results are shown in \cref{tab:solve-status-smt-comp}.
 %competition on the same benchmarks, as well as \Ostrich{} using the baseline
 %back-end described in \cref{sec:implementing-baseline}}.
 
-We include this section to show that \Calculus{} can be used to enhance the
-performance of an automaton-based string solver with cost-enriched automata like
-\Ostrich{}. The results should be considered as preliminary, however, 
+As can be seen from the table, integrating \Catra{} as a back-end
+leads to gains both on satisfiable and unsatisfiable problems. The
+increase is more relevant for the unsatisfiable problems, given that
+\Ostrich{} is a state-of-the-art solver in particular on such benchmarks.
+
+The results show that \Calculus{} can be used to enhance the
+performance of an automaton-based string solver.
+The results should be considered as preliminary, however, 
 as we believe that a deeper integration of our \Catra{} solver into
 string solvers can lead to significant performance gains.
 
