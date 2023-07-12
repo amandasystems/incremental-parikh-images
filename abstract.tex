@@ -1,0 +1,19 @@
+A common problem in string constraint solvers is computing the Parikh image, a
+linear arithmetic formula that describes all possible combinations of character
+counts in strings of a given language. Automata-based string solvers frequently
+need to compute the Parikh image of large products (intersections) of
+nondeterministic automata, which in many operations is both prohibitively slow
+and memory-intensive. We contribute a novel understanding of how Parikh maps can
+be tackled as a constraint solving problem to solve real-world constraints
+stemming from functions on regular languages, including length and indexing
+constraints. Furthermore, we show how this formulation can be efficiently
+implemented as a calculus, \Calculus{}, in an automated theorem prover
+supporting Presburger logic.  We implement \Calculus{} in a tool called
+\Catra{}, and evaluate it on constraints produced by the \OstrichPlus{} string
+constraint solver when solving Parikh automata intersection problems produced
+when solving standard string constraint benchmarks involving cardinality
+constraints on strings. We show that our solution strictly outperforms the
+standard approach described in~\citeauthor{generate-parikh-image} as well as the
+over-approximating method recently described by~\citeauthor{approximate-parikh}
+by a wide margin, and for realistic timeouts for constraint solving also
+the~\Nuxmv{} model checker.
