@@ -61,15 +61,16 @@ therefore also the transition sets) are pairwise disjoint.
            \\\ImagePredicate{
                      \Tuple{\Automaton_1, \Automaton_{i-1}, \Automaton_{i+1}, \ldots,
                      \Automaton_{j-1}, \Automaton_{j+1}, \ldots, \Automaton_k,
-                     \Automaton'},~ \SomeInequalities, \SomeClause
-           }{\Map}{\Filter'}{\MonoidElement}
+                     \Automaton'}
+           }{\Map}{\Filter'}{\MonoidElement},~ \SomeInequalities, \SomeClause
            \end{array}}
            }
       {\ImagePredicate{\Tuple{\Automaton_1, \ldots, \Automaton_i, \ldots, \Automaton_j, \ldots, \Automaton_k}}{\Map}{\Filter}{\MonoidElement},~ \SomeInequalities, \SomeClause} &
       $\begin{array}{@{}l@{}}
-         \Filter' = \Extend(\Automaton_i, \Automaton_j,\Filter),\\
+         \Filter' = \Extend(\Automaton',\Filter),\\
          1 \leq i < j \leq k, \\
-      \Automaton' = \Automaton_i \times \Automaton_j,\\
+      \Automaton' =
+         \Filter_{\SomeInequalities}(\Automaton_i) \times \Filter_{\SomeInequalities}(\Automaton_j)\\
       \end{array}$ \\
       \bottomrule
       \end{tabular}
@@ -83,30 +84,37 @@ therefore also the transition sets) are pairwise disjoint.
     since it is needed to keep track of the currently considered
     partial products.
 
-Additionally, for an
-automaton~$\Automaton = \AutomatonTuple$, we allow mapping the selection function
-like so: $\Filter(\Automaton) = \Tuple{\States, \InitialState, \AcceptingStates,
-\Set{\Transition \in \Transitions \SuchThat \Filter(\Transition) > 0}}$, i.e.
-$\Automaton$~with only the transitions for which~$\Filter$ is positive. In this
-instance, the basis for the matched linear inequalities is
-implicitly~$\SomeInequalities$. 
 
 The rule~$\Materialise$ introduces the product of two individual
 automata~$\Automaton_i, \Automaton_j$; this step eliminates
 $\Automaton_i, \Automaton_j$ as index of the $\Image$ predicate, and
-instead adds the product~$\Automaton_i \times \Automaton_j$, while
-also introducing the flow equations and the $\Connected$ predicate.
+instead adds the product of the automata restricted to the
+transitions that can still be taken. The rule
+also introduces the flow equations and the $\Connected$ predicate.
 
-The rule~$\Materialise$ also has to connect the newly introduced
-product~$\Automaton_i \times \Automaton_j$ to the previous automata
+In $\Materialise$, we use the following notation for pruning away
+parts of an automaton based on the transition selection
+function~$\sigma$, only keeping those transitions for which~$\Filter$
+is positive:
+\begin{equation*}
+  \Filter_{\SomeInequalities}(\Automaton) =
+  \Tuple{\States, \InitialState, \AcceptingStates,
+\Set{\Transition \in \Transitions \SuchThat (\Filter(\Transition) = 0) \not\in E}}
+\end{equation*}
+This filtering operation can be optimised to also eliminate states from
+$Q$ and $F$ that become unreachable; this is kept implicit for sake of
+presentation at this point.
+
+The rule~$\Materialise$ has to connect the newly introduced
+product to the previous automata
 $\Automaton_i, \Automaton_j$. This is done by extending the
 selection function~$\Filter$ to $\Filter'$, mapping the transitions of the product
 to fresh variables~$x_{\Transition}$:
 \begin{equation*}
-  \Extend(\Automaton_i, \Automaton_j,\sigma)(t)
+  \Extend(\Automaton',\sigma)(t)
   ~~=~~
   \begin{cases}
-    x_{\Transition} & t \in \Transitions_{\Automaton_i \times \Automaton_j}
+    x_{\Transition} & t \in \Transitions_{\Automaton'}
     \\
     \Filter(t) & \text{otherwise}
   \end{cases}
@@ -117,17 +125,17 @@ to the multiplicities in the individual automata, modelled using the
 $\BindingSum$ predicate. The predicate expresses that the multiplicity
 of a transition~$\Transition \in \Transitions_{\Automaton_i}$ in
 $\Automaton_i$ has to coincide with the sum of the multiplicities of
-transitions in $\Automaton_i \times \Automaton_j$ derived from $t$,
+transitions in $\Filter_{\SomeInequalities}(\Automaton_i) \times \Filter_{\SomeInequalities}(\Automaton_j)$ derived from $t$,
 and similarly for $\Automaton_j$:
 %
   $$
   \BindingSum(\Automaton_i, \Automaton_j, \Filter') ~~=~~
   \begin{aligned}
   & \Set{ 
-    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State_R}}} \Filter'(\Transition')
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State, \State_R}}{\Label}{\Tuple{\State', \State'_R}}} \Filter'(\Transition')
   \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_i} } \cup\mbox{} \\ 
   & \Set{
-    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State_L, \State'}}} \Filter'(\Transition') \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_j}
+    \Filter'(\Transition)  =  \sum\limits_{\Transition' = \FromLabelTo{\Tuple{\State_L, \State}}{\Label}{\Tuple{\State'_L, \State'}}} \Filter'(\Transition') \SuchThat \Transition = \FromLabelTo{\State}{\Label}{\State'} \in \Transitions_{\Automaton_j}
   }
   \end{aligned}
 $$
@@ -141,9 +149,9 @@ We return to our example in \cref{sec:intuition}. We also reuse the
 definition of $\Map$ as the simple projection to extract the counter increments,
 so in this case, $\Map(\Transition) = \left[l_{B+}\right]$ for every
 transition~$\Transition$ since $\mathcal{B}$ only counts length. The reader is
-strongly advised to review \cref{fig:aut_a_annotated,fig:aut_b_annotated} from
-\cref{sec:intuition} while going through this example! In particular, note that
-the transition variables of the figures match the ones used here.
+advised to review \cref{fig:aut_a_annotated,fig:aut_b_annotated} from
+\cref{sec:intuition} while going through this example.
+The transition variables of the figures match the ones used here.
 
 We extend \cref{eq:single-filter} from \cref{sec:single:example} with
 definitions for $B$ shown in \cref{eq:multi-filter}:
@@ -366,3 +374,8 @@ solution-preservation:
   and connectedness, and it will be related to the individual paths as
   stipulated by the \BindingSum{} predicate.
 \end{proof}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
