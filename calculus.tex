@@ -240,7 +240,11 @@ vector $\Vec{v}$, concretely $h(\FromLabelTo{I_A}{\Sigma / \left[ l_{A+}, i_+
 \right]}{I_A}) = \left[ l_{A+}, i_+ \right]$. We use the same compact notation
 here as in \cref{sec:intuition} to represent what is essentially a sparse vector
 of $1$ and $0$ coefficients, i.e. $\left[ l_{A+}, i_+ \right] = \left[1, 1,
-0\right]$. Initially, we let $\Filter$ map to fresh variables to obtain, after some simplifications:
+0\right]$.  The reader is
+advised to review \cref{fig:aut_a} from
+\cref{sec:intuition} while going through this example.
+
+Initially, we let $\Filter$ map to fresh variables to obtain, after some simplifications:
 \begin{equation}\label{eq:single-filter}
   \begin{array}{rl@{\qquad}rl@{\qquad}rl}
     \Filter(\FromLabelTo{D}{d/[l_{A+}, n_+]}{F_A})
@@ -259,9 +263,9 @@ of $1$ and $0$ coefficients, i.e. $\left[ l_{A+}, i_+ \right] = \left[1, 1,
     &= \TransitionVar_5  \\[3ex]
 %
   \multicolumn{6}{c}{
-    \FlowEq(\mathcal{A}', \Filter)  = \begin{aligned}
-                       1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_4 + \TransitionVar_3\\
-                    \TransitionVar_4 &= \TransitionVar_1 \\
+    \FlowEq(\mathcal{A}', \Filter)  =\quad \begin{aligned}
+                       1 + \cancel{\TransitionVar_5} &= \cancel{\TransitionVar_5} + \TransitionVar_4 + \TransitionVar_3 \wedge\mbox{}\\
+                    \TransitionVar_4 &= \TransitionVar_1 \wedge\mbox{}\\
                     \TransitionVar_3 + \TransitionVar_1 + \cancel{\TransitionVar_2} &= \cancel{\TransitionVar_2} + 1  \\
                     \end{aligned}}
   \end{array}

@@ -173,10 +173,11 @@ definitions for $B$ shown in \cref{eq:multi-filter}:
     \\[3ex]
 % 
     \multicolumn{6}{c}{
-        \FlowEq(\mathcal{B}, \Filter) =  \begin{aligned}
-            1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12}\\
-            \land \TransitionVar_{11} &= \TransitionVar_6\\
-            \land \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}
+        \FlowEq(\mathcal{B}, \Filter) =\quad  \begin{aligned}
+            1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12} \wedge\mbox{}\\
+            \TransitionVar_{11} &= \TransitionVar_6\wedge\mbox{}\\
+            \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}\mbox{}\\
+            \TransitionVar_6 + \TransitionVar_{10} &= 1
         \end{aligned}}
   \end{array}
 \end{equation}
