@@ -19,7 +19,7 @@ could be solved in under five seconds, with a mean runtime of about 0.1s.
 The benchmarks are run
 on commit~\texttt{\commit} of \Catra{}\footnote{Github repository redacted for anonymity.}.
 
-The benchmarks are executed in parallel across a cluster of \Fudge{identical}
+The benchmarks are executed in parallel across a cluster of identical
 machines, \BenchmarkRig{}, but as the sole job for each machine.  We compiled
 the code using Scala~\ScalaVersion{} and executed the experiments
 on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{}
@@ -42,7 +42,7 @@ type is also available in \cref{tab:solve-status}. Note that many instances lack
 a corum ground truth as they are solved by only one backend. We see that
 \Calculus{} generally outperforms \Nuxmv{} on determining unsatisfiability, as
 does baseline, while being similar at satisfiable instances. Both \Calculus{} and
-\Nuxmv outperforms baseline on satisfiable instances. On satisfiable
+\Nuxmv{} outperforms baseline on satisfiable instances. On satisfiable
 instances, \Nuxmv and \Calculus{} have similar performance.
 
 Baseline performs worse on satisfiable instances because it executes a heuristic
