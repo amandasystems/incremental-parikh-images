@@ -43,7 +43,7 @@ a corum ground truth as they are solved by only one backend. We see that
 \Calculus{} generally outperforms \Nuxmv{} on determining unsatisfiability, as
 does baseline, while being similar at satisfiable instances. Both \Calculus{} and
 \Nuxmv{} outperforms baseline on satisfiable instances. On satisfiable
-instances, \Nuxmv and \Calculus{} have similar performance.
+instances, \Nuxmv{} and \Calculus{} have similar performance.
 
 Baseline performs worse on satisfiable instances because it executes a heuristic
 meant to detect unsatisfiability early at a heavy penalty to satisfiable
@@ -112,10 +112,13 @@ left as future work.
   \begin{center}
   \input{experiments/qf_slia_comparison.tex}
   \end{center}
-  \caption{Number of solved benchmarks from the single-query QF\_SLIA track of
-  quantifier-free string linear integer arithmetic at SMT-COMP 2023. The numbers
-  for each solver are from the publicly available data files, except for
-  \Ostrich-\Catra{}, which are executed by us. }\label{tab:solve-status-smt-comp}
+  \caption{Number of solved benchmarks from the single-query QF\_SLIA
+    track of quantifier-free string linear integer arithmetic at
+    SMT-COMP 2023. The numbers for each solver are from the publicly
+    available data files, except for CA-Str, which is executed by us
+    (600s timeout, AMD Opteron 2220
+    SE), and \Ostrich+CA, which is a virtual portfolio. }
+  \label{tab:solve-status-smt-comp}
 \end{table}
 
 To evaluate the effectiveness of \Calculus{} in an actual string solver,
@@ -127,12 +130,12 @@ for quantifier-free strings (\texttt{QF\_S}), as well as dominating
 other solvers on the complete set of
  unsatisfiable string benchmarks~\cite{smt-comp-23}.
 
- At SMT-COMP, \Ostrich{} competed using different
- (automata-based) back-ends:
+ At SMT-COMP, \Ostrich{} competed using a portfolio of three different
+ back-ends:
 \begin{itemize}
 \item \textbf{BW-Str:} a backward-propagation-based solver, not utilising
   Parikh automata~\cite{ostrich}.
-%\item \textbf{ADT-Str:} a solver based on algebraic data-types.
+\item \textbf{ADT-Str:} a solver based on algebraic data-types.
 \item \textbf{CE-Str:} a re-implementation of the \OstrichPlus{}
   algorithm~\cite{ostrich-plus}, using Parikh automata and the
   encoding from~\cite{generate-parikh-image}.
@@ -140,12 +143,13 @@ other solvers on the complete set of
 
 For our experiments, we modified the CE-Str solver to apply \Catra{}
 instead of the previous baseline method, resulting in a new back-end
-\textbf{CA-Str}.
+\textbf{CA-Str}. We created also a new virtual portfolio~\Ostrich{}+CA
+by combining the three solvers in \Ostrich{}~1.3 with \textbf{CA-Str}.
 
-As benchmarks, we again focused on the PyEx benchmarks~\cite{pyex}, of
-which we picked 1000~problems uniformly at random. We ran
-different combinations of the
-back-ends on those 1000~problems with a 120s timeout.
+%As benchmarks, we again focused on the PyEx benchmarks~\cite{pyex}, of
+%which we picked 1000~problems uniformly at random. We ran
+%different combinations of the
+%back-ends on those 1000~problems with a 120s timeout.
 %
 %The \texttt{QF\_S} track contains no Parikh automata intersection problems,
 %however. For that, we need to look to the linear integer arithmetic
@@ -155,16 +159,23 @@ back-ends on those 1000~problems with a 120s timeout.
 %competition. In this section, we evaluated a version of \Ostrich{} using
 %\Catra{} as its back-end \Fudge{on StarExec, the same cluster SMT-COMP ran on}
 %on \numprint{1000}~randomly selected instances from the PyEx benchmarks. 
-The results are shown in \cref{tab:solve-status-smt-comp}.
 %
 % comparison \Fudge{to the other provers of the 2023
 %competition on the same benchmarks, as well as \Ostrich{} using the baseline
 %back-end described in \cref{sec:implementing-baseline}}.
 
+We evaluate the different solvers in \cref{tab:solve-status-smt-comp}
+on 21\,938~benchmarks from the single-query QF\_SLIA track at SMT-COMP 2023, as
+QF\_SLIA was the most challenging track for \Ostrich{} in the
+competition.
+%
 As can be seen from the table, integrating \Catra{} as a back-end
-leads to gains both on satisfiable and unsatisfiable problems. The
-increase is more relevant for the unsatisfiable problems, given that
-\Ostrich{} is a state-of-the-art solver in particular on such benchmarks.
+leads to gains both on satisfiable and unsatisfiable problems. On
+satisfiable benchmarks, the combination \Ostrich+CA is still
+outperformed by cvc5 and z3alpha. On unsatisfiable benchmarks,
+\Ostrich+CA narrowly beats the other solvers, which is promising given
+that also \Ostrich{}~1.3, cvc5, and z3alpha show very strong
+performance on this class of benchmarks.
 
 The results show that \Calculus{} can be used to enhance the
 performance of an automaton-based string solver.
