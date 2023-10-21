@@ -20,7 +20,7 @@ The benchmarks are run
 on commit~\texttt{\commit} of \Catra{}\footnote{Github repository redacted for anonymity.}.
 
 The benchmarks are executed in parallel across a cluster of identical
-machines, \BenchmarkRig{}, but as the sole job for each machine.  We compiled
+machines, \BenchmarkRig{}, as the sole job for each machine.  We compiled
 the code using Scala~\ScalaVersion{} and executed the experiments
 on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{}
 version~\NuxmvVersion{} invoked as a subprocess for each instance. Instances
@@ -39,17 +39,16 @@ executing the instance, and exclude time spent parsing (usually far below
 In \cref{fig:solve-division}, we show how many of the~\NrBenchmarks{} instances
 the respective back-end could solve. A summary of their outcomes by instance
 type is also available in \cref{tab:solve-status}. Note that many instances lack
-a corum ground truth as they are solved by only one backend. We see that
+a ground truth as they are solved by only one backend. We see that
 \Calculus{} generally outperforms \Nuxmv{} on determining unsatisfiability, as
 does baseline, while being similar at satisfiable instances. Both \Calculus{} and
 \Nuxmv{} outperforms baseline on satisfiable instances. On satisfiable
 instances, \Nuxmv{} and \Calculus{} have similar performance.
 
 Baseline performs worse on satisfiable instances because it executes a heuristic
-meant to detect unsatisfiability early at a heavy penalty to satisfiable
-instances roughly similar to \cite{approximate-parikh}. The heuristic is enabled
-since the improvement is significant compared to the extra cost and since we
-have observed more unsatisfiable instances than satisfiable ones.
+meant to detect unsatisfiability early, similar to~\cite{approximate-parikh}.
+The heuristic is enabled since the improvement is significant compared to the
+extra cost.
 
 \begin{table}
   \begin{center}
@@ -71,7 +70,7 @@ have observed more unsatisfiable instances than satisfiable ones.
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth]{graphs/\commit-time-boxplot.pdf}
-    \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
+    \caption{The distribution of runtimes for solved instances per backend. Total numbers of solved instances differ.}
     \label{fig:runtime-boxplot}
     \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the PC* backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for PC*. On the other hand, PC* has a lot of outliers.}
   \end{subfigure}
@@ -87,25 +86,20 @@ have observed more unsatisfiable instances than satisfiable ones.
 
 \subsubsection{Scalability}\label{sec:scaling}%
 To investigate scaling we additionally execute \numprint{2000} randomly sampled
-(without replacement) benchmarks with a \numprint{120}-second timeout. In
-addition to the previous back-ends, we also execute \Calculus{} with clause
-learning and restarts disabled, and with only clause learning disabled to show
-the impact of \cref{sec:random-restarts}, and \cref{sec:clause-learning}
-respectively.
+(without replacement) benchmarks with a \numprint{120}-second timeout. We add
+runs of \Calculus{} with clause learning and restarts disabled, and with only
+clause learning disabled to show the impact of \cref{sec:random-restarts}, and
+\cref{sec:clause-learning} respectively.
 
 A cactus plot showing the number of instances solved within a given timeout can
 be seen in \cref{fig:cactus}. We see that \Calculus{} outperforms \Nuxmv{} in
-general but that \Nuxmv{} might scale better on very long runtimes.
-Non-systematic observations suggest that \Nuxmv{}'s scaling benefits kicks in
-faster on newer machines, so it is likely that the amount of CPU cycles spent is
-the underlying factor. This is likely due to two factors. First, \Nuxmv{} is
-more mature than \Calculus{}, and it makes sense that its more general model
-checking methods would pay off on more difficult instances where more
-problem-specific methods offer less payoff. Second, for longer running
-calculations clause learning as described in \cref{sec:clause-learning} can be
-assumed to matter more. However, the clauses we learn are still unpolished, and
-in particular, generalise poorly across product computations. Improvements are
-left as future work.
+general but that \Nuxmv{} might scale better on very long runtimes. This is
+likely due to two factors. First, \Nuxmv{} is more mature than \Calculus{}, and
+its more general model checking methods might pay off on more difficult
+instances compared to problem-specific methods. Second, for longer-running
+calculations clause learning as described in \cref{sec:clause-learning} might
+matter more. As clause learning in \Catra{} is rudimentary and generalises
+poorly across product computations, there is a performance hit.
 
 \subsection{Evaluation in \Ostrich{}}\label{}%
 
@@ -113,23 +107,21 @@ left as future work.
   \begin{center}
   \input{experiments/qf_slia_comparison.tex}
   \end{center}
-  \caption{Number of solved benchmarks from the single-query QF\_SLIA
-    track of quantifier-free string linear integer arithmetic at
-    SMT-COMP 2023. The numbers for each solver are from the publicly
-    available data files, except for CA-Str, which is executed by us
-    (600s timeout, AMD Opteron 2220
-    SE), and \Ostrich+CA, which is a virtual portfolio. }
+  \caption{Number of solved benchmarks in the set of quantifier-free string
+    linear integer arithmetic (QF\_SLIA) at SMT-COMP 2023. The numbers are from
+    the competition results, except for CA-Str, which is executed by us (600s
+    timeout, AMD Opteron 2220 SE), and \Ostrich+CA, a virtual portfolio. }
   \label{tab:solve-status-smt-comp}
 \end{table}
 
-To evaluate the effectiveness of \Calculus{} in an actual string solver,
-\Catra{} was experimentally integrated as the Parikh automata product solver
-into the string solver \Ostrich{}~version~1.3. \Ostrich{} is an independently
-developed solver that participated in the recent SMT-COMP~2023\footnote{\url{https://smt-comp.github.io/2023/participants/ostrich}},
- winning the single-query track
-for quantifier-free strings (\texttt{QF\_S}), as well as dominating
-other solvers on the complete set of
- unsatisfiable string benchmarks~\cite{smt-comp-23}.
+To evaluate the effectiveness of \Calculus{} in a string solver, \Catra{} was
+experimentally integrated as the Parikh automata product solver into the string
+solver \Ostrich{}~version~1.3. \Ostrich{} is an independently developed solver
+that participated in the recent
+SMT-COMP~2023\footnote{\url{https://smt-comp.github.io/2023/participants/ostrich}},
+winning the single-query track for quantifier-free strings (\texttt{QF\_S}), as
+well as dominating other solvers on unsatisfiable string
+benchmarks~\cite{smt-comp-23}.
 
  At SMT-COMP, \Ostrich{} competed using a portfolio of three different
  back-ends:
@@ -139,7 +131,7 @@ other solvers on the complete set of
 \item \textbf{ADT-Str:} a solver based on algebraic data-types.
 \item \textbf{CE-Str:} a re-implementation of the \OstrichPlus{}
   algorithm~\cite{ostrich-plus}, using Parikh automata and the
-  encoding from~\cite{generate-parikh-image}.
+  encoding from~\cite{generate-parikh-image} (referred to in this paper as baseline).
 \end{itemize}
 
 For our experiments, we modified the CE-Str solver to apply \Catra{}
@@ -178,21 +170,19 @@ outperformed by cvc5 and z3alpha. On unsatisfiable benchmarks,
 that also \Ostrich{}~1.3, cvc5, and z3alpha show very strong
 performance on this class of benchmarks.
 
-The results show that \Calculus{} can be used to enhance the
-performance of an automaton-based string solver.
-The results should be considered as preliminary, however, 
-as we believe that a deeper integration of our \Catra{} solver into
-string solvers can lead to significant performance gains.
+The results show that \Calculus{} can be used to enhance the performance of an
+automaton-based string solver. The results should be considered preliminary,
+however, as we believe that a deeper integration of \Catra{} into string solvers
+can lead to significant performance gains.
 
 \subsection{Threats to Validity}
 
-The most obvious threats to validity would be an unsound implementation. To
+The most obvious threat to validity would be an unsound implementation. To
 address this we have validated all reported solutions made by \Calculus{} with
 \Nuxmv{}. A previous version contained a race with random restarts during
 product materialisation causing non-deterministic unsoundness in \numprint{0.7}
-of instances. Since addressing that bug we have observed no other soundness
-issues, despite re-executing the same instances multiple times for long
-durations.
+of instances. Since addressing that bug we have observed no further soundness
+issues.
 
 The second threat to validity is our implementation of automata operations. As
 \Calculus{} by design offloads some of the product computation work onto
