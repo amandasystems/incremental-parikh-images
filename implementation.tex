@@ -19,31 +19,29 @@ example introduced in \cref{sec:intuition} can be seen in
 \cref{lst:input-example}.
 
 \Catra{} uses symbolic labels for automata. A symbolic label is defined as a
-finite range of Unicode code points. This allows succinct representation of many
-regular expression patterns such as \lstinline{(a-z).*}, which would have
-otherwise required $27$~transitions. The transition for the range would be
-written \lstinline{a -> b [97, 122]}.
+finite range of Unicode code points. This allows representing regular expression
+patterns like \lstinline{(a-z)} as \lstinline{a -> b [a, z]} when it would have
+otherwise required $27$~non-symbolic transitions. 
 
 In satisfaction mode, supported by all backends, \Catra{} tries to satisfy the
 constraints expressed by the input file, reporting \Sat{} with register
-assignments or \Unsat{} much like traditional~SAT- or SMT solvers would.
-Additionally, baseline and \Calculus{} also support generating the Presburger
-formula describing the constraints of the input file, i.e., computing
-a closed-from representation of the complete Parikh image.
+assignments or \Unsat{}. Additionally, baseline and \Calculus{} also support
+generating the Presburger formula describing the constraints of the input file,
+i.e., computing a closed-form representation of the complete Parikh image.
 % Baseline uses standard
 %quantifier elimination, and \Calculus{} uses the method described in
 %\cref{sec:finding-the-image}.
 
-Since \Princess{} does not support the multiple-arity predicates used
-in \Calculus{}, we have implemented variable-length arguments using
-additional helper predicates. These are $\Unused{}(\Automaton)$, which
-marks an automaton as unused in any product, and
-$\TransitionMask{}(\Automaton, \Transition, \Filter(\Transition))$
-which associates a transition $\Transition$ and automaton $\Automaton$
-with its corresponding transition
-variable~$\Filter(\Transition)$. Additionally, we associate each
-predicate with an instance variable to tie helper predicates to the
-$\Image$ predicate they originated from.
+% Since \Princess{} does not support the multiple-arity predicates used
+% in \Calculus{}, we have implemented variable-length arguments using
+% additional helper predicates. These are $\Unused{}(\Automaton)$, which
+% marks an automaton as unused in any product, and
+% $\TransitionMask{}(\Automaton, \Transition, \Filter(\Transition))$
+% which associates a transition $\Transition$ and automaton $\Automaton$
+% with its corresponding transition
+% variable~$\Filter(\Transition)$. Additionally, we associate each
+% predicate with an instance variable to tie helper predicates to the
+% $\Image$ predicate they originated from.
 
 \subsection{Implementing the Baseline}\label{sec:implementing-baseline}
 
@@ -79,7 +77,7 @@ taken in~\cite{approximate-parikh}.
 
   }
 
-  $q \gets \NewPriorityQueue{}$
+  $q \gets \NewPriorityQueue{$\mathcal{A}_i, \ldots, \mathcal{A}_n$}$
 
 
   \While{$p$ not \textsc{Unsat} and $|q| > 1$}{

@@ -136,7 +136,7 @@ state-of-the-art approach to handling Parikh image computation is to
 over-approximate the Parikh image of a product of $k$~automata
 $\ParikhMap(\Language(\Automaton_1) \cap \ldots \cap \Language(\Automaton_k))$
 with the conjunction of the automata's Parikh maps, $\bigwedge_{i=1}^{k}
-\ParikhMap(\Automaton_i)$. Due to the over-approximation,
+\ParikhMap(\Language(\Automaton_i))$. Due to the over-approximation,
 this approach works only for unsatisfiable instances,
 and will require falling back to computing the product of the automata before
 using the standard approach for finding its image originally presented
