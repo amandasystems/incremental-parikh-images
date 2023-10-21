@@ -66,21 +66,21 @@ have observed more unsatisfiable instances than satisfiable ones.
     \includegraphics[width=\textwidth]{graphs/\commit-by-solver.pdf}
     \caption{The division of statuses per backend.}
     \label{fig:solve-division}
-    \Description[A bar chart showing three bars, one per backend, illustrating how many instances they could solve]{The bars are divided by satisfiable and unsatisfiable instances. Baseline could seemingly only solve unsatisfiable instances, lazy could solve a few satisfiable and mostly unsatisfiable, and nuxmv could solve about twice as many unsatisfiable as satisfiable instances, and slightly less in total than lazy.}
+    \Description[A bar chart showing three bars, one per backend, illustrating how many instances they could solve]{The bars are divided by satisfiable and unsatisfiable instances. Baseline could seemingly only solve unsatisfiable instances, PC* could solve a few satisfiable and mostly unsatisfiable, and nuxmv could solve about twice as many unsatisfiable as satisfiable instances, and slightly less in total than PC*.}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth]{graphs/\commit-time-boxplot.pdf}
     \caption{The distribution of runtimes for solved instances per backend. Note that the number of instances solved differs between backends.}
     \label{fig:runtime-boxplot}
-    \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the lazy backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for lazy. On the other hand, lazy has a lot of outliers.}
+    \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the PC* backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for PC*. On the other hand, PC* has a lot of outliers.}
   \end{subfigure}
   \vfill
   \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{graphs/\commit-cactus.pdf}
     \caption{The number of instances solved as the time budget increases, simulated from one \numprint{120}s-timeout run.}
     \label{fig:cactus}
-    \Description[A cactus plot comparing the performance of nuxmv, lazy and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv.}
+    \Description[A cactus plot comparing the performance of nuxmv, PC* and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv.}
   \end{subfigure}
 \end{figure}
 
