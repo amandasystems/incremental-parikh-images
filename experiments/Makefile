@@ -4,6 +4,8 @@ COMMIT ?= $(shell git rev-parse --short HEAD)
 all:
 	papermill ./Analysis.ipynb -p commit ${COMMIT} \
 			--no-report-mode Report.ipynb
+	papermill "SMT-COMP comparison.ipynb" -p commit ${COMMIT} \
+			--no-report-mode Report-SMT-COMP.ipynb
 
 clean:
 	${RM} trivial-*.log solved_pivot_table.tex *.pdf
