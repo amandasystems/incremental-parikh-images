@@ -8,7 +8,7 @@ all:
 			--no-report-mode Report-SMT-COMP.ipynb
 
 clean:
-	${RM} trivial-*.log solved_pivot_table.tex *.pdf
+	${RM} trivial-*.log solved_pivot_table.tex *.pdf Report-SMT-COMP.ipynb Report.ipynb
 
 .PHONY: notebook
 notebook:
