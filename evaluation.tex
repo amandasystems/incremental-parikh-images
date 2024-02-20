@@ -168,9 +168,16 @@ track (QF\_SLIA) in~\cref{tab:solve-status-smt-comp}. We obtain
 the results by executing \Ostrich{}~1.3 with CA-Str using
 the same benchmarking infrastructure (the StarExec cluster)
 and configuration that ran SMT-COMP 2023, combining our new results for CA-Str with the
-published results of SMT-COMP 2023. Where avaiable, we use the revised, out-of
-competition version of the results for solvers with bugs, including \Ostrich{} and Z3-Noodler.
+published results of SMT-COMP 2023.
+\footnote{StarExec Job ID 59410, "SMT-COMP 2023 single query final", 
+\url{https://www.starexec.org/starexec/secure/details/job.jsp?id=59410}.} 
+Where avaiable, we use the revised, out-of
+competition version of the results for solvers with bugs discovered during
+the competition, including \Ostrich{} and Z3-Noodler. 
+\footnote{StarExec Job ID 59668, "SMT-COMP 2023 single query final fixed" available at
+\url{https://www.starexec.org/starexec/secure/details/job.jsp?id=59668}.}
 Note that Z3-Noodler abstained on 70~instances, and thus has a lower total number of results.
+We used the parallel results for all solvers.
 
 We picked QF\_SLIA since
 \Ostrich{} already performed well on the other two string solving tracks. In fact,
