@@ -28,7 +28,7 @@ were executed in batches of \BatchSize{}, each given a fresh JVM. Each JVM was
 warmed up for \numprint{10}s on a random benchmark from the set before starting
 to execute. We believe this represents a realistic use case where \Calculus{} is
 used to support, e.g., a string solver. Experiments were executed in random order
-for all backends. Each instance got a time budget of~\RuntimeTimeout.
+for all backends. Each instance got a time budget of~\RuntimeTimeout{}.
 
 All runtimes are measured in wall-clock time as observed by the JVM when
 executing the instance, and exclude time spent parsing (usually far below
@@ -162,13 +162,13 @@ back-end to \Ostrich{}.
 %competition on the same benchmarks, as well as \Ostrich{} using the baseline
 %back-end described in \cref{sec:implementing-baseline}}.
 
-We extend the results of SMT-COMP 2023 with our modified \Ostrich{}
+We extend the results of SMT-COMP~2023 with our modified \Ostrich{}
 on the single-query string solving with linear integer arithmetic constraint
 track (QF\_SLIA) in~\cref{tab:solve-status-smt-comp}. We obtain
 the results by executing \Ostrich{}~1.3 with CA-Str using
 the same benchmarking infrastructure (the StarExec cluster)
-and configuration that ran SMT-COMP 2023, combining our new results for CA-Str with the
-published results of SMT-COMP 2023.
+and configuration that ran SMT-COMP~2023, combining our new results for CA-Str with the
+published results of SMT-COMP~2023.
 \footnote{StarExec Job ID 59410, "SMT-COMP 2023 single query final", 
 \url{https://www.starexec.org/starexec/secure/details/job.jsp?id=59410}.} 
 Where avaiable, we use the revised, out-of
@@ -187,8 +187,8 @@ As can be seen from \cref{tab:solve-status-smt-comp}, integrating \Catra{} as a 
 leads to gains both on satisfiable and unsatisfiable problems. On
 satisfiable problems, the combination \Ostrich+CA is still
 outperformed by cvc5 and z3alpha. On unsatisfiable benchmarks,
-\Ostrich+CA narrowly beats the other solvers,
-which is promising given that \Ostrich{}~1.3 (without CA-Str), cvc5, and z3alpha show very strong
+\Ostrich+CA now narrowly beats the other solvers by squeezing past cvc5,
+which is promising given that \Ostrich{}~1.3 (without CA-Str), cvc5, and z3alpha all show very strong
 performance on this class of benchmarks. Similar improvements
 occur in QF\_S, they are much smaller (an additional 2 unsatisfiable, 4 satisfiable 
 solved out of~8\,847 in total).
@@ -209,12 +209,16 @@ address this we have validated all reported solutions made by \Calculus{} with
 \Nuxmv{}. A previous version contained a race with random restarts during
 product materialisation causing non-deterministic unsoundness in \numprint{0.7}
 of instances. Since addressing that bug we have observed no further soundness
-issues, with the exception of one erroneous \textsc{Unsat} response on the QF\_S track of 
-SMT-COMP (\texttt{QF\_S\/20230329-automatark-lu\/instance08425.smt2}) that likely occurred
-in the interaction surface between \Ostrich{} and \Catra{}, since we have robustly tested 
-\Catra{} separately from \Ostrich{}. For this case, as well as for the similarly buggy case
-for Z3-Noodler, we use the same rule as SMT-COMP and count the erroneous responses as error
-results.
+issues in \Catra{}. During extended evaluations by reviewer suggestion for the 
+camera-ready version of this paper, however, one single erroneous \textsc{Unsat} 
+response on the QF\_S track of 
+SMT-COMP (\texttt{QF\_S\/20230329-automatark-lu\/instance08425.smt2}) was discovered.
+The most likely cause is a misgenerated constraint in the interaction surface between \Ostrich{}
+and \Catra{}, since we have robustly tested 
+\Catra{} separately from \Ostrich{} and vice versa. Additionally, Z3-Noodler
+also similarly has one incorrect response, even in the bugfixed version. For both of
+these, we apply the same rule as SMT-COMP, counting the erroneous responses for Z3-Noodler
+and \Ostrich{}+CA as error results.
 
 The second threat to validity is our implementation of automata operations. As
 \Calculus{} by design offloads some of the product computation work onto
@@ -224,7 +228,8 @@ performance issues with the baseline approach have been reported for string
 solvers. Additionally, profiling shows that baseline spends most of its time in
 \Princess{}, suggesting that the automaton implementation is not the bottleneck.
 Finally, the difference in performance between \Calculus{} and baseline has been
-robust under significant optimisation of the automata library.
+robust under significant optimisation of the automata library, additionally
+strengthening this thesis.
 
 %%% Local Variables:
 %%% mode: latex
