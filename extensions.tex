@@ -13,7 +13,7 @@ automaton $\Automaton$ under a certain transition variable $\Filter$ has become
 unreachable, we can learn the clause $\Connected(\Automaton, \Filter) \land
 \bigwedge_{\Transition' \in C} \Filter(\Transition') = 0 \implies \Transition = 0$ where
 $\Dominates(C, \Automaton, \Transition)$ for some minimal $C$. Note that this
-captures both forward (unrachable from the initial state) and
+captures both forward (unreachable from the initial state) and
 backward (does not reach an accepting state) unreachability. Bidirectional cut
 learning is implemented in \Catra, and has provided a slight improvement in
 performance on some instances.
