@@ -349,10 +349,9 @@ to the calculus for a single automaton.
   one automaton, until only one remains and \cref{lma:single-terminates} for
   single-automaton instances apply.
   
-  This implies that also the rule~\ExpandM{} can only be applied
-  finitely often since its side condition only allows applying it once
-  per instance of an $\Image$ predicate containing a product, and only finitely
-  many instances of $\Image$ can be introduced on each branch.
+  \ExpandM{} can only be applied precisely once per $\Image$~term since
+  each application introduces an identical set of formulas and we have a generic
+  side condition that no rule may add only redundant formulas.
 \end{proof}
 
 \subsubsection{The rules in \cref{tbl:rules:multi} are solution-preserving}
