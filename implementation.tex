@@ -45,11 +45,11 @@ i.e., computing a closed-form representation of the complete Parikh image.
 
 \subsection{Implementing the Baseline}\label{sec:implementing-baseline}
 
-We baseline using the same Presburger solver (\Princess{}), input file parser,
-and automaton implementation as \Catra. We do this to better analyse the impact
+As a baseline, we use the same Presburger solver (\Princess{}), input file parser,
+and automaton implementation as \Catra{}. We do this to better analyse the impact
 of the calculus rules themselves. Adapting~\cite{generate-parikh-image}, we
 produce quantified Presburger formulae for each successive term and add them to
-\Princess. We compute the product incrementally term by term, checking
+\Princess{}. We compute the product incrementally term by term, checking
 satisfiability at each step. We use a priority queue to select automata for each
 step and order them by their number of transitions. We use this heuristic to put
 off computing large (and therefore slow) products until we have to, hoping to
@@ -77,7 +77,7 @@ taken in~\cite{approximate-parikh}.
 
   }
 
-  $q \gets \NewPriorityQueue{$\mathcal{A}_i, \ldots, \mathcal{A}_n$}$
+  $q \gets \NewPriorityQueue{$\mathcal{A}_1, \ldots, \mathcal{A}_n$}$
 
 
   \While{$p$ not \textsc{Unsat} and $|q| > 1$}{
