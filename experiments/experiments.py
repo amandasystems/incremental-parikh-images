@@ -65,7 +65,7 @@ def log2df(log):
 
 def solved_after(seconds, known_solved):
     df = known_solved[known_solved['runtime'] < seconds]\
-        .groupby('backend')\
+        .groupby('backend', observed=False)\
         .size()\
         .reset_index()
     df['after'] = seconds
