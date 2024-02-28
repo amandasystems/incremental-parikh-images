@@ -61,6 +61,21 @@ of automata to be the conjunction of the image of the individual automata of the
 product \cite{approximate-parikh}. This approach only works for unsatisfiable
 instances, and comes with a harsh penalty for satisfiable instances.
 
+The most basic version fo the problem considered in this paper is:
+{
+    \centering
+    \begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,%
+        title=Satisfiability of Parikh images of a product of automata,%
+        width=0.8\linewidth]
+        Given a finite set of regular languages, $\Language_1, \ldots, \Language_n$
+        over a finite, common, alphabet $\Set{a_1, \ldots, a_k}$,
+        and a Presburger formula, $\phi(\Vec{x_1, \ldots, x_k})$, 
+        decide if there is a word, $w$ in the 
+        intersection of $\Language_1, \ldots, \Language_n$, whose Parikh vector 
+        $\Vec{m_1, \ldots, m_k}$ satisfies $\phi$.
+    \end{tcolorbox}
+  }
+
 Addressing these concerns, we have developed a calculus for Parikh images of
 products of regular languages that we call \Calculus{}. It allows us to
 interleave the computation of arbitrarily deep products of automata with the
