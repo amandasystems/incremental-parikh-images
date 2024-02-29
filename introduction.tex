@@ -33,6 +33,7 @@ intersection of multiple automata. This problem arises in string solvers in
 particular, as conjunctions of string constraints lead to the computation of
 length images of products (intersections) of regular languages represented as
 finite automata. The problem considered in this paper is thus:
+
 {
     \centering
     \begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,%
@@ -132,7 +133,8 @@ through the automata (and their product) is finite. In summary, the key ideas ar
             transitions from the automata that are incompatible with constraints
             \item Intelligently \emph{branch} on the presence\slash{}absence of key
              transitions to drive propagation of the connectivity constraint
-             \item Compute products of automata lazily, after propagation
+             \item Compute products of automata lazily, after pruning transitions
+             that violate constraints using propagation
         \end{itemize}
     \end{tcolorbox}
   }
