@@ -282,33 +282,8 @@ Initially, we let $\Filter$ map to fresh variables to obtain, after some simplif
   \end{array}
 \end{equation}
 
-The proof tree is shown in \cref{fig:derivation:single}.  Like in
-\cref{sec:a_1,sec:intuition:algebra}, by arithmetic reasoning the
-calculus ends up with fixed values for several of the transition
-variables $\TransitionVar_k$, and eventually concludes that the
-transition directly from state $I_{A}$ to $F_{A}$ (variable~$x_3$)
-is incompatible with
-the constraint.  It is then possible to remove the $\Connected{}$
-predicate using \Subsume{}, since \Propagate{} is not able to infer
-further constraints, and no non-trivial applications of \Split{}
-remain to be done.  After this, by further arithmetic reasoning we can
-derive a solution~$l_A = 4, i = 1, n = 2$, and conclude that the root
-constraint is satisfiable.  To obtain values for the string
-variables~$s_1, s_2$ corresponding to the solution, one can
-construct an accepting path of the automaton with each transition~$t$
-taken $\Filter(t)$ times.
 
-\iffalse
-
-the rest of the reasoning can be
-continued without any part of \Calculus{} since all values of the
-existentially quantified transition variables
-$\TransitionVar_1,\ldots,\TransitionVar_5$ compatible with
-\cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring,const:something-before-and-after}
-are represented by the flow equations introduced by $\Expand{}$.
-\fi
-
-\begin{figure}[tb]
+\begin{figure}[h]
   \centering
 \begin{prooftree}
   \hypo[]{$\vdots$}
@@ -454,6 +429,32 @@ are represented by the flow equations introduced by $\Expand{}$.
 from \cref{ex:string-constraints}, corresponding to handling the Parikh
 automaton $\mathcal{A}'$ of \cref{fig:aut_a}.}\label{fig:derivation:single}
 \end{figure}
+
+The proof tree is shown in~\cref{fig:derivation:single}. Like in
+\cref{sec:a_1,sec:intuition:algebra}, by arithmetic reasoning the
+calculus ends up with fixed values for several of the transition
+variables $\TransitionVar_k$, and eventually concludes that the
+transition directly from state $I_{A}$ to $F_{A}$ (variable~$x_3$)
+is incompatible with
+the constraint.  It is then possible to remove the $\Connected{}$
+predicate using \Subsume{}, since \Propagate{} is not able to infer
+further constraints, and no non-trivial applications of \Split{}
+remain to be done.  After this, by further arithmetic reasoning we can
+derive a solution~$l_A = 4, i = 1, n = 2$, and conclude that the root
+constraint is satisfiable.  To obtain values for the string
+variables~$s_1, s_2$ corresponding to the solution, one can
+construct an accepting path of the automaton with each transition~$t$
+taken $\Filter(t)$ times.
+
+\iffalse
+
+the rest of the reasoning can be
+continued without any part of \Calculus{} since all values of the
+existentially quantified transition variables
+$\TransitionVar_1,\ldots,\TransitionVar_5$ compatible with
+\cref{const:more-inside-than-before,const:s1-in-c-dd,const:s1-substring,const:something-before-and-after}
+are represented by the flow equations introduced by $\Expand{}$.
+\fi
 
 \subsection{Correctness of \Calculus{}}\label{sec:single:correct}
 

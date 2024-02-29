@@ -8,6 +8,33 @@ $\Regex{\mathtt{*}}$ the Kleene star, and $\Regex{\mathtt{.}}$ matches any singl
 For the length of a string $s$, we write $\Length{s}$. All number variables in
 this example are in $\Naturals$ with $0$.
 
+\newcommand{\autscale}[0]{0.48}
+
+\begin{figure}[ht]
+    \centering 
+  \begin{subfigure}[b]{\autscale\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{a}
+    \caption{The automaton $A'$, whose Parikh registers count the length of the
+    string accepted by the automaton (register $l_A$), the start offset of the
+    substring ($i$) and length ($n$) of the substring matching
+    $\Regex{c\RegexOr{}dd}$. Note the symbolic transitions in the starting and
+    accepting states matching any symbol in the alphabet!}\label{fig:aut_a}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}%
+  \hfill%
+  \begin{subfigure}[b]{\autscale\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{b}
+    \caption{The automaton $B$, where the Parikh registers count the length of
+    the string in register $l_B$.}\label{fig:aut_b}
+      %\Description[SHORT]{LONG}
+  \end{subfigure}
+  \caption{The collection of automata we use as running
+  examples, both derived from \cref{ex:string-constraints}.}\label{fig:examples}
+\end{figure}
+
+
 \begin{example}\label{ex:string-constraints} Consider the following set of
     string constraints over string variables~$s_1, s_2$ and integer
     variables~$n, i$:
@@ -77,32 +104,6 @@ is mostly sparse here, we use the symbolic notation $\begin{bmatrix} x_{1+}
 
 Note that the labels of transitions can be ranges of characters with $\Sigma$
 representing any character in the alphabet.
-
-\newcommand{\autscale}[0]{0.48}
-
-\begin{figure}[ht]
-    \centering 
-  \begin{subfigure}[b]{\autscale\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{a}
-    \caption{The automaton $A'$, whose Parikh registers count the length of the
-    string accepted by the automaton (register $l_A$), the start offset of the
-    substring ($i$) and length ($n$) of the substring matching
-    $\Regex{c\RegexOr{}dd}$. Note the symbolic transitions in the starting and
-    accepting states matching any symbol in the alphabet!}\label{fig:aut_a}
-      %\Description[SHORT]{LONG}
-  \end{subfigure}%
-  \hfill%
-  \begin{subfigure}[b]{\autscale\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{b}
-    \caption{The automaton $B$, where the Parikh registers count the length of
-    the string in register $l_B$.}\label{fig:aut_b}
-      %\Description[SHORT]{LONG}
-  \end{subfigure}
-  \caption{The collection of automata we use as running
-  examples, both derived from \cref{ex:string-constraints}.}\label{fig:examples}
-\end{figure}
 
 Intuitively, \cref{ex:string-constraints} is unsatisfiable. By inspecting the
 automata, we realise that the path using $\Char{dd}$ in $\mathcal{A}'$ is unusable since
@@ -220,6 +221,34 @@ start of the substring ($i$), and the length of the substring ($n$).
   \label{fig:a_2}
 \end{figure}
 
+
+\begin{figure}[ht]
+  \centering 
+\begin{subfigure}{0.42\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{a_annotated}
+  \vspace*{5ex}
+  \caption{ $\mathcal{A}'$ with its associated transition variables in symbolic
+  form.}\label{fig:aut_a_annotated}
+    %\Description[SHORT]{LONG}
+  \vspace*{1.9ex}
+\end{subfigure}\hfill%
+\begin{subfigure}{0.54\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{b_annotated}
+  \caption{$\mathcal{B}$ with its associated transition variables in symbolic forms.
+  The large number of implicitly existentially quantified
+  variables~$x_i$ on
+  transitions suggest that this automaton has a more complex structure
+  with relation to its (free) target variable representing the string length
+  than $\mathcal{A}'$. %The variables used here are fresh, and do not correspond to the
+  % ones previously used.
+}\label{fig:aut_b_annotated}
+    %\Description[SHORT]{LONG}
+\end{subfigure}
+\caption{The automata after arithmetic simplification.}\label{fig:propagated}
+\end{figure}
+
 Having obtained this representation, we conclude that $1 < n \leq 2$
 from
 \cref{const:more-inside-than-before,const:something-before-and-after}. The
@@ -240,36 +269,9 @@ Substituting the derived value of $n$ and applying similar
 reasoning to automaton~$\mathcal{B}$, we arrive at the simplified
 automata in \cref{fig:propagated}.
 
-\begin{figure}[ht]
-    \centering 
-  \begin{subfigure}{0.42\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{a_annotated}
-    \vspace*{5ex}
-    \caption{ $\mathcal{A}'$ with its associated transition variables in symbolic
-    form.}\label{fig:aut_a_annotated}
-      %\Description[SHORT]{LONG}
-    \vspace*{1.9ex}
-  \end{subfigure}\hfill%
-  \begin{subfigure}{0.54\textwidth}
-    \centering
-    \includegraphics[width=\textwidth]{b_annotated}
-    \caption{$\mathcal{B}$ with its associated transition variables in symbolic forms.
-    The large number of implicitly existentially quantified
-    variables~$x_i$ on
-    transitions suggest that this automaton has a more complex structure
-    with relation to its (free) target variable representing the string length
-    than $\mathcal{A}'$. %The variables used here are fresh, and do not correspond to the
-    % ones previously used.
-  }\label{fig:aut_b_annotated}
-      %\Description[SHORT]{LONG}
-  \end{subfigure}
-  \caption{The automata after arithmetic simplification.}\label{fig:propagated}
-\end{figure}
-
 
 Note that the per-automata length counting registers have been assigned the same
-solver variable $l_A$. Since they have to be equal, either one can be used in
+solver variable~$l_A$. Since they have to be equal, either one can be used in
 both automata through similar applications of equality elimination rules.
 
 %\subsubsection{Connectivity reasoning}\label{sec:intuition:subsume}

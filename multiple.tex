@@ -145,74 +145,6 @@ the calculus as before.
 
 \subsection{An Example}\label{sec:multiple:example}
 
-We return to our example in \cref{sec:intuition}. We also reuse the
-definition of $\Map$ as the simple projection to extract the counter increments,
-so in this case, $\Map(\Transition) = \left[l_{B+}\right]$ for every
-transition~$\Transition$ since $\mathcal{B}$ only counts length. The reader is
-advised to review \cref{fig:aut_a_annotated,fig:aut_b_annotated} from
-\cref{sec:intuition} while going through this example.
-The transition variables of the figures match the ones used here.
-
-We extend \cref{eq:single-filter} from \cref{sec:single:example} with
-definitions for $B$ shown in \cref{eq:multi-filter}:
-\begin{equation}\label{eq:multi-filter}
-  \begin{array}{rl@{\qquad}rl@{\qquad}rl}
-     \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) &= \TransitionVar_6 
-     &
-     \Filter(\FromLabelTo{A}{c / l_{B+}}{A} ) &= \TransitionVar_7 
-     &
-      \Filter(\FromLabelTo{B}{b / l_{B+}}{I_B}) &= \TransitionVar_8 
-     \\
-     \Filter(\FromLabelTo{B}{c / l_{B+}}{B}) &= \TransitionVar_9 
-     &
-     \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B}) &= \TransitionVar_{10}
-     &
-     \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A}) &= \TransitionVar_{11}
-     \\
-      \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B}) &= \TransitionVar_{12}
-    \\[3ex]
-% 
-    \multicolumn{6}{c}{
-        \FlowEq(\mathcal{B}, \Filter) =\quad  \begin{aligned}
-            1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12} \wedge\mbox{}\\
-            \TransitionVar_{11} &= \TransitionVar_6\wedge\mbox{}\\
-            \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}\mbox{}\\
-            \TransitionVar_6 + \TransitionVar_{10} &= 1
-        \end{aligned}}
-  \end{array}
-\end{equation}
-
-The only possible rule at the start is $\ExpandM$, which we use to add the
-corresponding constraints on each automaton of the product as we would have had
-in the single-automaton version. After that, we expand the various sums and apply
-light equality propagation.
-
-We then continue by repeating the steps of \cref{sec:single:example} shown in
-\cref{fig:derivation:single}, since the steps to propagate
-\cref{ex:string-constraints} across the automaton $\mathcal{A}'$ still apply for the
-product. Note that this fixes the values of all transitions but one of $\mathcal{A}'$ as
-constants, including the free counter variables $i, n$, whose new constant
-values we propagate everywhere.
-
-Once we have performed reasoning by equality to eliminate transition variables,
-we obtain the version of $\mathcal{B}$ shown in \cref{fig:aut_b_annotated} and represented
-by the clauses in the final node in the tree. This corresponds to the end of
-\cref{sec:intuition:algebra}. Our only options now are to either split on which
-path we take from $I_B$ by case-splitting on~$\TransitionVar_{12}$ or to
-directly invoke \Materialise{}. The latter would produce a shorter tree in this
-instance but might lead to a larger product being computed, so we (and indeed
-\Catra{}) pick \Split{}. This leads to an opportunity for propagation since
-$\TransitionVar_{12} = 0$ cuts off $\TransitionVar_{9}$ from $I_B$ on the left
-branch. Note that the same opportunity does not present itself on the right
-branch, though; the use of the upper path to state~$A$ does not preclude visiting
-state~$B$.
-
-In both cases, we have comparatively simple automata left, so we apply
-\Materialise{} to obtain their product, which for both branches is empty. An
-empty product will have no outgoing transitions from its initial state, and so
-will produce a flow equation $1 = 0$ since the right-hand balancing side will
-always be the empty sum. We can then close the proof and know that the problem
-is unsatisfiable.
 
 \begin{figure}
   \centering
@@ -327,6 +259,77 @@ constraints of \cref{ex:string-constraints}. Note the constant propagation
 for~$n$!}\label{fig:derivation:multi}
 \Description[]{}% This isn't a problem; it's all text
 \end{figure}
+
+We return to our example in \cref{sec:intuition}. We also reuse the
+definition of $\Map$ as the simple projection to extract the counter increments,
+so in this case, $\Map(\Transition) = \left[l_{B+}\right]$ for every
+transition~$\Transition$ since $\mathcal{B}$ only counts length. The reader is
+advised to review \cref{fig:aut_a_annotated,fig:aut_b_annotated} from
+\cref{sec:intuition} while going through this example.
+The transition variables of the figures match the ones used here.
+
+We extend \cref{eq:single-filter} from \cref{sec:single:example} with
+definitions for $B$ shown in \cref{eq:multi-filter}:
+\begin{equation}\label{eq:multi-filter}
+  \begin{array}{rl@{\qquad}rl@{\qquad}rl}
+     \Filter(\FromLabelTo{A}{a / l_{B+}}{F_B} ) &= \TransitionVar_6 
+     &
+     \Filter(\FromLabelTo{A}{c / l_{B+}}{A} ) &= \TransitionVar_7 
+     &
+      \Filter(\FromLabelTo{B}{b / l_{B+}}{I_B}) &= \TransitionVar_8 
+     \\
+     \Filter(\FromLabelTo{B}{c / l_{B+}}{B}) &= \TransitionVar_9 
+     &
+     \Filter(\FromLabelTo{B}{c / l_{B+}}{F_B}) &= \TransitionVar_{10}
+     &
+     \Filter(\FromLabelTo{I_B}{a / l_{B+}}{A}) &= \TransitionVar_{11}
+     \\
+      \Filter(\FromLabelTo{I_B}{b / l_{B+}}{B}) &= \TransitionVar_{12}
+    \\[3ex]
+% 
+    \multicolumn{6}{c}{
+        \FlowEq(\mathcal{B}, \Filter) =\quad  \begin{aligned}
+            1 + \TransitionVar_{8}   &= \TransitionVar_{11} + \TransitionVar_{12} \wedge\mbox{}\\
+            \TransitionVar_{11} &= \TransitionVar_6\wedge\mbox{}\\
+            \TransitionVar_{12} &= \TransitionVar_8 + \TransitionVar_{10}\mbox{}\\
+            \TransitionVar_6 + \TransitionVar_{10} &= 1
+        \end{aligned}}
+  \end{array}
+\end{equation}
+
+The only possible rule at the start is $\ExpandM$, which we use to add the
+corresponding constraints on each automaton of the product as we would have had
+in the single-automaton version. After that, we expand the various sums and apply
+light equality propagation.
+
+We then continue by repeating the steps of~\cref{sec:single:example}, shown 
+in~\cref{fig:derivation:single} since the steps to propagate
+\cref{ex:string-constraints} across the automaton $\mathcal{A}'$ still apply for the
+product. Note that this fixes the values of all transitions but one of $\mathcal{A}'$ as
+constants, including the free counter variables $i, n$, whose new constant
+values we propagate everywhere.
+
+Once we have performed reasoning by equality to eliminate transition variables,
+we obtain the version of $\mathcal{B}$ shown in \cref{fig:aut_b_annotated} and represented
+by the clauses in the final node in the tree. This corresponds to the end of
+\cref{sec:intuition:algebra}. Our only options now are to either split on which
+path we take from $I_B$ by case-splitting on~$\TransitionVar_{12}$ or to
+directly invoke \Materialise{}. The latter would produce a shorter tree in this
+instance but might lead to a larger product being computed, so we (and indeed
+\Catra{}) pick \Split{}. This leads to an opportunity for propagation since
+$\TransitionVar_{12} = 0$ cuts off $\TransitionVar_{9}$ from $I_B$ on the left
+branch. Note that the same opportunity does not present itself on the right
+branch, though; the use of the upper path to state~$A$ does not preclude visiting
+state~$B$.
+
+In both cases, we have comparatively simple automata left, so we apply
+\Materialise{} to obtain their product, which for both branches is empty. An
+empty product will have no outgoing transitions from its initial state, and so
+will produce a flow equation $1 = 0$ since the right-hand balancing side will
+always be the empty sum. We can then close the proof and know that the problem
+is unsatisfiable. A full derivation tree for the example can be found 
+in~\cref{fig:derivation:multi}.
+
 
 \subsection{Correctness of \Calculus{} for Products of Automata}
 

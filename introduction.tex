@@ -86,7 +86,8 @@ finite automata. The problem considered in this paper is thus:
   for all of the terms of that product individually. Exploiting this fact, the Parikh
   image of a product of automata is first represented as the conjunction of the image of
   the individual automata of the product, falling back to computing the entire product
-  for satisfiable cases~\cite{approximate-parikh}.
+  for satisfiable cases or cases when unsatisfiability is only discoverable after
+  full- or partial product construction~\cite{approximate-parikh}.
 
 
 Addressing these concerns, we have developed a calculus for Parikh images of
@@ -103,7 +104,7 @@ Our primary influence for this work is the operation of (finite-domain)
 constraint programming (CP)%
 ~solvers~\cite{cp}. CP~solvers typically employ a combination of lazy enforcement
 of constraints through \emph{propagation},
-lazily pruning values from decision variable domains that do not satisfy 
+pruning values from decision variable domains that do not satisfy 
 the constraints during solving, and \emph{branching}, splitting proofs
 by cases in a way that will encourage maximum propagation.
 
@@ -117,7 +118,7 @@ encourage propagation of the connectivity constraint. This allows
 us to whittle down the automata
 (including intermittent products) before moving on with potentially
  explosive product construction. The underlying observation
-is that though the problem domain and the domain of our integer variables
+is that though the domain of our integer variables
 is infinite, the number of simple paths
 through the automata (and their product) is finite. In summary, the key ideas are:
 
@@ -162,7 +163,7 @@ obtaining improvements in both \textsc{Sat}  and \textsc{Unsat} performance in
 \Ostrich{}' results from SMT-COMP 2023, crucially allowing \Ostrich{} to win
 the unsatisfiable category of the track of quantifier-free, linear constraints
 over string logic (QF\_SLIA) and increasing the number of \textsc{Sat}~results
-by \numprint{3}\%.
+by \numprint{3}\% on the same track.
 
 % PR: maybe only mention this in the evaluation?
 
