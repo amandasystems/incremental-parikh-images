@@ -95,8 +95,8 @@ product's Parikh image, and is generalised to an arbitrary homomorphism over
 automata labels, including string lengths. This enables us to let both
 calculations inform each other, eliminating unnecessary work, and pruning the
 size of the partial products considered in the computation for a smaller memory
-footprint. Moreover, the method can be used iteratively to tackle smaller chunks
-of the product incrementally, thereby decreasing the memory footprint.
+footprint. Moreover, our approach allows us to do this precisely, without the expensive
+fallbacks when approximations fail as in the case of~\cite{approximate-parikh}.
 
 Our primary influence for this work is the operation of (finite-domain) 
 constraint programming (CP)%
