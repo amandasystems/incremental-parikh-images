@@ -20,7 +20,10 @@ this example are in $\Naturals$ with $0$.
     substring ($i$) and length ($n$) of the substring matching
     $\Regex{c\RegexOr{}dd}$. Note the symbolic transitions in the starting and
     accepting states matching any symbol in the alphabet!}\label{fig:aut_a}
-      %\Description[SHORT]{LONG}
+      \Description[A 3-state Parikh automaton.]{%
+      A 3-state Parikh automaton with two registers counting the length
+      of a substring matching c or dd.%
+      }
   \end{subfigure}%
   \hfill%
   \begin{subfigure}[b]{\autscale\textwidth}
@@ -28,7 +31,12 @@ this example are in $\Naturals$ with $0$.
     \includegraphics[width=\textwidth]{b}
     \caption{The automaton $B$, where the Parikh registers count the length of
     the string in register $l_B$.}\label{fig:aut_b}
-      %\Description[SHORT]{LONG}
+      \Description[A 4-state Parikh automaton.]{%
+      A 4-state Parikh automaton with initial state IB going to the B state,
+      which counts a number of letters c, followed by one final c before reaching 
+      the accepting state, FB. The second path from the initial state consumes an a,
+      goes into state A, consumes some number of c:s, followed by a final a to get to
+      the accepting state.}
   \end{subfigure}
   \caption{The collection of automata we use as running
   examples, both derived from \cref{ex:string-constraints}.}\label{fig:examples}
@@ -218,6 +226,13 @@ start of the substring ($i$), and the length of the substring ($n$).
   in terms of $n$. Intuitively, this version captures the fact that $n$ is given
   by distributing the incoming flow of $1$ across the two outgoing transitions
   from $I_{A'}$, the initial state.}
+  \Description[A 3-state automaton, with equations on its labels.]{%
+  The initial state accepts any character and is labelled with the variable i. From
+  that state there is a transition to the D state reading d with $n-1$ and one reading c
+  going directly to the final state. The second transition is labelled with the equation
+  $2-n$. The final state has one transition that consumes any character with the equation 
+  $l_A-i-n$.%
+  }
   \label{fig:a_2}
 \end{figure}
 
@@ -230,7 +245,7 @@ start of the substring ($i$), and the length of the substring ($n$).
   \vspace*{5ex}
   \caption{ $\mathcal{A}'$ with its associated transition variables in symbolic
   form.}\label{fig:aut_a_annotated}
-    %\Description[SHORT]{LONG}
+    %\Description[A 3-state automaton with ]{LONG}
   \vspace*{1.9ex}
 \end{subfigure}\hfill%
 \begin{subfigure}{0.54\textwidth}
