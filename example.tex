@@ -245,7 +245,12 @@ start of the substring ($i$), and the length of the substring ($n$).
   \vspace*{5ex}
   \caption{ $\mathcal{A}'$ with its associated transition variables in symbolic
   form.}\label{fig:aut_a_annotated}
-    %\Description[A 3-state automaton with ]{LONG}
+    \Description[A 3-state automaton with equations on its edges]{
+      A 3-state automaton with a self-loop on any character on the
+      initial state labelled 1, a transition on c to the accepting state
+      and one on d to a state named D, labelled 0 and 1 respectively,
+      then one transition from D to FA, the accepting state on d labelled 1.
+      The accepting state has a self-loo labelled $l_A -3$.}
   \vspace*{1.9ex}
 \end{subfigure}\hfill%
 \begin{subfigure}{0.54\textwidth}
@@ -259,7 +264,13 @@ start of the substring ($i$), and the length of the substring ($n$).
   than $\mathcal{A}'$. %The variables used here are fresh, and do not correspond to the
   % ones previously used.
 }\label{fig:aut_b_annotated}
-    %\Description[SHORT]{LONG}
+    \Description[A 4-state automaton with its transitions annotated
+    with equations]{A 4-state automaton with transitions from the initial state to B on b,
+    one to A on a, labelled $x_{12}$ and $x_{11}$ respectively. State B has one self-loop
+    on c labelled $x_9$, one transition back to the initial state labelled 
+    b / $x_{11} + x_{12} - 1$. Finally, B has a transition to the accepting state on c,
+    labelled $1 0 x_{11}$. A has one self-loop on c labelled $l_A - x_9 - 2x_{11} - 2x_{12}$,
+    and one transition on a to the accepting state labelled $x_{11}$.}
 \end{subfigure}
 \caption{The automata after arithmetic simplification.}\label{fig:propagated}
 \end{figure}
