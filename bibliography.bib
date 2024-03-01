@@ -1,10 +1,21 @@
 @inproceedings{approximate-parikh,
+  doi       = {10.1007/978-3-030-45093-9_59},
+  author    = {Jank{\r{u}}, Petr
+               and Turo{\v{n}}ov{\'a}, Lenka},
+  editor    = {Moreno-D{\'i}az, Roberto
+               and Pichler, Franz
+               and Quesada-Arencibia, Alexis},
   title     = {Solving String Constraints with Approximate Parikh Image},
-  author    = {Janků, Petr and Turoňová, Lenka},
-  booktitle = {{EUROCAST}},
+  booktitle = {Computer Aided Systems Theory -- EUROCAST 2019},
+  year      = {2020},
+  publisher = {Springer International Publishing},
+  address   = {Cham},
   pages     = {491--498},
-  year      = {2019}
+  abstract  = {In this paper, we propose a refined version of the Parikh image abstraction of finite automata to resolve string length constraints. We integrate this abstraction into the string solver SLOTH, where on top of handling length constraints, our abstraction is also used to speed-up solving other types of constraints. The experimental results show that our extension of SLOTH has good results on simple benchmarks as well as on complex benchmarks that are real-word combinations of transducer and concatenation constraints.},
+  isbn      = {978-3-030-45093-9}
 }
+
+
 
 @article{bounds,
   title   = {Converting nondeterministic automata and context-free grammars into Parikh equivalent one-way and two-way deterministic automata},
@@ -50,11 +61,19 @@
 }
 
 @inproceedings{epistemic-logic,
+  doi       = {10.5555/3463952.3464097},
+  author    = {Stan, Daniel and Lin, Anthony W.},
   title     = {Regular Model Checking Approach to Knowledge Reasoning over Parameterized Systems},
-  author    = {Stan, Daniel and Lin, Anthony W},
+  year      = {2021},
+  isbn      = {9781450383073},
+  publisher = {International Foundation for Autonomous Agents and Multiagent Systems},
+  address   = {Richland, SC},
   booktitle = {Proceedings of the 20th International Conference on Autonomous Agents and MultiAgent Systems},
-  pages     = {1254--1262},
-  year      = {2021}
+  pages     = {1254–1262},
+  numpages  = {9},
+  keywords  = {automaton learning, epistemic, muddy children, parameterised, public announcement logic, regular model checking},
+  location  = {Virtual Event, United Kingdom},
+  series    = {AAMAS '21}
 }
 
 @article{ESPARZA2011614,
@@ -68,30 +87,40 @@
   author  = {Javier Esparza and Pierre Ganty and Stefan Kiefer and Michael Luttenberger}
 }
 
-@article{expressiveness,
-  title   = {On the expressiveness of Parikh automata and related models},
-  author  = {Cadilhac, Micha{\"e}l and Finkel, Alain and McKenzie, Pierre},
-  journal = {arXiv preprint arXiv:1101.1547},
-  year    = {2011}
+
+@misc{expressiveness,
+  title         = {On the expressiveness of Parikh automata and related models},
+  author        = {Michaël Cadilhac and Alain Finkel and Pierre McKenzie},
+  year          = {2011},
+  eprint        = {1101.1547},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.FL}
 }
 
 @inproceedings{generate-parikh-image,
+  doi       = {10.1007/11532231_25},
   author    = {Verma, Kumar Neeraj
                and Seidl, Helmut
                and Schwentick, Thomas},
+  editor    = {Nieuwenhuis, Robert},
   title     = {On the Complexity of Equational Horn Clauses},
-  booktitle = {{CADE}},
-  address   = {New York, NY, USA},
-  year      = 2005,
-  pages     = {337--352}
+  booktitle = {Automated Deduction -- CADE-20},
+  year      = {2005},
+  publisher = {Springer Berlin Heidelberg},
+  address   = {Berlin, Heidelberg},
+  pages     = {337--352},
+  isbn      = {978-3-540-31864-4}
 }
 
 @inproceedings{graph-queries,
   author    = {Figueira, Diego and Libkin, Leonid},
-  booktitle = {{LICS} '15},
+  booktitle = {2015 30th Annual ACM/IEEE Symposium on Logic in Computer Science},
   title     = {Path Logics for Querying Graphs: Combining Expressiveness and Efficiency},
   year      = {2015},
+  publisher = {IEEE},
+  address   = {Kyoto, Japan},
   pages     = {329-340},
+  keywords  = {Automata;Complexity theory;Database languages;Radiation detectors;Approximation methods;Query processing;graph databases;parikh automata;rational relations;RPQ},
   doi       = {10.1109/LICS.2015.39}
 }
 
@@ -192,25 +221,50 @@
   isbn      = {978-3-030-19212-9}
 }
 
+
 @inproceedings{muscholl-linear,
   author    = {Seidl, Helmut
                and Schwentick, Thomas
                and Muscholl, Anca
                and Habermehl, Peter},
+  editor    = {D{\'i}az, Josep
+               and Karhum{\"a}ki, Juhani
+               and Lepist{\"o}, Arto
+               and Sannella, Donald},
   title     = {Counting in Trees for Free},
-  booktitle = {{ICALP} 2004},
-  publisher = {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik},
-  address   = {Dagstuhl, Germany},
-  year      = 2004
+  booktitle = {Automata, Languages and Programming},
+  year      = {2004},
+  publisher = {Springer Berlin Heidelberg},
+  address   = {Berlin, Heidelberg},
+  pages     = {1136--1149},
+  abstract  = {It is known that MSO logic for ordered unranked trees is undecidable if Presburger constraints are allowed at children of nodes. We show here that a decidable logic is obtained if we use a modal fixpoint logic instead. We present a characterization of this logic by means of deterministic Presburger tree automata and show how it can be used to express numerical document queries. Surprisingly, the complexity of satisfiability for the extended logic is asymptotically the same as for the original fixpoint logic. The non-emptiness for Presburger tree automata (PTA) is pspace-complete, which is moderate given that it is already pspace-hard to test whether the complement of a regular expression is non-empty. We also identify a subclass of PTAs with a tractable non-emptiness problem. Further, to decide whether a tree t satisfies a formula ϕ is polynomial in the size of ϕ and linear in the size of t.},
+  isbn      = {978-3-540-27836-8},
+  doi       = {10.1007/978-3-540-27836-8_94}
 }
 
+
+
 @inproceedings{nuxmv,
-  title     = {The nuXmv symbolic model checker},
-  author    = {Cavada, Roberto and Cimatti, Alessandro and Dorigatti, Michele and Griggio, Alberto and Mariotti, Alessandro and Micheli, Andrea and Mover, Sergio and Roveri, Marco and Tonetta, Stefano},
-  booktitle = {International Conference on Computer Aided Verification},
-  pages     = {334--342},
+  author    = {Cavada, Roberto
+               and Cimatti, Alessandro
+               and Dorigatti, Michele
+               and Griggio, Alberto
+               and Mariotti, Alessandro
+               and Micheli, Andrea
+               and Mover, Sergio
+               and Roveri, Marco
+               and Tonetta, Stefano},
+  editor    = {Biere, Armin
+               and Bloem, Roderick},
+  title     = {The nuXmv Symbolic Model Checker},
+  booktitle = {Computer Aided Verification},
   year      = {2014},
-  publisher = {Springer}
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {334--342},
+  abstract  = {This paper describes the nuXmv symbolic model checker for finite- and infinite-state synchronous transition systems. nuXmv is the evolution of the nuXmv open source model checker. It builds on and extends nuXmv along two main directions. For finite-state systems it complements the basic verification techniques of nuXmv with state-of-the-art verification algorithms. For infinite-state systems, it extends the nuXmv language with new data types, namely Integers and Reals, and it provides advanced SMT-based model checking techniques.},
+  isbn      = {978-3-319-08867-9},
+  doi       = {10.1007/978-3-319-08867-9_22}
 }
 
 @article{optimally_profiling,
@@ -307,18 +361,22 @@
 }
 
 @inproceedings{ostrich-plus,
-  author    = {Taolue Chen and
-               Matthew Hague and
-               Jinlong He and
-               Denghang Hu and
-               Anthony Widjaja Lin and
-               Philipp R{\"{u}}mmer and
-               Zhilin Wu},
+  author    = {Chen, Taolue
+               and Hague, Matthew
+               and He, Jinlong
+               and Hu, Denghang
+               and Lin, Anthony Widjaja
+               and R{\"u}mmer, Philipp
+               and Wu, Zhilin},
+  editor    = {Hung, Dang Van
+               and Sokolsky, Oleg},
   title     = {A Decision Procedure for Path Feasibility of String Manipulating Programs with Integer Data Type},
-  booktitle = {{ATVA} 2020},
-  volume    = {12302},
-  pages     = {325--342},
+  booktitle = {Automated Technology for Verification and Analysis},
   year      = {2020},
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {325--342},
+  isbn      = {978-3-030-59152-6},
   doi       = {10.1007/978-3-030-59152-6_18}
 }
 
@@ -332,18 +390,18 @@
 }
 
 @inproceedings{princess,
-  author    = {Philipp R{\"u}mmer},
-  title     = {A Constraint Sequent Calculus for First-Order Logic with
-               Linear Integer Arithmetic},
-  booktitle = {Proceedings, 15th International Conference on Logic
-               for Programming, Artificial Intelligence and
-               Reasoning},
-  year      = 2008,
-  volume    = 5330,
-  pages     = {274-289},
-  isbn      = {978-3-540-89438-4},
-  series    = {LNCS},
-  publisher = {Springer}
+  author    = {R{\"u}mmer, Philipp},
+  editor    = {Cervesato, Iliano
+               and Veith, Helmut
+               and Voronkov, Andrei},
+  title     = {A Constraint Sequent Calculus for First-Order Logic with Linear Integer Arithmetic},
+  booktitle = {Logic for Programming, Artificial Intelligence, and Reasoning},
+  year      = {2008},
+  publisher = {Springer Berlin Heidelberg},
+  address   = {Berlin, Heidelberg},
+  pages     = {274--289},
+  isbn      = {978-3-540-89439-1},
+  doi       = {10.1007/978-3-540-89439-1_20}
 }
 
 @inproceedings{pyex,
@@ -353,11 +411,20 @@
                and Brumley, David
                and Liang, Tianyi
                and Tinelli, Cesare},
+  editor    = {Majumdar, Rupak
+               and Kun{\v{c}}ak, Viktor},
   title     = {Scaling Up DPLL(T) String Solvers Using Context-Dependent Simplification},
-  booktitle = {{CAV} '17},
+  booktitle = {Computer Aided Verification},
   year      = {2017},
-  pages     = {453--474}
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {453--474},
+  abstract  = {Efficient reasoning about strings is essential to a growing number of security and verification applications. We describe satisfiability checking techniques in an extended theory of strings that includes operators commonly occurring in these applications, such as {\$}{\$}{\backslash}mathsf {\{}contains{\}}, {\backslash}mathsf {\{}index{\backslash}{\_}of{\}}{\$}{\$}and {\$}{\$}{\backslash}mathsf {\{}replace{\}}{\$}{\$}. We introduce a novel context-dependent simplification technique that improves the scalability of string solvers on challenging constraints coming from real-world problems. Our evaluation shows that an implementation of these techniques in the SMT solver cvc4 significantly outperforms state-of-the-art string solvers on benchmarks generated using PyEx, a symbolic execution engine for Python programs. Using a test suite sampled from four popular Python packages, we show that PyEx uses only {\$}{\$}41{\backslash}{\%} {\$}{\$}of the runtime when coupled with cvc4 than when coupled with cvc4's closest competitor while achieving comparable program coverage.},
+  isbn      = {978-3-319-63390-9},
+  doi       = {10.1007/978-3-319-63390-9_24}
 }
+
+
 
 @inproceedings{qe,
   author    = {Monniaux, David},
@@ -441,104 +508,109 @@
 
 @inproceedings{trau-pldi,
   author    = {Abdulla, Parosh Aziz and Atig, Mohamed Faouzi and Chen, Yu-Fang and Diep, Bui Phi and Hol\'{\i}k, Luk\'{a}\v{s} and Rezine, Ahmed and R\"{u}mmer, Philipp},
-  title     = {Flatten and Conquer: A Framework for Efficient Analysis of String Constraints},
+  title     = {Flatten and conquer: a framework for efficient analysis of string constraints},
   year      = {2017},
+  isbn      = {9781450349888},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3062341.3062384},
   doi       = {10.1145/3062341.3062384},
+  abstract  = {We describe a uniform and efficient framework for checking the satisfiability of a large class of string constraints. The framework is based on the observation that both satisfiability and unsatisfiability of common constraints can be demonstrated through witnesses with simple patterns. These patterns are captured using flat automata each of which consists of a sequence of simple loops. We build a Counter-Example Guided Abstraction Refinement (CEGAR) framework which contains both an under- and an over-approximation module. The flow of information between the modules allows to increase the precision in an automatic manner. We have implemented the framework as a tool and performed extensive experimentation that demonstrates both the generality and efficiency of our method.},
+  booktitle = {Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation},
   pages     = {602–617},
   numpages  = {16},
-  booktitle = {PLDI 2017}
+  keywords  = {String Equation, Formal Verification, Automata Theory},
+  location  = {Barcelona, Spain},
+  series    = {PLDI 2017}
 }
 
+      
 
-@inproceedings{sloth,
-  author    = {Hol\'{\i}k, Luk\'{a}\v{s} and Jank\r{u}, Petr and Lin, Anthony W. and R\"{u}mmer, Philipp and Vojnar, Tom\'{a}\v{s}},
-  title     = {String Constraints with Concatenation and Transducers Solved Efficiently},
-  year      = {2017},
-  publisher = {Association for Computing Machinery},
-  volume    = {2},
-  booktitle = {{POPL} 2017},
-  doi       = {10.1145/3158092},
-  month     = {dec},
-  articleno = {4},
-  numpages  = {32},
-  keywords  = {Decision Procedure, String Solving, IC3, Alternating Finite Automata}
+
+@article{sloth,
+  author     = {Hol\'{\i}k, Luk\'{a}\v{s} and Jank\r{u}, Petr and Lin, Anthony W. and R\"{u}mmer, Philipp and Vojnar, Tom\'{a}\v{s}},
+  title      = {String constraints with concatenation and transducers solved efficiently},
+  year       = {2017},
+  issue_date = {January 2018},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {2},
+  number     = {POPL},
+  url        = {https://doi.org/10.1145/3158092},
+  doi        = {10.1145/3158092},
+  abstract   = {String analysis is the problem of reasoning about how strings are manipulated by a program. It has numerous applications including automatic detection of cross-site scripting, and automatic test-case generation. A&nbsp;popular string analysis technique includes symbolic executions, which at their core use constraint solvers over the string domain, a.k.a. string solvers. Such solvers typically reason about constraints expressed in theories over strings with the concatenation operator as an atomic constraint. In recent years, researchers started to recognise the importance of incorporating the replace-all operator (i.e. replace all occurrences of a string by another string) and, more generally, finite-state transductions in the theories of strings with concatenation. Such string operations are typically crucial for reasoning about XSS vulnerabilities in web applications, especially for modelling sanitisation functions and implicit browser transductions (e.g. innerHTML). Although this results in an undecidable theory in general, it was recently shown that the straight-line fragment of the theory is decidable, and is sufficiently expressive in practice. In this paper, we provide the first string solver that can reason about constraints involving both concatenation and finite-state transductions. Moreover, it has a completeness and termination guarantee for several important fragments (e.g. straight-line fragment). The main challenge addressed in the paper is the prohibitive worst-case complexity of the theory (double-exponential time), which is exponentially harder than the case without finite-state transductions. To this end, we propose a method that exploits succinct alternating finite-state automata as concise symbolic representations of string constraints. In contrast to previous approaches using nondeterministic automata, alternation offers not only exponential savings in space when representing Boolean combinations of transducers, but also a possibility of succinct representation of otherwise costly combinations of transducers and concatenation. Reasoning about the emptiness of the AFA language requires a state-space exploration in an exponential-sized graph, for which we use model checking algorithms (e.g.&nbsp;IC3). We have implemented our algorithm and demonstrated its efficacy on benchmarks that are derived from cross-site scripting analysis and other examples in the literature.},
+  journal    = {Proc. ACM Program. Lang.},
+  month      = {dec},
+  articleno  = {4},
+  numpages   = {32},
+  keywords   = {String Solving, IC3, Decision Procedure, Alternating Finite Automata}
 }
+
 
 @inproceedings{length-aware-solver,
-  author    = {Murphy Berzish and
-               Mitja Kulczynski and
-               Federico Mora and
-               Florin Manea and
-               Joel D. Day and
-               Dirk Nowotka and
-               Vijay Ganesh},
-  editor    = {Alexandra Silva and
-               K. Rustan M. Leino},
-  title     = {An {SMT} Solver for Regular Expressions and Linear Arithmetic over
-               String Length},
-  booktitle = {Computer Aided Verification - 33rd International Conference, {CAV}
-               2021, Virtual Event, July 20-23, 2021, Proceedings, Part {II}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {12760},
-  pages     = {289--312},
-  publisher = {Springer},
+  author    = {Berzish, Murphy
+               and Kulczynski, Mitja
+               and Mora, Federico
+               and Manea, Florin
+               and Day, Joel D.
+               and Nowotka, Dirk
+               and Ganesh, Vijay},
+  editor    = {Silva, Alexandra
+               and Leino, K. Rustan M.},
+  title     = {An SMT Solver for Regular Expressions and Linear Arithmetic over String Length},
+  booktitle = {Computer Aided Verification},
   year      = {2021},
-  url       = {https://doi.org/10.1007/978-3-030-81688-9\_14},
-  doi       = {10.1007/978-3-030-81688-9\_14},
-  timestamp = {Mon, 03 Jan 2022 22:13:44 +0100},
-  biburl    = {https://dblp.org/rec/conf/cav/BerzishKMMDNG20.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {289--312},
+  isbn      = {978-3-030-81688-9}
 }
 
+
+
 @inproceedings{DBLP:conf/cav/AbdullaACHRRS15,
-  author    = {Parosh Aziz Abdulla and
-               Mohamed Faouzi Atig and
-               Yu{-}Fang Chen and
-               Luk{\'{a}}s Hol{\'{\i}}k and
-               Ahmed Rezine and
-               Philipp R{\"{u}}mmer and
-               Jari Stenman},
-  editor    = {Daniel Kroening and
-               Corina S. Pasareanu},
-  title     = {Norn: An {SMT} Solver for String Constraints},
-  booktitle = {Computer Aided Verification - 27th International Conference, {CAV}
-               2015, San Francisco, CA, USA, July 18-24, 2015, Proceedings, Part
-               {I}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {9206},
-  pages     = {462--469},
-  publisher = {Springer},
+  author    = {Abdulla, Parosh Aziz
+               and Atig, Mohamed Faouzi
+               and Chen, Yu-Fang
+               and Hol{\'i}k, Luk{\'a}{\v{s}}
+               and Rezine, Ahmed
+               and R{\"u}mmer, Philipp
+               and Stenman, Jari},
+  editor    = {Kroening, Daniel
+               and P{\u{a}}s{\u{a}}reanu, Corina S.},
+  title     = {Norn: An SMT Solver for String Constraints},
+  booktitle = {Computer Aided Verification},
   year      = {2015},
-  url       = {https://doi.org/10.1007/978-3-319-21690-4\_29},
-  doi       = {10.1007/978-3-319-21690-4\_29},
-  timestamp = {Thu, 23 Dec 2021 10:30:13 +0100},
-  biburl    = {https://dblp.org/rec/conf/cav/AbdullaACHRRS15.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {462--469},
+  isbn      = {978-3-319-21690-4}
 }
+
+
 
 @book{Fitting96a,
   author    = {Melvin C.~Fitting},
   edition   = {2nd},
-  publisher = {Springer-Verlag, New York},
+  isbn      = {978-1-4612-7515-2},
+  address   = {New York, NY, USA},
+  publisher = {Springer-Verlag},
   title     = {First-Order Logic and Automated Theorem Proving},
   year      = 1996
 }
 
-@article{DBLP:journals/corr/BerzishZG17,
-  author     = {Murphy Berzish and
-                Yunhui Zheng and
-                Vijay Ganesh},
-  title      = {Z3str3: {A} String Solver with Theory-aware Branching},
-  journal    = {CoRR},
-  volume     = {abs/1704.07935},
-  year       = {2017},
-  url        = {http://arxiv.org/abs/1704.07935},
-  eprinttype = {arXiv},
-  eprint     = {1704.07935},
-  timestamp  = {Thu, 14 Oct 2021 09:15:57 +0200},
-  biburl     = {https://dblp.org/rec/journals/corr/BerzishZG17.bib},
-  bibsource  = {dblp computer science bibliography, https://dblp.org}
+
+@inproceedings{DBLP:journals/corr/BerzishZG17,
+  author    = {Berzish, Murphy and Ganesh, Vijay and Zheng, Yunhui},
+  booktitle = {2017 Formal Methods in Computer Aided Design (FMCAD)},
+  title     = {Z3str3: A String Solver with Theory-aware Heuristics},
+  year      = {2017},
+  publisher = {IEEE},
+  address   = {Vienna, Austria},
+  pages     = {55-59},
+  doi       = {10.23919/FMCAD.2017.8102241}
 }
+
 
 @inproceedings{DBLP:conf/issac/Weispfenning97,
   author    = {Volker Weispfenning},
@@ -570,104 +642,115 @@
   publisher = {Springer},
   year      = {2017},
   url       = {https://doi.org/10.1007/978-3-319-68670-7},
+  address   = {Cham},
   doi       = {10.1007/978-3-319-68670-7},
   isbn      = {978-3-319-68668-4},
-  timestamp = {Thu, 30 Dec 2021 10:17:44 +0100},
   biburl    = {https://dblp.org/rec/books/sp/BultanYAA17.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @phdthesis{rodrigoRaya,
-  author    = {Rodrigo Raya},
-  title     = {Decision Procedures for Power Structures},
-  year      = 2023,
-  institute = {EPFL Lausanne}
+  title       = {Decision Procedures for Power Structures},
+  author      = {Raya, Rodrigo},
+  institution = {IINFCOM},
+  publisher   = {EPFL},
+  school      = {EPFL},
+  address     = {Lausanne},
+  pages       = {141},
+  year        = {2023},
+  url         = {http://infoscience.epfl.ch/record/302891},
+  doi         = {https://doi.org/10.5075/epfl-thesis-10546}
 }
 
- @inproceedings{Z3,
-  author    = {Leonardo Mendon{\c{c}}a de Moura and
-               Nikolaj Bj{\o}rner},
-  title     = {{Z3:} An Efficient {SMT} Solver},
-  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems,
-               14th International Conference, {TACAS} 2008, Held as Part of the Joint
-               European Conferences on Theory and Practice of Software, {ETAPS} 2008,
-               Budapest, Hungary, March 29-April 6, 2008. Proceedings},
-  pages     = {337--340},
+
+@inproceedings{Z3,
+  author    = {de Moura, Leonardo
+               and Bj{\o}rner, Nikolaj},
+  editor    = {Ramakrishnan, C. R.
+               and Rehof, Jakob},
+  title     = {Z3: An Efficient SMT Solver},
+  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
   year      = {2008},
+  publisher = {Springer Berlin Heidelberg},
+  address   = {Berlin, Heidelberg},
+  pages     = {337--340},
+  abstract  = {Satisfiability Modulo Theories (SMT) problem is a decision problem for logical first order formulas with respect to combinations of background theories such as: arithmetic, bit-vectors, arrays, and uninterpreted functions. Z3 is a new and efficient SMT Solver freely available from Microsoft Research. It is used in various software verification and analysis applications.},
+  isbn      = {978-3-540-78800-3},
   url       = {https://doi.org/10.1007/978-3-540-78800-3\_24},
-  doi       = {10.1007/978-3-540-78800-3\_24},
-  timestamp = {Tue, 14 May 2019 10:00:53 +0200},
-  biburl    = {https://dblp.org/rec/bib/conf/tacas/MouraB08},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+  doi       = {10.1007/978-3-540-78800-3\_24}
 }
- @inproceedings{Z3-str,
-  title     = {{Z3-str: a Z3-based string solver for web application analysis}},
+
+@inproceedings{Z3-str,
   author    = {Zheng, Yunhui and Zhang, Xiangyu and Ganesh, Vijay},
-  booktitle = {{ESEC/SIGSOFT FSE}},
-  pages     = {114--124},
+  title     = {Z3-str: a z3-based string solver for web application analysis},
   year      = {2013},
-  doi       = {10.1145/2491411.2491456}
+  isbn      = {9781450322379},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/2491411.2491456},
+  doi       = {10.1145/2491411.2491456},
+  abstract  = {Analyzing web applications requires reasoning about strings and non-strings cohesively. Existing string solvers either ignore non-string program behavior or support limited set of string operations. In this paper, we develop a general purpose string solver, called Z3-str, as an extension of the Z3 SMT solver through its plug-in interface. Z3-str treats strings as a primitive type, thus avoiding the inherent limitations observed in many existing solvers that encode strings in terms of other primitives. The logic of the plug-in has three sorts, namely, bool, int and string. The string-sorted terms include string constants and variables of arbitrary length, with functions such as concatenation, sub-string, and replace. The int-sorted terms are standard, with the exception of the length function over string terms. The atomic formulas are equations over string terms, and (in)-equalities over integer terms. Not only does our solver have features that enable whole program symbolic, static and dynamic analysis, but also it performs better than other solvers in our experiments. The application of Z3-str in remote code execution detection shows that its support of a wide spectrum of string operations is key to reducing false positives.},
+  booktitle = {Proceedings of the 2013 9th Joint Meeting on Foundations of Software Engineering},
+  pages     = {114–124},
+  numpages  = {11},
+  keywords  = {String Analysis, String Constraint Solver, Web Application},
+  location  = {Saint Petersburg, Russia},
+  series    = {ESEC/FSE 2013}
 }
 
 @inproceedings{cvc5,
-  author    = {Haniel Barbosa and
-               Clark W. Barrett and
-               Martin Brain and
-               Gereon Kremer and
-               Hanna Lachnitt and
-               Makai Mann and
-               Abdalrhman Mohamed and
-               Mudathir Mohamed and
-               Aina Niemetz and
-               Andres N{\"{o}}tzli and
-               Alex Ozdemir and
-               Mathias Preiner and
-               Andrew Reynolds and
-               Ying Sheng and
-               Cesare Tinelli and
-               Yoni Zohar},
-  editor    = {Dana Fisman and
-               Grigore Rosu},
-  title     = {cvc5: {A} Versatile and Industrial-Strength {SMT} Solver},
-  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems
-               - 28th International Conference, {TACAS} 2022, Held as Part of the
-               European Joint Conferences on Theory and Practice of Software, {ETAPS}
-               2022, Munich, Germany, April 2-7, 2022, Proceedings, Part {I}},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {13243},
-  pages     = {415--442},
-  publisher = {Springer},
+  author    = {Barbosa, Haniel
+               and Barrett, Clark
+               and Brain, Martin
+               and Kremer, Gereon
+               and Lachnitt, Hanna
+               and Mann, Makai
+               and Mohamed, Abdalrhman
+               and Mohamed, Mudathir
+               and Niemetz, Aina
+               and N{\"o}tzli, Andres
+               and Ozdemir, Alex
+               and Preiner, Mathias
+               and Reynolds, Andrew
+               and Sheng, Ying
+               and Tinelli, Cesare
+               and Zohar, Yoni},
+  editor    = {Fisman, Dana
+               and Rosu, Grigore},
+  title     = {cvc5: A Versatile and Industrial-Strength SMT Solver},
+  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
   year      = {2022},
-  url       = {https://doi.org/10.1007/978-3-030-99524-9\_24},
-  doi       = {10.1007/978-3-030-99524-9\_24},
-  timestamp = {Fri, 29 Apr 2022 14:50:36 +0200},
-  biburl    = {https://dblp.org/rec/conf/tacas/BarbosaBBKLMMMN22.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {415--442},
+  isbn      = {978-3-030-99524-9},
+  doi       = {10.1007/978-3-030-99524-9_24}
 }
 
+
+
+
 @inproceedings{DBLP:conf/fm/MoraBKNG21,
-  author    = {Federico Mora and
-               Murphy Berzish and
-               Mitja Kulczynski and
-               Dirk Nowotka and
-               Vijay Ganesh},
-  editor    = {Marieke Huisman and
-               Corina S. Pasareanu and
-               Naijun Zhan},
-  title     = {Z3str4: {A} Multi-armed String Solver},
-  booktitle = {Formal Methods - 24th International Symposium, {FM} 2021, Virtual
-               Event, November 20-26, 2021, Proceedings},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {13047},
-  pages     = {389--406},
-  publisher = {Springer},
+  author    = {Mora, Federico
+               and Berzish, Murphy
+               and Kulczynski, Mitja
+               and Nowotka, Dirk
+               and Ganesh, Vijay},
+  editor    = {Huisman, Marieke
+               and P{\u{a}}s{\u{a}}reanu, Corina
+               and Zhan, Naijun},
+  title     = {Z3str4: A Multi-armed String Solver},
+  booktitle = {Formal Methods},
   year      = {2021},
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {389--406},
+  isbn      = {978-3-030-90870-6},
   url       = {https://doi.org/10.1007/978-3-030-90870-6\_21},
-  doi       = {10.1007/978-3-030-90870-6\_21},
-  timestamp = {Mon, 03 Jan 2022 22:36:11 +0100},
-  biburl    = {https://dblp.org/rec/conf/fm/MoraBKNG21.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
+  doi       = {10.1007/978-3-030-90870-6\_21}
 }
+
+
 
 @article{DBLP:journals/pacmpl/HolikJLRV18,
   author    = {Luk{\'{a}}s Hol{\'{\i}}k and
@@ -689,11 +772,12 @@
 }
 
 @online{smt-comp-23,
-  author  = {{SMT-COMP}},
-  title   = {SMT-COMP 2023 Results},
-  year    = 2023,
-  url     = {https://smt-comp.github.io/2023/results.html},
-  urldate = {2023-07-11}
+  author       = {{SMT-COMP}},
+  organization = {{The SMT Steering Committee}},
+  title        = {SMT-COMP 2023 Results},
+  year         = 2023,
+  url          = {https://smt-comp.github.io/2023/results.html},
+  urldate      = {2023-07-11}
 }
 
 @book{DBLP:books/daglib/0022394,
@@ -701,6 +785,8 @@
   title     = {Handbook of Practical Logic and Automated Reasoning},
   publisher = {Cambridge University Press},
   year      = {2009},
+  month     = {March},
+  address   = {Shaftesbury Road, Cambridge, UK},
   isbn      = {978-0-521-89957-4},
   timestamp = {Thu, 05 Sep 2019 14:51:32 +0200},
   biburl    = {https://dblp.org/rec/books/daglib/0022394.bib},
@@ -708,24 +794,30 @@
 }
 
 @inproceedings{Saxena10:kaluza,
-  author    = {Prateek Saxena and
-               Devdatta Akhawe and
-               Steve Hanna and
-               Feng Mao and
-               Stephen McCamant and
-               Dawn Song},
-  title     = {{A Symbolic Execution Framework for JavaScript}},
-  booktitle = {IEEE Symposium on Security and Privacy},
+  author    = {Saxena, Prateek and Akhawe, Devdatta and Hanna, Steve and Mao, Feng and McCamant, Stephen and Song, Dawn},
+  booktitle = {2010 IEEE Symposium on Security and Privacy},
+  title     = {A Symbolic Execution Framework for JavaScript},
   year      = {2010},
+  volume    = {},
+  number    = {},
   pages     = {513-528},
-  publisher = {IEEE Computer Society},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+  publisher = {{IEEE}},
+  address   = {Oakland, CA, USA},
+  doi       = {10.1109/SP.2010.38}
 }
 
 
 @book{cp,
-  title     = {Programming with constraints: an introduction},
-  author    = {Marriott, Kim and Stuckey, Peter J},
+  author    = {Marriott, Kimbal and Stuckey, Peter},
+  title     = {{Programming with Constraints: An Introduction}},
+  publisher = {The MIT Press},
+  address   = {Cambridge, MA, USA},
   year      = {1998},
-  publisher = {MIT press}
+  month     = {02},
+  isbn      = {9780262279161},
+  doi       = {10.7551/mitpress/5625.001.0001},
+  url       = {https://doi.org/10.7551/mitpress/5625.001.0001}
 }
+
+
+
