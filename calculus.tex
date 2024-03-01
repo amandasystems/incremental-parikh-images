@@ -110,7 +110,7 @@ in Presburger arithmetic allowing a solution to be computed using
 standard algorithms~\cite{DBLP:books/daglib/0022394}.
 
 We use the convention of splitting the formulas in proof goals into
-linear (in)equalities ($\SomeInequalities$) and other formulas
+linear (in-) equalities ($\SomeInequalities$) and other formulas
 ($\SomeClause$), and assume that predicates $\Image$ and $\Connected$
 only occur positively.
 %Since our rules operate by adding and matching
@@ -120,8 +120,8 @@ only occur positively.
 The transition selection function~$\Filter$ is represented
 symbolically and can, in practice, be read as a function from
 transitions to $\Naturals$-valued terms (e.g.~\texttt{t}
-or~\texttt{t+1}). In our implementation \Catra{}, described in
-\cref{sec:implementation}, $\Filter$~is a vector of fresh variables
+or~\texttt{t+1}). In our implementation \Catra{}, described 
+in~\cref{sec:implementation}, $\Filter$~is a vector of fresh variables
 with the same size as~$\Transitions$.
 
 To ensure termination, rules can only be applied when they add new formulas
@@ -131,8 +131,6 @@ only be applied to proof goals that contain neither
 $\Filter(\Transition) = 0$ nor $\Filter(\Transition) > 0$, and can
 never be applied to split on the same term twice on the same branch.
 
-\medskip
-%
 The rule~\textsc{Expand} expands an $\SinglePredicateInstance$
 predicate into the more basic predicate
 $\Connected(\Automaton, \Filter)$, as well as linear equations
@@ -214,8 +212,6 @@ In addition to \cref{tbl:rules:single}, we assume the existence of a rule
 \PresburgerClose{}, corresponding to a sound and complete solver for Presburger
 formulae, and for constraints over~$\Monoid$.
 
-\medskip
-%
 A decision procedure would start from one or multiple
 predicates~$\SinglePredicateInstance$ to be satisfied, possibly in
 combination with other constraints about $m$. It would then first
@@ -428,6 +424,7 @@ Initially, we let $\Filter$ map to fresh variables to obtain, after some simplif
 \cref{const:s1-in-c-dd,const:s1-substring,const:something-before-and-after,const:more-inside-than-before}
 from \cref{ex:string-constraints}, corresponding to handling the Parikh
 automaton $\mathcal{A}'$ of \cref{fig:aut_a}.}\label{fig:derivation:single}
+\Description[]{}% This is fine; it's all text!
 \end{figure}
 
 The proof tree is shown in~\cref{fig:derivation:single}. Like in
