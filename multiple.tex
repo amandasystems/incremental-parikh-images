@@ -30,6 +30,7 @@ therefore also the transition sets) are pairwise disjoint.
 \end{definition}
 
   \begin{table}[t]
+    \caption{Additional derivation rules for products of arbitrarily many automata.}\label{tbl:rules:multi}
     \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
       Name & \text{Rule} & Side conditions\\
       \midrule
@@ -80,8 +81,8 @@ therefore also the transition sets) are pairwise disjoint.
           \Automaton_1,  \ldots, & \Automaton_i, \ldots, \\
           \Automaton_j, \ldots, & \Automaton_k
         \end{array}%
-        }}{\Map}{\Filter}{\MonoidElement},
-        \SomeInequalities, \SomeClause
+        }}{\Map}{\Filter}{\MonoidElement}
+        \SomeInequalities, \SomeClause{}
       \end{array}}} &%
       $\begin{array}{l@{}}
           \Filter' = \Extend(\Automaton',\Filter),\\
@@ -91,7 +92,6 @@ therefore also the transition sets) are pairwise disjoint.
       \end{array}$ \\
       \bottomrule
       \end{tabular}
-      \caption{Additional derivation rules for products of arbitrarily many automata.}\label{tbl:rules:multi}
     \end{table}
 
     For the calculus (\cref{tbl:rules:multi}), we first extend

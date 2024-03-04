@@ -104,12 +104,12 @@ Notably, \cref{fig:duels:baseline} shows that any instance solved by baseline in
 solved by \Calculus{} in under \numprint{5}s.
 
 \begin{table}
-  \begin{center}
-  \input{graphs/solved_pivot_table.tex}
-  \end{center}
   \caption{Number of successful results within a timeout of \RuntimeTimeout{}.
   Instances solved by no backend within the timeout (about half of the set) are
   omitted from the table.}\label{tab:solve-status}
+  \begin{center}
+  \input{graphs/solved_pivot_table.tex}
+  \end{center}
 \end{table}
 
 \subsubsection{Scalability}\label{sec:scaling}%
@@ -132,16 +132,15 @@ poorly across product computations, there is a performance hit.
 \subsection{Evaluation in \Ostrich{}}\label{}%
 
 \begin{table}
+  \caption{Number of solved benchmarks in the set of quantifier-free strings with
+  linear integer arithmetic constraints (QF\_SLIA) at SMT-COMP~2023. The numbers are from
+  the competition results, except for CA-Str, which is executed by us on the same 
+  cluster as the competition with the same resources, and the two virtual portfolio solvers
+  \Ostrich+CA and \textsc{Competition} which aggregate the best results from \Ostrich{}/CA-Str and 
+  all the competition results for non-\Ostrich{} solvers respectively. }\label{tab:solve-status-smt-comp}
   \begin{center}
   \input{graphs/qf_slia_comparison.tex}
   \end{center}
-  \caption{Number of solved benchmarks in the set of quantifier-free strings with
-    linear integer arithmetic constraints (QF\_SLIA) at SMT-COMP~2023. The numbers are from
-    the competition results, except for CA-Str, which is executed by us on the same 
-    cluster as the competition with the same resources, and the two virtual portfolio solvers
-    \Ostrich+CA and \textsc{Competition} which aggregate the best results from \Ostrich{}/CA-Str and 
-    all the competition results for non-\Ostrich{} solvers respectively. }
-  \label{tab:solve-status-smt-comp}
 \end{table}
 
 \begin{figure}[t]
