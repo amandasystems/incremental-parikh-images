@@ -1,0 +1,7 @@
+#!/bin/sh
+
+nohup ./run-catra filelist 1 --backend baseline --nr-unknown-to-start-materialise 500 --no-clause-learning --no-restarts --restart-timeout-factor 500 &
+nohup ./run-catra filelist 2 --backend lazy --nr-unknown-to-start-materialise 6 --restart-timeout-factor 500 &
+nohup ./run-catra filelist 3 --backend lazy --nr-unknown-to-start-materialise 500 --no-clause-learning --no-restarts --restart-timeout-factor 500 &
+nohup ./run-catra filelist 4 --backend lazy --nr-unknown-to-start-materialise 500 --restart-timeout-factor 500 &
+nohup ./run-catra filelist 5 --backend lazy --nr-unknown-to-start-materialise 1 --restart-timeout-factor 500 &

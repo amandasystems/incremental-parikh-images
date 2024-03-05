@@ -1,0 +1,14 @@
+#!/bin/sh
+
+ulimit -t 600
+
+listname=$1
+shift
+id=$1
+shift
+
+for name in `cat $listname`; do
+  echo $name
+  /usr/bin/time -f "%e" ~/tmp/catra/bin/catra solve-satisfy --timeout 120000 "$@" $name 
+done >"$listname"_catra"$id" 2>&1
+
