@@ -57,7 +57,6 @@ find an empty intermittent product. This is roughly similar to the approach
 taken in~\cite{approximate-parikh}.
 
 \begin{algorithm}
-  \caption{How we implement the baseline approach}\label{alg:baseline}
   \KwData{$\Automaton_1, \ldots, \Automaton_n$ automata, other constraints $\SomeClause$}
   \KwResult{\textsc{Sat} or \textsc{Unsat}}
   \SetKwFunction{NewTheoremProver}{newTheoremProver}
@@ -89,7 +88,7 @@ taken in~\cite{approximate-parikh}.
   }
   
   \KwRet{$p$'s SAT status}
-
+  \caption{How we implement the baseline approach}\label{alg:baseline}
   \end{algorithm}
 
 As an optimisation, our automata (including intermittent products) have dead
@@ -103,7 +102,7 @@ minimisation on automata with counters is non-trivial.
 % here: ours are less symbolic (i.e. typically finite) than the ones in the
 % cited paper, and so are technically no worse than normal non-symbolic ones.
 
-\subsection{Heuristics and search strategies}
+\subsection{Heuristics and Search Strategies}
 
 \Calculus{} as described in \cref{sec:calculus,sec:multiple} leaves some choices
 unspecified, including the priority of rules and the order of their arguments. In

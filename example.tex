@@ -78,7 +78,7 @@ automata, then break down how the constraints will be handled by \Calculus{}.
 This example will recur in a more formal fashion in \cref{sec:generalised},
 which can be read in parallel if (even) more detail is desired.
 
-\subsection{Translating the constraints into a Parikh automata intersection problem}
+\subsection{Translating the Constraints into a Parikh Automata Intersection Problem}
 
 By a Parikh automaton we mean a standard non-deterministic finite automaton
 (NFA) with a set of integer registers (Parikh registers) that are incremented
@@ -136,7 +136,7 @@ resulting set of linear inequalitites. Scalability of this
 construction is limited due to the size of the product automata to be computed,
 and the complexity of the resulting Presburger formula.
 
-\subsection{Solving the Parikh automata intersection problem using \Calculus{}}
+\subsection{Solving the Parikh Automata Intersection Problem Using \Calculus{}}
 
 We will now proceed to show how our calculus~\Calculus{} can lazily
 prove the unsatisfiability of the running example. The calculus
@@ -158,7 +158,7 @@ define precisely as calculus rules:
   sufficiently small, we compute the precise product automaton.
 \end{inparaenum}
 
-\subsubsection{Approximating paths through automata using flow analysis}\label{sec:a_1}
+\subsubsection{Approximating Paths Through Automata Using Flow Analysis}\label{sec:a_1}
 
 We associate each transition $\Transition$ of $\mathcal{A}'$ and $\mathcal{B}$ with a fresh
 variable~$\TransitionVar_\Transition$ ranging over natural numbers (i.e.,
@@ -203,7 +203,7 @@ unreachable, additional constraints are required to ensure consistency.
 %  }\label{fig:a_1}
 %\end{figure}
 
-\subsubsection{Arithmetic flow simplification}\label{sec:intuition:algebra}
+\subsubsection{Arithmetic Flow Simplification}\label{sec:intuition:algebra}
 
 We then use linear arithmetic reasoning on the register
 equations~\eqref{eq:counter-sums} and flow
@@ -308,7 +308,7 @@ both automata through similar applications of equality elimination rules.
 %\cref{eq:counter-sums} and the flow equations alone without the need for
 %expensive connectivity constraints.
 
-\subsubsection{Case Splitting and connectivity propagation}\label{sec:intuition:split}
+\subsubsection{Case Splitting and Connectivity Propagation}\label{sec:intuition:split}
 We now have a choice of two paths through automaton $\mathcal{B}$; the
 upper through state $A$ or the lower through state $B$. Since
 arithmetic reasoning and propagation are not able to resolve this choice,
@@ -324,7 +324,7 @@ that the state~$B$ is now unreachable, which means that its outgoing transitions
 therefore infer the additional equations $x_9 = 0$ and $x_{11} = 1$.
 
 
-\subsubsection{Computing products}\label{sec:intuition:materialise}
+\subsubsection{Computing Products}\label{sec:intuition:materialise}
 After discounting all transitions that can no longer be taken, we are
 left with two (small) flat automata, and can compute their product with
 relative ease. By putting off computing the product $\mathcal{B} \times \mathcal{A}'$ until after
