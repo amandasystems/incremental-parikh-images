@@ -3,11 +3,13 @@ constraints is important for program analysis, particularly to detect cross-site
 scripting vulnerabilities and other string manipulation
 bugs~\cite{DBLP:books/sp/BultanYAA17}.
 %
-To decide whether a formula like $x \in \Language_1 \wedge y \in \Language_2
+To check the satisfiability of a formula like $x \in \Language_1 \wedge y \in \Language_2
 \wedge |x| > |y|$, with string variables~$x, y$ and regular
-languages~$\Language_1, \Language_2$, is satisfiable, it is necessary to reason
-about the sets of word lengths induced by $\Language_1, \Language_2$, which are
-special cases of the Parikh image of such languages.
+languages~$\Language_1, \Language_2$, it is necessary to reason
+about the possible lengths of $x, y$ that are admitted by
+$\Language_1, \Language_2$, respectively. The
+set of word lengths $\{ |w| \mid w \in \Language\}$ in a language~$\Language$
+is a special case of the Parikh image of a regular language.
 This required combined reasoning about
 strings and string length has long been identified as a major bottleneck in
 string solvers
@@ -18,80 +20,91 @@ strings and integers (including
 \verb!str.substr!  and \verb!str.at!), which comes at an even higher price in
 terms of computational complexity~\cite{ostrich-plus}.
 
-The Parikh image, more broadly, is a characterisation of formal languages in
-terms of their character counts. Given a language over an alphabet~$\{a_1,
-\ldots, a_k\}$, the Parikh image is a set of $k$-dimensional vectors that
-contains some vector~$\VectorLiteral{m_1, m_2, \ldots, m_k}$ if and only if the
-formal language contains a word in which each $a_i$ occurs $m_i$ times. It is a
-classical result that the Parikh image of every context-free language (and,
-thus, also of every regular language) is a semilinear set,
-i.e., Presburger-definable~\cite{parikh-theorem}.
+The Parikh image, more broadly, is a characterisation of formal
+languages in terms of their character counts. Given a
+language~$\Language$ over an alphabet~$\{a_1, \ldots, a_k\}$, the
+Parikh image is a set of $k$-dimensional vectors that contains some
+vector~$\VectorLiteral{m_1, \ldots, m_k}$ if and only if the
+language~$\Language$ contains a word in which each $a_i$ occurs $m_i$
+times. It is a classical result that the Parikh image of every
+context-free language (and, thus, also of every regular language) is a
+semilinear set, i.e., Presburger-definable~\cite{parikh-theorem}.
+In
+fact, it is possible to compute an existential Presburger formula
+describing the Parikh image of any \emph{context-free} language in
+linear time~\cite{generate-parikh-image} in the size of the grammar
+describing the language. For the special case of
+regular languages, this result was also stated
+in~\cite{muscholl-linear}.
 
-In applications involving regular languages, it is typically necessary
-to consider the Parikh image not only of a single automaton, but of the
-intersection of multiple automata. This problem arises in string solvers in
+In applications,  it is often necessary   
+to consider the Parikh image not only of a single regular language, but of the
+intersection of multiple languages.
+This happens in string solvers in
 particular, as conjunctions of string constraints lead to the computation of
-length images of products (intersections) of regular languages represented as
-finite automata. The problem considered in this paper is thus:
+length images of intersections of regular languages represented as
+finite-state automata.
+On the other hand, we are often
+not interested in a closed-form description of the complete Parikh image,
+but rather in checking whether the Parikh image contains vectors satisfying
+some given properties. 
+\emph{The main problem considered in this paper is the following:}
 
 {
     \centering
     \begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,%
-        title=Satisfiability of Parikh images of a product of automata,%
-        width=0.8\linewidth]
-        Given a finite set of deterministic, finite-state automata, $\Automaton_1, \ldots, \Automaton_n$
-        over a finite, common, alphabet $\Set{a_1, \ldots, a_k}$,
-        and a Presburger formula, $\phi(\VectorLiteral{x_1, \ldots, x_k})$, 
-        decide if there is a word, $w$ accepted by the 
-        product $\Automaton_1 \times \cdots \times \Automaton_n$, whose Parikh vector 
+        title=Joint satisfiability of Parikh images modulo Presburger constraints,%
+        width=0.9\linewidth]
+        Given regular languages~$\Language_1, \ldots, \Language_n$
+        over a common alphabet $\Set{a_1, \ldots, a_k}$,
+        and a Presburger formula~$\phi(x_1, \ldots, x_k)$, 
+        decide if there is a word~$w \in \Language_1 \cap
+        \cdots \cap \Language_n$ whose Parikh vector 
         $\VectorLiteral{m_1, \ldots, m_k}$ satisfies $\phi$.
     \end{tcolorbox}
-  }
+}
 
-  The current method of handling this problem consists of computing the
-  intersection of the languages (the product of their automata),
-  constructing the Presburger representation of their Parikh image, and then
-  checking its satisfiability. It is possible to compute an existential
-   Presburger formula describing the
-  Parikh image of any \emph{context-free} language in linear
-  time~\cite{generate-parikh-image}. For our special case of regular languages,
-  this result was also stated in~\cite{muscholl-linear}. While theoretically
-  elegant, this construction has several disadvantages for us, often making it
-  impractical for integration into algorithms.
+The problem can be solved using the classical construction of Parikh
+images~\cite{muscholl-linear,generate-parikh-image} by first computing
+the product of finite-state automata accepting the
+languages~$\Language_1, \ldots, \Language_n$, then extracting a
+Presburger formula~$\psi$ describing the Parikh image of the product
+automaton, and finally checking the satisfiability of $\phi \wedge \psi$.
   
-  Firstly, the constructed Presburger
-  formula contains a linear number of existential quantifiers in the size of the
-  considered grammar, as well as complex Boolean structure, which is needed to
-  express the connectedness of sets of productions considered in the construction.%
-  \iffalse{}Eliminating those quantifiers to obtain a quantifier-free representation of the
-  Parikh image has exponential complexity~\cite{DBLP:conf/issac/Weispfenning97},
-  and is often impossible in reasonable time.\fi{}%
-  Just solving the Parikh image
-  membership problem is NP-complete, as it corresponds to computing a satisfying
-  assignment of the existential Presburger formula, and taxing for solvers as
-  well~\cite{ostrich-plus}.
-  
-  Secondly, computing the product itself is usually prohibitively expensive
-  in both memory and CPU due to exponential blow-up. Applying the approach in~\cite{generate-parikh-image} would in
-  this case require the eager computation of the product before its length image,
-  and result in an existential Presburger formula of exponential size (in the
-  number of automata). In several instances we have observed while solving
-  real-world string constraints, the computation of the product of automata
-  exhausts the memory of any machine available due to the exponential blow-up in
-  size of the product, quickly becoming intractable as the number of automata in
-  the product increases.
-  
-  The current best published mitigation for this problem relies on the observation
-  that any Presburger formula that applies to a product of automata must also hold
-  for all of the terms of that product individually. Exploiting this fact, the Parikh
-  image of a product of automata is first represented as the conjunction of the image of
-  the individual automata of the product, falling back to computing the entire product
-  for satisfiable cases or cases when unsatisfiability is only discoverable after
-  full- or partial product construction~\cite{approximate-parikh}.
+While theoretically elegant, this construction has several
+disadvantages that easily turn into bottlenecks when reasoning about
+Parikh images in algorithms or applications.
 
+Firstly, computing the product automaton is often prohibitively
+expensive in both memory and CPU time.  In several instances we have
+observed while solving real-world string constraints, the computation
+of the product of automata exhausts the memory of any machine
+available due to the exponential blow-up in size of the product,
+quickly becoming intractable as the number of automata in the product
+increases.
+
+Secondly, the constructed Presburger formula~$\psi$ contains a linear
+number of existential quantifiers in the size of the product
+automaton, as well as complex Boolean structure, which is needed to
+express the connectedness of paths considered in the construction.
+Solving formulas of this kind generally tends to be taxing for
+solvers~\cite{ostrich-plus}; in the present case, since the product
+automaton itself is exponentially big, also formula~$\psi$ has
+exponential size in the number of considered regular languages, and
+can easily become too complex for today's Presburger arithmetic
+solvers to handle.
+  
+The current best published mitigation for this problem relies on the
+observation that the Parikh image of an intersection of languages can
+be over-approximated by the conjunction of the Parikh images of the
+individual languages. Such over-approximation can be used to derive
+that no word exists whose Parikh vector satisfies a formula~$\phi$,
+falling back to computing the intersection of the languages (or of
+some subset of the languages) for the satisfiable
+cases~\cite{approximate-parikh}.
 
 Addressing these concerns, we have developed a calculus for Parikh images of
-products of regular languages that we call \Calculus{}. It allows us to
+intersections of regular languages that we call \Calculus{}. It allows us to
 interleave the computation of arbitrarily deep products of automata with the
 product's Parikh image, and is generalised to an arbitrary homomorphism over
 automata labels, including string lengths. This enables us to let both
@@ -125,30 +138,26 @@ through the automata (and their product) is finite. In summary, the key ideas ar
 {
     \centering
     \begin{tcolorbox}[colback=ourcolour!5!white,colframe=ourcolour!75!black,%
-        title=Key ideas of \Calculus{},%
-        width=0.8\linewidth]
+        title=Key paradigms in \Calculus{},%
+        width=0.9\linewidth]
 
         \begin{itemize}
-            \item Enforce automata connectivity constraints lazily
+            \item Enforce automata connectivity constraints lazily;
             \item Use \emph{propagation} of constraints on the Parikh image to prune
-            transitions from the automata that are incompatible with constraints
-            \item Intelligently \emph{branch} on the presence\slash{}absence of key
-             transitions to drive propagation of the connectivity constraint
+            transitions from the automata that are incompatible with constraints;
+            \item Intelligently \emph{branch} on the presence or absence of key
+             transitions to drive propagation of the connectivity constraint;
              \item Compute products of automata lazily, after pruning transitions
-             that violate constraints using propagation
+             that violate constraints using propagation.
         \end{itemize}
     \end{tcolorbox}
   }
 
-
 We implement \Calculus{} as a plug-in theory for the \Princess{} automated
-theorem prover and experimentally use it as the Parikh image interesection solver for
-to the \Ostrich{} string constraint solver.
-
-We additionally wrap the Parikh image solver as a stand-alone tool, \Catra{}.
+theorem prover~\cite{princess}, and additionally wrap the Parikh image solver as a stand-alone tool, \Catra{}.
 \Catra{} also supports a variant of the approximate method of~\cite{approximate-parikh}, its fall-back variant adapted
 from~\cite{generate-parikh-image}, and an adapter for the \Nuxmv{} model
-checker~\cite{nuxmv}. Using \Catra, we compare \Calculus{} to the other two
+checker~\cite{nuxmv}. Using \Catra, we compare \Calculus{} to the other 
 back-ends on \NrBenchmarks{} distinct Parikh automata intersection problems
 generated by \OstrichPlus{} when solving the PyEx string constraint benchmark
 suite involving string length constraints~\cite{pyex}, finding that \Calculus{}
@@ -157,13 +166,14 @@ to solve every problem solved by baseline within \SI{30}{s} in under \SI{5}{s}.
 \Calculus{} in particular outperforms \Nuxmv{} on unsatisfiable instances, more than 
 doubling the number of unsatisfiable results found within a \SI{30}{s}~timeout.
 
-We extend the \Ostrich{} string solver's backend portfolio with \Calculus{} via
-\Catra{} as the Parikh image intersection solver of the \OstrichPlus{}~algorithm,
-obtaining improvements in both \textsc{Sat}  and \textsc{Unsat} performance in
-\Ostrich{}' results from SMT-COMP 2023, crucially allowing \Ostrich{} to win
-the unsatisfiable category of the track of quantifier-free, linear constraints
-over string logic (QF\_SLIA) and increasing the number of \textsc{Sat}~results
-by \numprint{3}\% on the same track.
+We also extend the \Ostrich{} string solver~\cite{ostrich} with a new back-end
+based on \Catra{} as the Parikh image intersection solver of
+the \OstrichPlus{}~algorithm, obtaining improvements in both
+\textsc{Sat} and \textsc{Unsat} performance in \Ostrich{}' results
+from SMT-COMP 2023, crucially allowing \Ostrich{} to win the
+unsatisfiable category of the track of quantifier-free, linear
+constraints over string logic (QF\_SLIA) and increasing the number of
+\textsc{Sat}~results by \numprint{3}\% on the same track.
 
 % PR: maybe only mention this in the evaluation?
 
