@@ -201,19 +201,25 @@ without constraints on the final values on their registers are also sometimes
 called cost-enriched automata, weighted automata, or counter automata, depending
 on exact definitions and side constraints. The decision problem tackled in this
 paper, determining the emptiness of an intersection of Parikh automata, was
-recently shown to be PSPACE-complete~\cite{graph-queries}.
+shown to be PSPACE-complete~\cite{graph-queries}.
 
 Parikh image computations, as well as Parikh automata, feature extensively in
 string solvers, including as mentioned above \Ostrich{} and \OstrichPlus{}
 \cite{ostrich,ostrich-plus}, but also forms the basis of
 \textsc{Trau}~\cite{trau-pldi},
 and occurs in \textsc{Sloth}~\cite{sloth}. Parikh images frequently appear when
-introducing cardinality constraints like length or string indexing. The
-state-of-the-art approach to handling Parikh image computation is to
+introducing cardinality constraints like length or string indexing.
+While relying on Parikh images (or on being able to check
+the emptiness of Parikh images under given side constraints), the mentioned
+papers do not propose any techniques to compute Parikh images.
+
+
+A common approach to handling Parikh image computation is to
 over-approximate the Parikh image of a product of $k$~automata
 $\ParikhMap(\Language(\Automaton_1) \cap \ldots \cap \Language(\Automaton_k))$
 with the conjunction of the automata's Parikh maps, $\bigwedge_{i=1}^{k}
-\ParikhMap(\Language(\Automaton_i))$. Due to the over-approximation,
+\ParikhMap(\Language(\Automaton_i))$~\cite{approximate-parikh}.
+Due to the over-approximation,
 this approach works only for unsatisfiable instances,
 and will require falling back to computing the product of the automata before
 using the standard approach for finding its image originally presented
@@ -224,7 +230,9 @@ of \citeauthor{symbolic-boolean-derivatives}, who tackle the exponential
 blow-up resulting from Boolean combinations
 of regular automata in SMT string solvers
 through the use of symbolic derivatives~\cite{symbolic-boolean-derivatives}.
-In addition to presenting a decision procedure for lazily dispatching
+ The research by
+ \citeauthor{symbolic-boolean-derivatives} does not consider Parikh images,
+ however. In addition to presenting a decision procedure for lazily dispatching
 constraints, we similarly also allow for symbolic labelling of automata to
 handle large Unicode alphabets.
 
