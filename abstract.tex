@@ -1,22 +1,27 @@
 A common problem in string constraint solvers is computing the Parikh image, a
 linear arithmetic formula that describes all possible combinations of character
 counts in strings of a given language. Automata-based string solvers frequently
-need to compute the Parikh image of large products (intersections) of
-nondeterministic automata, which in many operations is both prohibitively slow
-and memory-intensive. We contribute a novel understanding of how Parikh maps can
-be tackled as a constraint solving problem to solve real-world constraints
-stemming from functions on regular languages, including length and indexing
-constraints. Furthermore, we show how this formulation can be efficiently
-implemented as a calculus, \Calculus{}, in an automated theorem prover
-supporting Presburger logic.  We implement \Calculus{} in a tool called
-\Catra{}, and evaluate it on constraints produced by the \OstrichPlus{} string
-constraint solver when solving Parikh automata intersection problems produced
-when solving standard string constraint benchmarks involving cardinality
-constraints on strings. We show that our solution strictly outperforms the
-standard approach described by~\citeauthor{generate-parikh-image} as well as the
+need to compute the Parikh image of products (or intersections) of
+finite-state automata, in particular when solving string constraints that
+also include the integer data-type due to operations like string length
+and indexing. In this context, the computation of Parikh images often turns
+out to be both prohibitively slow
+and memory-intensive. This paper contributes a new understanding of how
+the reasoning about Parikh images can be cast as a constraint solving problem,
+and questions about Parikh images be answered without explicitly computing
+the product automaton or the exact Parikh image. The paper shows
+how this formulation can be efficiently implemented as a calculus,
+\Calculus{}, embedded in an automated theorem prover supporting
+Presburger logic. The resulting standalone tool
+\Catra{} is evaluate on constraints produced by the \OstrichPlus{} string
+solver when solving standard string constraint benchmarks
+involving integer operations.
+The experiments show that \Calculus{} strictly outperforms the
+standard approach by~\citeauthor{generate-parikh-image} to extract Parikh
+images from finite-state automata, as well as the
 over-approximating method recently described by~\citeauthor{approximate-parikh}
 by a wide margin, and for realistic timeouts (under \SI{60}{s}) also
 the~\Nuxmv{} model checker. When added as the Parikh image backend of \OstrichPlus{} to
 the \Ostrich{} string constraint solver's portfolio, it boosts its results on the
-quantifier-free strings with linear integer algebra track of SMT-COMP~20203 (QF\_SLIA)
+quantifier-free strings with linear integer algebra track of SMT-COMP~2023 (QF\_SLIA)
 enough to solve the most \Unsat{} instances in that track of all competitors.
