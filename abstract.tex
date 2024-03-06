@@ -13,7 +13,10 @@ supporting Presburger logic.  We implement \Calculus{} in a tool called
 constraint solver when solving Parikh automata intersection problems produced
 when solving standard string constraint benchmarks involving cardinality
 constraints on strings. We show that our solution strictly outperforms the
-standard approach described in~\citeauthor{generate-parikh-image} as well as the
+standard approach described by~\citeauthor{generate-parikh-image} as well as the
 over-approximating method recently described by~\citeauthor{approximate-parikh}
-by a wide margin, and for realistic timeouts for constraint solving also
-the~\Nuxmv{} model checker.
+by a wide margin, and for realistic timeouts (under \SI{60}{s}) also
+the~\Nuxmv{} model checker. When added as the Parikh image backend of \OstrichPlus{} to
+the \Ostrich{} string constraint solver's portfolio, it boosts its results on the
+quantifier-free strings with linear integer algebra track of SMT-COMP~20203 (QF\_SLIA)
+enough to solve the most \Unsat{} instances in that track of all competitors.

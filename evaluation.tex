@@ -25,14 +25,14 @@ the code using Scala~\ScalaVersion{} and executed the experiments
 on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{}
 version~\NuxmvVersion{} invoked as a subprocess for each instance. Instances
 were executed in batches of \BatchSize{}, each given a fresh JVM. Each JVM was
-warmed up for \numprint{10}s on a random benchmark from the set before starting
+warmed up for \SI{10}{s} on a random benchmark from the set before starting
 to execute. We believe this represents a realistic use case where \Calculus{} is
 used to support, e.g., a string solver. Experiments were executed in random order
 for all backends. Each instance got a time budget of~\RuntimeTimeout{}.
 
 All runtimes are measured in wall-clock time as observed by the JVM when
 executing the instance, and exclude time spent parsing (usually far below
-\numprint{0.1}s).
+\SI{0.1}{s}).
 
 \subsection{Execution Time and Ability to Solve Instances}\label{sec:runtime}
 
@@ -47,15 +47,15 @@ executing the instance, and exclude time spent parsing (usually far below
   \hfill
   \begin{subfigure}[b]{0.49\textwidth}
     \includegraphics[width=\textwidth]{graphs/\commit-time-boxplot.pdf}
-    \caption{The distribution of runtimes for solved instances per backend, assuming they were solved within the \numprint{30}s timeout.
-    The whiskers use the default placement in Pandas, \numprint{1.5} times the IQR (interquartile range).}
+    \caption{The distribution of runtimes for solved instances per backend, assuming they were solved within the \SI{30}{s} timeout.
+    The whiskers use the default placement in Pandas, \numprint{1.5}~times the IQR (interquartile range).}
     \label{fig:runtime-boxplot}
     \Description[A box plot showing the distribution of runtime over the three backends]{The middle box plot shows a tiny box centered around 0 seconds for the PC* backend, the rightmost box shows a bigger box between five seconds and 30 seconds for nuxmv, and the leftmost box shows a smaller box between 20 and 30 seconds for baseline. The whiskers of nuxmv span between 0 and the timeout, 60 seconds, while they are much tighter for PC*. On the other hand, PC* has a lot of outliers.}
   \end{subfigure}
   \vfill
   \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{graphs/\commit-cactus.pdf}
-    \caption{The number of instances solved as the time budget increases, simulated from one \numprint{120}s-timeout run.}
+    \caption{The number of instances solved as the time budget increases, simulated from one \SI{120}{s}-timeout run.}
     \label{fig:cactus}
     \Description[A cactus plot comparing the performance of nuxmv, PC* and baseline]{The line for baseline is strictly lower than the two others, and does not head upwards from zero until after 10 seconds of timeout, while the number of instances for nuxmv increases sharply until ca 10 seconds and then linearly after that. Lazy solves much more instances than nuxmv.}
   \end{subfigure}
@@ -96,12 +96,12 @@ extra cost.
 
 
 Finally, in \cref{fig:runtime-boxplot,fig:duels:baseline,fig:duels:nuxmv} and we compare
-runtimes for solved instances between the backends. We see that \Nuxmv{} has a more even spread of runtimes up to \numprint{20}s,
+runtimes for solved instances between the backends. We see that \Nuxmv{} has a more even spread of runtimes up to \SI{20}{s},
 while both \Calculus{} and baseline tend towards solving their
 instances quickly or not at all, though \Calculus{} does have a long tail of outlier
 instances that finish as the timeout increaseses.
-Notably, \cref{fig:duels:baseline} shows that any instance solved by baseline in \numprint{30}s is also
-solved by \Calculus{} in under \numprint{5}s.
+Notably, \cref{fig:duels:baseline} shows that any instance solved by baseline in \SI{30}{s} is also
+solved by \Calculus{} in under \SI{5}{s}.
 
 \begin{table}
   \caption{Number of successful results within a timeout of \RuntimeTimeout{}.

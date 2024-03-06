@@ -50,18 +50,17 @@ all. With a somewhat liberal interpretation of what we are allowed to map to
 like the ones in a range label. In \Catra{}, we frontload this problem by
 requiring the user to encode their input as a Parikh automaton. For an example of how automata can be encoded, see \cref{sec:parikh-automata}.
 
-\iffalse
 \subsection{Transducers}\label{sec:ext:transducers}
 
 Another interesting application is applying \Calculus{} to automata with
-multiple tracks, e.g. transducers. One application of such a calculus would be
+multiple tracks, e.g.\ transducers. One application of such a calculus would be
 to represent replace operations and other functions on regular languages, and to
-be able to answer questions like "does this operation change the length of the
-string". The difficulty in implementing it for transducers is first to perform
+be able to answer questions such as \enquote{does this operation change the length of the
+string}. The difficulty in implementing it for transducers is first to perform
 the mapping on the labels, which for both the length and Parikh cases is
 straightforward; just do the same thing in two dimensions. The more complicated
 operation is defining the product of transducers. In some cases it would
-probably be desirable to perform synchronisation (e.g. requiring overlapping
+probably be desirable to perform synchronisation (e.g.\ requiring overlapping
 transitions) on only some transitions, for example the first track.
 
 Implementing such a calculus is straightforward in \Calculus, since the
@@ -127,7 +126,7 @@ $\ImageVar \gets \bot$\;
     
     A preliminary implementation of this approach is available as part
     of~\Catra, but has been neither optimised nor fully tested.
-\fi
+
 
 %%% Local Variables:
 %%% mode: latex
