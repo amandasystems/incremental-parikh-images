@@ -8,11 +8,11 @@ $\Regex{\mathtt{*}}$ the Kleene star, and $\Regex{\mathtt{.}}$ matches any singl
 For the length of a string $s$, we write $\Length{s}$. All number variables in
 this example are in $\Naturals$ with $0$.
 
-\newcommand{\autscale}[0]{0.48}
+\newcommand{\autscale}[0]{0.60}
 
 \begin{figure}[ht]
     \centering 
-  \begin{subfigure}[b]{\autscale\textwidth}
+  \begin{subfigure}[b]{0.9\textwidth}
     \centering
     \includegraphics[width=\textwidth]{a}
     \caption{The automaton $A'$, whose Parikh registers count the length of the
@@ -34,7 +34,7 @@ this example are in $\Naturals$ with $0$.
       \Description[A 4-state Parikh automaton.]{%
       A 4-state Parikh automaton with initial state IB going to the B state,
       which counts a number of letters c, followed by one final c before reaching 
-      the accepting state, FB. The second path from the initial state consumes an a,
+      the accepting state, FB.\@The second path from the initial state consumes an a,
       goes into state A, consumes some number of c:s, followed by a final a to get to
       the accepting state.}
   \end{subfigure}
@@ -143,7 +143,7 @@ prove the unsatisfiability of the running example. The calculus
 interleaves several reasoning principles, which we will later
 define precisely as calculus rules:
 \begin{inparaenum}[(i)]
-\item Similarly, as in \cite{generate-parikh-image}, we first describe
+\item Similarly, as in~\cite{generate-parikh-image}, we first describe
   each automaton as a flow network, counting how often each transition
   is taken in a run of the automaton. The flow constraints are an
   over-approximation of the possible accepting runs of an automaton.
@@ -220,7 +220,7 @@ start of the substring ($i$), and the length of the substring ($n$).
 
 \begin{figure}[tb]
   \centering 
-  \includegraphics[width=0.6\textwidth]{a_2}
+  \includegraphics[width=0.9\textwidth]{a_2}
   \caption{ $\mathcal{A}'$ after even more simplification using linear algebra,
    with most transitions expressed
   in terms of $n$. Intuitively, this version captures the fact that $n$ is given
@@ -253,7 +253,7 @@ start of the substring ($i$), and the length of the substring ($n$).
       The accepting state has a self-loo labelled $l_A -3$.}
   \vspace*{1.9ex}
 \end{subfigure}\hfill%
-\begin{subfigure}{0.54\textwidth}
+\begin{subfigure}{0.58\textwidth}
   \centering
   \includegraphics[width=\textwidth]{b_annotated}
   \caption{$\mathcal{B}$ with its associated transition variables in symbolic forms.

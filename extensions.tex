@@ -94,8 +94,8 @@ image.
 
 
   \begin{algorithm}
-    \DontPrintSemicolon
-    \caption{$\FindImage{}(\Automaton_1 \times \ldots \times \Automaton_k, \Map)$ will find the Presburger form for the product $\Automaton_1 \times \ldots \times \Automaton_k$ modulo a homomorphism $\Map$ where the only free variable is/are the one(s) representing the monoid element of $\Map$.}\label{alg:find-image}
+    \DontPrintSemicolon{}
+    \caption{$\FindImage{}(\Automaton_1 \times \cdots \times \Automaton_k, \Map)$ will find the Presburger form for the product $\Automaton_1 \times \ldots \times \Automaton_k$ modulo a homomorphism $\Map$ where the only free variable is/are the one(s) representing the monoid element of $\Map$.}\label{alg:find-image}
     \KwData{$\Automaton$, a product from \Calculus{}, a model $a$ assigning counts to the terms that $\Filter$ associate with each transition of $\Automaton$, and our homomorphism $\Map$ that we want to compute the image modulo.}
     \KwResult{a quantifier-free Presburger formula $P$ representing a partial $\Map$-homomorphic image}
     \SetKwFunction{NewTheoremProver}{newTheoremProver}

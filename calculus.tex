@@ -197,11 +197,6 @@ and the initial state after removing transitions where $\Filter(\Transition) = 0
 By only performing this computation after such filtering, a solver additionally avoids
 breaking the rule of adding clauses that already appear in the formula.
 
-We here only define forward propagation. Backward propagation 
-can be straightforwardly obtained by computing reachability from
-an accepting state on the same principle as above, and indeed our
-implementation of \Calculus{} does this.
-
 Finally, the rule~\Subsume{} can be applied when the connectedness of
 an automaton has been ensured by exhaustive application of the other
 rules. This suggests a proof strategy where you \Propagate{} when you
