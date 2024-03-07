@@ -7,7 +7,7 @@ simplicity, we assume that the sets of states of the $k$ automata (and
 therefore also the transition sets) are pairwise disjoint. 
 \begin{definition}\label{def:multiple}
   Suppose $\Automaton_1, \ldots, \Automaton_k$ are automata,
-  $\Map : \Alphabet^* \to \Monoid$ is a map to a commutative monoid
+  $\Map : \Alphabet^* \to \Monoid$ is a homomorphism to a commutative monoid
   $\Monoid$,
   $\Filter: \bigcup_{i=1}^k \Transitions_{\Automaton_i} \to \Naturals$
   is a transition selection function, and
@@ -31,7 +31,7 @@ therefore also the transition sets) are pairwise disjoint.
 
   \begin{table}[t]
     \caption{Additional derivation rules for products of arbitrarily many automata.}\label{tbl:rules:multi}
-    \begin{tabular}{@{}l>{$}c<{$}p{3cm}@{}}\toprule
+    \begin{tabular}{l>{$}c<{$}l}\toprule
       Name & \text{Rule} & Side conditions\\
       \midrule
     
@@ -41,9 +41,9 @@ therefore also the transition sets) are pairwise disjoint.
       {
        {\begin{array}{c@{}}
            \left\{
-            \begin{array}{l@{}}
-              \FlowEq(\Automaton_i, \Filter),\\
-              \Connected(\Automaton_i, \Filter),\\
+            \begin{array}{c@{}}
+              \FlowEq(\Automaton_i, \Filter),
+              \Connected(\Automaton_i, \Filter),\\[1ex]
               \MonoidElement = \sum_{\Transition \in \Transitions_{\Automaton_i}} \Filter(\Transition) \cdot \Map(\Transition)
             \end{array}
             \right\}_{i=1}^k,
@@ -57,19 +57,17 @@ therefore also the transition sets) are pairwise disjoint.
       \Materialise{} &
       \inferrule%
       {{
-         \begin{array}{l@{}}
-           \FlowEq(\Automaton', \Filter'),\\
-           \Connected(\Automaton', \Filter'),\\
-           \BindingSum(\Automaton_i, \Automaton_j, \Automaton', \Filter')\\
+         \begin{array}{c@{}}
+           \FlowEq(\Automaton', \Filter'),
+           \Connected(\Automaton', \Filter'),
+           \BindingSum(\Automaton_i, \Automaton_j, \Automaton', \Filter'),\\
            \ImagePredicate{
                      \Tuple{%
-                     \begin{array}{l@{}l@{}l@{}}
-                      \Automaton_1, & \Automaton_{i-1}, & \Automaton_{i+1}, \\
-                      \ldots, & \Automaton_{j-1}, & \Automaton_{j+1}, \\
-                      \ldots, & \Automaton_k, & \Automaton'
-                     \end{array}
+                      \Automaton_1,  \Automaton_{i-1},  \Automaton_{i+1},
+                      \ldots,  \Automaton_{j-1},  \Automaton_{j+1},
+                      \ldots,  \Automaton_k,  \Automaton'
                      }
-           }{\Map}{\Filter'}{\MonoidElement},\\
+           }{\Map}{\Filter'}{\MonoidElement},
 \SomeInequalities, \SomeClause
            \end{array}}
            }
@@ -77,10 +75,8 @@ therefore also the transition sets) are pairwise disjoint.
       \begin{array}{l@{}}
       \ImagePredicate{
         \Tuple{%
-        \begin{array}{l@{}l@{}}%
-          \Automaton_1,  \ldots, & \Automaton_i, \ldots, \\
-          \Automaton_j, \ldots, & \Automaton_k
-        \end{array}%
+          \Automaton_1,  \ldots,  \Automaton_i, \ldots, 
+          \Automaton_j, \ldots,  \Automaton_k
         }}{\Map}{\Filter}{\MonoidElement}
         \SomeInequalities, \SomeClause{}
       \end{array}}} &%
