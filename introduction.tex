@@ -68,8 +68,8 @@ The problem can be solved using the classical construction of Parikh
 images~\cite{muscholl-linear,generate-parikh-image} by first computing
 the product of finite-state automata accepting the
 languages~$\Language_1, \ldots, \Language_n$, then extracting a
-Presburger arithmetic formula~$\psi$ describing the Parikh image of the product
-automaton, and finally checking the satisfiability of $\phi \wedge \psi$.
+Presburger arithmetic formula~$\rho$ describing the Parikh image of the product
+automaton, and finally checking the satisfiability of $\phi \wedge \rho$.
   
 While theoretically elegant, this construction has several
 disadvantages that easily turn into bottlenecks when reasoning about
@@ -83,13 +83,13 @@ available due to the exponential blow-up in size of the product,
 quickly becoming intractable as the number of automata in the product
 increases.
 
-Secondly, the constructed Presburger arithmetic formula~$\psi$ contains a linear
+Secondly, the constructed Presburger arithmetic formula~$\rho$ contains a linear
 number of existential quantifiers in the size of the product
 automaton, as well as complex Boolean structure, which is needed to
 express the connectedness of paths considered in the construction.
 Solving formulas of this kind generally tends to be taxing for
 solvers~\cite{ostrich-plus}; in the present case, since the product
-automaton itself is exponentially big, also formula~$\psi$ has
+automaton itself is exponentially big, also formula~$\rho$ has
 exponential size in the number of considered regular languages, and
 can easily become too complex for today's Presburger arithmetic
 solvers to handle.
@@ -105,13 +105,19 @@ cases~\cite{approximate-parikh}.
 
 Addressing these concerns, we have developed a calculus for Parikh images of
 intersections of regular languages that we call \Calculus{}. It allows us to
-interleave the computation of arbitrarily deep products of automata with the
-product's Parikh image, and is generalised to an arbitrary homomorphism over
-automata labels, including string length. This enables us to let both
-calculations inform each other, eliminating unnecessary work, and pruning the
+interleave the computation of product automata with the derivation of the
+Parikh image. This enables the two
+calculations to inform each other, eliminating unnecessary work, and pruning the
 size of the partial products considered in the computation for a smaller memory
-footprint. Moreover, our approach allows us to do this precisely, without the expensive
+footprint.
+Moreover, our approach allows us to do this precisely, without the expensive
 fallbacks when approximations fail as in the case of~\cite{approximate-parikh}.
+%
+Our calculus is applicable not only to Parikh images,
+but can be used for reasoning about the image of regular languages under
+arbitrary homomorphisms into commutative monoids. Besides Parikh images,
+this includes the length abstraction of regular languages commonly used in
+string solvers.
 
 Our primary influence for this work is the operation of (finite-domain) 
 constraint programming (CP)%
