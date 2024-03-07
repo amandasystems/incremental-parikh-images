@@ -12,7 +12,7 @@ this example are in $\Naturals$ with $0$.
 
 \begin{figure}[ht]
     \centering 
-  \begin{subfigure}[b]{0.9\textwidth}
+  \begin{subfigure}[b]{0.8\textwidth}
     \centering
     \includegraphics[width=\textwidth]{a}
     \caption{The automaton $A'$, whose Parikh registers count the length of the
@@ -25,8 +25,9 @@ this example are in $\Naturals$ with $0$.
       of a substring matching c or dd.%
       }
   \end{subfigure}%
-  \hfill%
-  \begin{subfigure}[b]{\autscale\textwidth}
+
+  \medskip
+  \begin{subfigure}[b]{0.7\textwidth}
     \centering
     \includegraphics[width=\textwidth]{b}
     \caption{The automaton $B$, where the Parikh registers count the length of
@@ -220,7 +221,7 @@ start of the substring ($i$), and the length of the substring ($n$).
 
 \begin{figure}[tb]
   \centering 
-  \includegraphics[width=0.9\textwidth]{a_2}
+  \includegraphics[width=0.8\textwidth]{a_2}
   \caption{ $\mathcal{A}'$ after even more simplification using linear algebra,
    with most transitions expressed
   in terms of $n$. Intuitively, this version captures the fact that $n$ is given
@@ -239,10 +240,10 @@ start of the substring ($i$), and the length of the substring ($n$).
 
 \begin{figure}[ht]
   \centering 
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.61\textwidth}
   \centering
   \includegraphics[width=\textwidth]{a_annotated}
-  \vspace*{5ex}
+
   \caption{ $\mathcal{A}'$ with its associated transition variables in symbolic
   form.}\label{fig:aut_a_annotated}
     \Description[A 3-state automaton with equations on its edges]{
@@ -252,10 +253,12 @@ start of the substring ($i$), and the length of the substring ($n$).
       then one transition from D to FA, the accepting state on d labelled 1.
       The accepting state has a self-loo labelled $l_A -3$.}
   \vspace*{1.9ex}
-\end{subfigure}\hfill%
-\begin{subfigure}{0.58\textwidth}
+\end{subfigure}
+
+\begin{subfigure}{0.8\textwidth}
   \centering
   \includegraphics[width=\textwidth]{b_annotated}
+  
   \caption{$\mathcal{B}$ with its associated transition variables in symbolic forms.
   The large number of implicitly existentially quantified
   variables~$x_i$ on
