@@ -30,7 +30,7 @@ times. It is a classical result that the Parikh image of every
 context-free language (and, thus, also of every regular language) is a
 semilinear set, i.e., Presburger-definable~\cite{parikh-theorem}.
 In
-fact, it is possible to compute an existential Presburger formula
+fact, it is possible to compute an existential Presburger arithmetic formula
 describing the Parikh image of any \emph{context-free} language in
 linear time~\cite{generate-parikh-image} in the size of the grammar
 describing the language. For the special case of
@@ -53,11 +53,11 @@ some given properties.
 {
     \centering
     \begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,%
-        title=Joint satisfiability of Parikh images modulo Presburger constraints,%
+        title=Joint satisfiability of Parikh images modulo Presburger arithmetic constraints,%
         width=0.9\linewidth]
         Given regular languages~$\Language_1, \ldots, \Language_n$
         over a common alphabet $\Set{a_1, \ldots, a_k}$,
-        and a Presburger formula~$\phi(x_1, \ldots, x_k)$, 
+        and a Presburger arithmetic formula~$\phi(x_1, \ldots, x_k)$, 
         decide if there is a word~$w \in \Language_1 \cap
         \cdots \cap \Language_n$ whose Parikh vector 
         $\VectorLiteral{m_1, \ldots, m_k}$ satisfies $\phi$.
@@ -68,7 +68,7 @@ The problem can be solved using the classical construction of Parikh
 images~\cite{muscholl-linear,generate-parikh-image} by first computing
 the product of finite-state automata accepting the
 languages~$\Language_1, \ldots, \Language_n$, then extracting a
-Presburger formula~$\psi$ describing the Parikh image of the product
+Presburger arithmetic formula~$\psi$ describing the Parikh image of the product
 automaton, and finally checking the satisfiability of $\phi \wedge \psi$.
   
 While theoretically elegant, this construction has several
@@ -83,7 +83,7 @@ available due to the exponential blow-up in size of the product,
 quickly becoming intractable as the number of automata in the product
 increases.
 
-Secondly, the constructed Presburger formula~$\psi$ contains a linear
+Secondly, the constructed Presburger arithmetic formula~$\psi$ contains a linear
 number of existential quantifiers in the size of the product
 automaton, as well as complex Boolean structure, which is needed to
 express the connectedness of paths considered in the construction.
@@ -107,7 +107,7 @@ Addressing these concerns, we have developed a calculus for Parikh images of
 intersections of regular languages that we call \Calculus{}. It allows us to
 interleave the computation of arbitrarily deep products of automata with the
 product's Parikh image, and is generalised to an arbitrary homomorphism over
-automata labels, including string lengths. This enables us to let both
+automata labels, including string length. This enables us to let both
 calculations inform each other, eliminating unnecessary work, and pruning the
 size of the partial products considered in the computation for a smaller memory
 footprint. Moreover, our approach allows us to do this precisely, without the expensive
@@ -122,7 +122,7 @@ the constraints during solving, and \emph{branching}, splitting proofs
 by cases in a way that will encourage maximum propagation.
 
 For our problem, the constraints are automata connectivity and linear
-equations (Presburger formulas).
+equations (Presburger arithmetic formulas).
 We use propagation to lazily enforce connectivity of automata,
 removing transitions as they become unreachable during solving or are
 eliminated by constraints in the Presburger formula. We
@@ -133,7 +133,8 @@ us to whittle down the automata
  explosive product construction. The underlying observation
 is that though the domain of our integer variables
 is infinite, the number of simple paths
-through the automata (and their product) is finite. In summary, the key ideas are:
+through the automata (and their product) is finite.
+\emph{In summary, the key ideas are:}
 
 {
     \centering
@@ -184,8 +185,9 @@ constraints over string logic (QF\_SLIA) and increasing the number of
 
 In summary, we contribute:
 \begin{itemize}
-    \item The \Calculus{} calculus to efficiently compute (a homomorphism on)
-          the Parikh image of products of Parikh automata.
+\item The \Calculus{} calculus to efficiently check the satisfiability
+  of the Parikh image of an intersection of regular languages modulo
+  Presburger arithmetic side conditions.
     \item Techniques to efficiently implement \Calculus{} in a modern
     automated theorem prover, including strategies for case splitting, clause
     learning, and constraint propagation for connectedness.
@@ -200,9 +202,9 @@ In summary, we contribute:
 
 \subsection{Related Work}
 
-The problem of computing constraints on Parikh images over products of regular
-languages under a given commutative homomorphism amounts to checking emptiness
-of products of
+The problem of satisfying Parikh images over products of regular
+languages, modulo Presburger arithmetic side conditions,
+amounts to checking emptiness of products of
 Parikh automata. Parikh automata are regular automata extended with integer
 counters with given increments and decrements for each transition, where we
 allow checking a set of linear constraints on the final values of the counters
@@ -223,28 +225,34 @@ While relying on Parikh images (or on being able to check
 the emptiness of Parikh images under given side constraints), the mentioned
 papers do not propose any techniques to compute Parikh images.
 
-
-A common approach to handling Parikh image computation is to
+\citeauthor{muscholl-linear} and \citeauthor{generate-parikh-image}
+define a closed-form description of the Parikh image of any regular
+language as an existential Presburger arithmetic formula.
+%
+An approach to optimise the construction is to
 over-approximate the Parikh image of a product of $k$~automata
 $\ParikhMap(\Language(\Automaton_1) \cap \ldots \cap \Language(\Automaton_k))$
-with the conjunction of the automata's Parikh maps, $\bigwedge_{i=1}^{k}
+with the conjunction of the Parikh images, $\bigwedge_{i=1}^{k}
 \ParikhMap(\Language(\Automaton_i))$~\cite{approximate-parikh}.
 Due to the over-approximation,
-this approach works only for unsatisfiable instances,
-and will require falling back to computing the product of the automata before
+this approach is primarily useful for unsatisfiable instances,
+and requires falling back to computing the product of the automata before
 using the standard approach for finding its image originally presented
-in~\cite{generate-parikh-image}.
+in~\cite{generate-parikh-image}. Our calculus~\Calculus{}, in a somewhat
+similar but more fine-grained manner, utilises laziness to postpone or
+avoid the most expensive steps in the computation of Parikh images of
+the intersection of regular languages.
 
-Our calculus~\Calculus{} is similar in spirit to the work
+Our calculus~\Calculus{} is also similar in spirit to the work
 of \citeauthor{symbolic-boolean-derivatives}, who tackle the exponential
 blow-up resulting from Boolean combinations
-of regular automata in SMT string solvers
+of finite-state automata in SMT string solvers
 through the use of symbolic derivatives~\cite{symbolic-boolean-derivatives}.
  The research by
  \citeauthor{symbolic-boolean-derivatives} does not consider Parikh images,
  however. In addition to presenting a decision procedure for lazily dispatching
 constraints, we similarly also allow for symbolic labelling of automata to
-handle large Unicode alphabets.
+handle large alphabets.
 
 Beyond the field of string solving, Parikh image computation is used
 as an elementary building block in a variety of areas.  For instance,
