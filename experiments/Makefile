@@ -5,7 +5,7 @@ all:
 	papermill "SMT-COMP comparison.ipynb" --no-report-mode Report-SMT-COMP.ipynb
 
 clean:
-	${RM} trivial-*.log solved_pivot_table.tex *.pdf Report-SMT-COMP.ipynb Report.ipynb
+	${RM} *.tex *.pdf Report-SMT-COMP.ipynb Report.ipynb
 
 .PHONY: notebook
 notebook:
