@@ -19,8 +19,12 @@ could be solved in under five seconds, with a mean runtime of about 0.1s.
 The benchmarks are run
 on commit~\texttt{\commit} of \Catra{}\footnote{Github repository redacted for anonymity.}.
 
-The benchmarks are executed in parallel across a cluster of identical
-machines, \BenchmarkRig{}, as the sole job for each machine.  We compiled
+The benchmarks for \Calculus{} and \Nuxmv{} are executed in parallel on \BenchmarkRig{}, with 4~threads
+sharing the same JVM.  The baseline implementation was executed as one single job per
+instance on StarExec, with the same configuration as CA-Str and \Ostrich{} used in SMT-COMP since
+it could not be executed reliably in less than a week on our machine.
+
+We compiled
 the code using Scala~\ScalaVersion{} and executed the experiments
 on~\JvmVersion{} with a maximum heap of~\MaxHeapSize{}. We used \Nuxmv{}
 version~\NuxmvVersion{} invoked as a subprocess for each instance. Instances
@@ -117,7 +121,11 @@ To investigate scaling we additionally execute \numprint{2000} randomly sampled
 (without replacement) benchmarks with a \numprint{120}-second timeout. We add
 runs of \Calculus{} with clause learning and restarts disabled, and with only
 clause learning disabled to show the impact of \cref{sec:random-restarts}, and
-\cref{sec:clause-learning} respectively.
+\cref{sec:clause-learning} respectively. These experiments are executed on a smaller
+machine, a six-core AMD~Ryzen~5 2600 but the same Java version. Their max
+heap size is set to \SI{20}{GB} since this system has less RAM. The baseline
+experiments are executed separately as only two threads, since the implementation is
+so RAM-hungry it is difficult to benchmark reliably under longer timeouts.
 
 A cactus plot showing the number of instances solved within a given timeout can
 be seen in \cref{fig:cactus}. We see that \Calculus{} outperforms \Nuxmv{} in
@@ -266,11 +274,15 @@ discovered a soundness issue in CA-Str on one instance in QF\_S where the
 incorrectly reported as \textsc{Unsat}. The underlying issue was that \Catra{} generated
 a too broad blocking clause when encountering unsatisifiability stemming from 
 an intermittent product accepting only the empty string during product materialisation. 
-We implemented a fix for that bug and re-evaluated all benchmarks in SMT-COMP.
+We implemented a fix for that bug and re-evaluated all benchmarks.
 
 Since addressing those bugs we have observed no further soundness
-issues in neither \Catra{} nor CA-Str. Benchmarking results for both runs are included
-in the artefact of this paper, and show virtually identical performance characteristics.
+issues in neither \Catra{} nor in CA-Str. Benchmarking results for both runs are included
+in the artefact of this paper, and show virtually identical performance characteristics,
+with the exception for higher efficiency due to better benchmarking machines. We have
+additionally performed several of the benchmarks (in particular the \SI{120}{s} experiments)
+on machines and clusters of machines with widely different performance characteristics
+and have observed the trends to be surprisingly robust.
 
 The second threat to validity is our implementation of automata operations. As
 \Calculus{} by design offloads some of the product computation work onto
