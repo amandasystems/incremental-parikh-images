@@ -17,12 +17,12 @@ but discarded them since they all turned out to be trivial for our tool
 \Catra{}: every instance
 could be solved in under five seconds, with a mean runtime of about 0.1s.
 The benchmarks are run
-on commit~\texttt{\commit} of \Catra{}\footnote{Github repository redacted for anonymity.}.
+on commit~\texttt{\commit} of \Catra{}.
 
 The benchmarks for \Calculus{} and \Nuxmv{} are executed in parallel on \BenchmarkRig{}, with 4~threads
-sharing the same JVM.  The baseline implementation was executed as one single job per
-instance on StarExec, with the same configuration as CA-Str and \Ostrich{} used in SMT-COMP since
-it could not be executed reliably in less than a week on our machine.
+sharing the same JVM. Baseline was
+executed one JVM instance per input as 6~jobs in with a \SI{4}{GB} heap each on an Intel i5-10600, \SI{3.3}{GHz} CPU
+with 6 cores and 12 threads. Simultaneously, StarExec ran the same experiment and produced almost identical results.
 
 We compiled
 the code using Scala~\ScalaVersion{} and executed the experiments
@@ -124,8 +124,7 @@ clause learning disabled to show the impact of \cref{sec:random-restarts}, and
 \cref{sec:clause-learning} respectively. These experiments are executed on a smaller
 machine, a six-core AMD~Ryzen~5 2600 but the same Java version. Their max
 heap size is set to \SI{20}{GB} since this system has less RAM. The baseline
-experiments are executed separately as only two threads, since the implementation is
-so RAM-hungry it is difficult to benchmark reliably under longer timeouts.
+experiments are executed separately as only two threads.
 
 A cactus plot showing the number of instances solved within a given timeout can
 be seen in \cref{fig:cactus}. We see that \Calculus{} outperforms \Nuxmv{} in
@@ -270,19 +269,16 @@ address this we have validated all reported solutions made by \Calculus{} with
 product materialisation causing non-deterministic unsoundness in \numprint{0.7}
 of instances. Additionally, both we and the artefact evaluation committee independently
 discovered a soundness issue in CA-Str on one instance in QF\_S where the 
-\texttt{QF\_S\slash{}20230329-automatark-lu\slash{}instance08425.smt2} instance was
+\texttt{20230329-automatark-lu\slash{}instance08425.smt2} instance was
 incorrectly reported as \textsc{Unsat}. The underlying issue was that \Catra{} generated
-a too broad blocking clause when encountering unsatisifiability stemming from 
-an intermittent product accepting only the empty string during product materialisation. 
-We implemented a fix for that bug and re-evaluated all benchmarks.
+a too broad blocking clause for a product without transitions. We implemented a fix
+and re-evaluated all benchmarks. Performance was not measurably affected.
 
 Since addressing those bugs we have observed no further soundness
 issues in neither \Catra{} nor in CA-Str. Benchmarking results for both runs are included
-in the artefact of this paper, and show virtually identical performance characteristics,
-with the exception for higher efficiency due to better benchmarking machines. We have
-additionally performed several of the benchmarks (in particular the \SI{120}{s} experiments)
-on machines and clusters of machines with widely different performance characteristics
-and have observed the trends to be surprisingly robust.
+in the artefact of this paper, and show virtually identical performance characteristics. We have
+additionally executed all of the benchmarks on machines with widely different performance
+characteristics and have observed the trends to be robust.
 
 The second threat to validity is our implementation of automata operations. As
 \Calculus{} by design offloads some of the product computation work onto
@@ -292,8 +288,8 @@ performance issues with the baseline approach have been reported for other strin
 solvers, as well as for a previous implementation in \Ostrich{}. Additionally,
 profiling shows that baseline spends most of its time in
 \Princess{}, suggesting that the automaton implementation is not the bottleneck.
-Finally, the difference in performance between \Calculus{} and baseline has been
-robust under significant optimisation of the automata library, additionally
+Finally, the difference in performance between \Calculus{} and baseline was unaffected
+ by significant optimisation of the automata library, additionally
 strengthening this thesis.
 
 %%% Local Variables:
