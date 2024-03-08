@@ -98,15 +98,15 @@ The rules relate premises~$\SomeClause_1, \ldots, \SomeClause_k$ with
 some conclusion~$\SomeClause$. 
 %
 When constructing a proof, we start with some root~$\SomeClause$, and
-then apply proof rules to the goals of the proof, in bottom-up
-direction, until all goals are closed, or no more rule is applicable.
+then apply proof rules to the goals of the proof in bottom-up
+direction until all goals are closed, or no more rules are applicable.
 
 A proof in which all proof goals are closed shows that the formulas
-in the root~$\SomeClause$ of the proof are inconsistent, and do not
-have any solutions. A proof goal that cannot be closed, but to which no
-more rules are applicable, gives rise to  a solution of the formulas in the
-root~$\SomeClause$. Such an open proof goal will only contain formulas
-in Presburger arithmetic allowing a solution to be computed using
+in the root $\SomeClause$ of the proof are inconsistent (have no solutions).
+An unclosable goal to which no rules are applicable
+gives rise to a solution of the formulas in the
+root~$\SomeClause$. Such a goal will only contain formulas
+in Presburger arithmetic, allowing a solution to be computed using
 standard algorithms~\cite{DBLP:books/daglib/0022394}.
 
 We use the convention of splitting the formulas in proof goals into
