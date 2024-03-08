@@ -11,7 +11,7 @@ FIGURES=$(shell grep includegraphics main.tex ${TEXFILES} | grep -v '\\commit' |
 %.fig: %.dot
 	dot2tex -tmath --encoding utf8 --autosize -ftikz --figonly $< -o $@
 
-oopsla24-catra.zip: main.tex Makefile ${TEXFILES} ${FIGURES} acmart.cls acmart.ins mymacros.sty main.bbl bibliography.bib
+oopsla24-catra.zip: main.tex Makefile ${TEXFILES} ${FIGURES} mymacros.sty main.bbl bibliography.bib  acmart.cls acm-jdslogo.png ACM-Reference-Format.bst
 	zip $@ -r graphs $^
 
 .PHONY: FORCE 
