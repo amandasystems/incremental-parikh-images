@@ -1,0 +1,2 @@
+60.43/30.10	/export/starexec/sandbox2/solver/bin/starexec_run_def: line 10: 49283 Alarm clock             java $JAVA_OPTS -jar "$HERE"/../catra-assembly-0.1.5.jar solve-satisfy --timeout 30000 --backend baseline $1
+60.43/30.10	EOF

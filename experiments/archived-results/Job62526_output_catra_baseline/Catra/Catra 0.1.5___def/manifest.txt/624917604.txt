@@ -1,0 +1,25 @@
+0.89/0.67	E: parse error 
+1.07/0.76	E: Expected parser:1:1 / document:1:1 / expression:1:1 / (counterDefinition | constraintDefinition | automatonDefinition | productDefinition):1:1, found "0.par: /Vo"
+1.07/0.77	==== ../../benchmark/theBenchmark.txt error: parse error: Expected parser:1:1 / document:1:1 / expression:1:1 / (counterDefinition | constraintDefinition | automatonDefinition | productDefinition):1:1, found "0.par: /Vo" ====
+1.07/0.77	java.lang.Exception: parse error: Expected parser:1:1 / document:1:1 / expression:1:1 / (counterDefinition | constraintDefinition | automatonDefinition | productDefinition):1:1, found "0.par: /Vo"
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$.$anonfun$runInstances$3(SolveRegisterAutomata.scala:137)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$.measureTime(SolveRegisterAutomata.scala:58)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$.$anonfun$runInstances$1(SolveRegisterAutomata.scala:127)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$.$anonfun$runInstances$1$adapted(SolveRegisterAutomata.scala:122)
+1.07/0.77		at scala.collection.immutable.List.foreach(List.scala:333)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$.runInstances(SolveRegisterAutomata.scala:122)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$.delayedEndpoint$uuverifiers$catra$SolveRegisterAutomata$1(SolveRegisterAutomata.scala:147)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$delayedInit$body.apply(SolveRegisterAutomata.scala:53)
+1.07/0.77		at scala.Function0.apply$mcV$sp(Function0.scala:42)
+1.07/0.77		at scala.Function0.apply$mcV$sp$(Function0.scala:42)
+1.07/0.77		at scala.runtime.AbstractFunction0.apply$mcV$sp(AbstractFunction0.scala:17)
+1.07/0.77		at scala.App.$anonfun$main$1(App.scala:98)
+1.07/0.77		at scala.App.$anonfun$main$1$adapted(App.scala:98)
+1.07/0.77		at scala.collection.IterableOnceOps.foreach(IterableOnce.scala:576)
+1.07/0.77		at scala.collection.IterableOnceOps.foreach$(IterableOnce.scala:574)
+1.07/0.77		at scala.collection.AbstractIterable.foreach(Iterable.scala:933)
+1.07/0.77		at scala.App.main(App.scala:98)
+1.07/0.77		at scala.App.main$(App.scala:96)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata$.main(SolveRegisterAutomata.scala:53)
+1.07/0.77		at uuverifiers.catra.SolveRegisterAutomata.main(SolveRegisterAutomata.scala)
+1.20/0.80	EOF

@@ -1,2 +1,0 @@
-48.19/21.36	==== ../../benchmark/theBenchmark.par: unsat run: 20.277586525s parse: 0.571977599s ====
-48.23/21.40	EOF
