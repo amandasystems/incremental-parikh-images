@@ -224,7 +224,7 @@ and configuration that ran SMT-COMP~2023, combining our new results for CA-Str w
 published results of SMT-COMP~2023.
 \footnote{StarExec Job ID 59410, \enquote{SMT-COMP 2023 single query final}, 
 available at \url{https://www.starexec.org/starexec/secure/details/job.jsp?id=59410}.} 
-Where avaiable, we use the revised, out-of
+Where available, we use the revised, out-of
 competition version of the results for solvers with bugs discovered during
 the competition, including \Ostrich{} and Z3-Noodler. 
 \footnote{StarExec Job ID 59668, \enquote{SMT-COMP 2023 single query final fixed} available at
@@ -241,10 +241,10 @@ outperformed by cvc5 and z3alpha. On unsatisfiable benchmarks,
 which is promising given that \Ostrich{}~1.3 (without CA-Str), cvc5, and z3alpha all show very strong
 performance on this class of benchmarks.
 
-These results are expected. It is known that automata-based string solvers (\Ostrich{}, Z3-Noodler) 
+These results are not unexpected. It is known that automata-based string solvers (\Ostrich{}, Z3-Noodler) 
 tend to perform better on unsatisfiable than on satisfiable benchmarks, compared to solvers
 that do not utilize automata and directly work on regular expressions (cvc5, z3alpha).
-This is not unexpected, as the computation of automata representations of regular 
+The computation of automata representations of regular 
 constraints can be expensive, and might be unnecessary for satisfiable formulas.
 In addition, the algorithm in \Ostrich{} has stronger theoretical completeness
 guarantees than cvc5 and Z3-Str, and ensuring completeness often has an adverse
