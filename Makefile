@@ -14,6 +14,8 @@ FIGURES=$(shell grep includegraphics main.tex ${TEXFILES} | grep -v '\\commit' |
 oopsla24-catra.zip: main.tex Makefile ${TEXFILES} ${FIGURES} mymacros.sty main.bbl bibliography.bib  acmart.cls acm-jdslogo.png ACM-Reference-Format.bst
 	zip $@ -r graphs $^
 
+main.bbl: main.pdf
+
 .PHONY: FORCE 
 main.pdf: FORCE main.tex ${FIGURES} ${TEXFILES}
 	./bin/latexrun main.tex

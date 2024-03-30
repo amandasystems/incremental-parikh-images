@@ -126,6 +126,10 @@
 \usepackage{tikz}
 \usepackage[most]{tcolorbox}
 \definecolor{ourcolour}{RGB}{103,194,165}
+% Conference requirement: algorithm caption above, not below
+\makeatletter
+\renewcommand{\@algocf@capt@plain}{above}% formerly {bottom}
+\makeatother
 
 
 \begin{document}

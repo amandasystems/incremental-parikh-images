@@ -153,7 +153,7 @@ and similarly for $\Automaton_j$:
   \end{aligned}
 $$
 
-For instances of precisely one automaton, neither rule applies, and we perform
+For precisely one automaton, neither rule applies, and we perform
 the calculus as before.
 
 \subsection{An Example}\label{sec:multiple:example}
@@ -318,8 +318,7 @@ light equality propagation.
 We then continue by repeating the steps of~\cref{sec:single:example}, shown 
 in~\cref{fig:derivation:single} since the steps to propagate
 \cref{ex:string-constraints} across the automaton $\mathcal{A}'$ still apply for the
-product. Note that this fixes the values of all transitions but one of $\mathcal{A}'$ as
-constants, including the free counter variables $i, n$, whose new constant
+product. Note that this fixes the values of all transitions but one of $\mathcal{A}'$, including the free counter variables $i, n$, whose new constant
 values we propagate everywhere.
 
 Once we have performed reasoning by equality to eliminate transition variables,
@@ -328,18 +327,16 @@ by the clauses in the final node in the tree. This corresponds to the end of
 \cref{sec:intuition:algebra}. Our only options now are to either split on which
 path we take from $I_B$ by case-splitting on~$\TransitionVar_{12}$ or to
 directly invoke \Materialise{}. The latter would produce a shorter tree in this
-instance but might lead to a larger product being computed, so we (and indeed
-\Catra{}) pick \Split{}. This leads to an opportunity for propagation since
+instance but might lead to a larger product being computed, so we pick \Split{}. This leads to an opportunity for propagation since
 $\TransitionVar_{12} = 0$ cuts off $\TransitionVar_{9}$ from $I_B$ on the left
 branch. Note that the same opportunity does not present itself on the right
-branch, though; the use of the upper path to state~$A$ does not preclude visiting
+branch; the use of the upper path to state~$A$ does not preclude visiting
 state~$B$.
 
-In both cases, we have comparatively simple automata left, so we apply
+In both cases the automata are now simpler, so we apply
 \Materialise{} to obtain their product, which for both branches is empty. An
 empty product will have no outgoing transitions from its initial state, and so
-will produce a flow equation $1 = 0$ since the right-hand balancing side will
-always be the empty sum. We can then close the proof and know that the problem
+will lead to a flow equation $1 = 0$. We can then close the proof and know that the problem
 is unsatisfiable. A full derivation tree for the example can be found 
 in~\cref{fig:derivation:multi}.
 
