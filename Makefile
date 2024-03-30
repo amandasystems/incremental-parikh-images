@@ -11,10 +11,11 @@ FIGURES=$(shell grep includegraphics main.tex ${TEXFILES} | grep -v '\\commit' |
 %.fig: %.dot
 	dot2tex -tmath --encoding utf8 --autosize -ftikz --figonly $< -o $@
 
-oopsla24-catra.zip: main.tex Makefile ${TEXFILES} ${FIGURES} mymacros.sty main.bbl bibliography.bib  acmart.cls acm-jdslogo.png ACM-Reference-Format.bst
+oopsla24-catra.zip: main.tex Makefile ${TEXFILES} ${FIGURES} mymacros.sty main.bbl bibliography.bib acmart.cls acm-jdslogo.png ACM-Reference-Format.bst
 	zip $@ -r graphs $^
 
-main.bbl: main.pdf
+main.bbl:
+	bibtex main
 
 .PHONY: FORCE 
 main.pdf: FORCE main.tex ${FIGURES} ${TEXFILES}
